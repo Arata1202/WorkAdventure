@@ -96,3 +96,6 @@ vi .env
 ```env
 START_ROOM_URL=/_/global/<YOUR_FQDN>/map-storage/map/office.tmj
 ```
+
+1. Access the uploaded map
+   `https://<YOUR_FQDN>`
