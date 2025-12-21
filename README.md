@@ -42,3 +42,34 @@ vi .env
 # Start server
 make up
 ```
+
+### Upload a Map Edited with Tiled (Local)
+
+[map-starter-kit](https://github.com/workadventure/map-starter-kit)
+
+```bash
+# Clone repository
+git clone git@github.com:workadventure/map-starter-kit.git
+cd map-starter-kit.git
+
+# Edit the map file (office.tmj) using Tiled
+
+# Install dependencies
+npm install
+
+# Preview the map locally
+npm run dev
+
+# Prepare files for upload
+npm run build
+mv dist map
+zip -r map.zip map
+```
+
+1. Open the Map Storage
+   `https://<YOUR_FQDN>/map-storage`
+2. Upload the map
+   - Select a file to upload: `map.zip`
+   - Directory: /
+3. Access the uploaded map
+   `https://<YOUR_FQDN>/_/global/<YOUR_FQDN>/map-storage/map/office.tmj`
