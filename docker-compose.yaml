@@ -306,6 +306,11 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.livekit.rule=Host(`livekit.${DOMAIN}`)"
+      - "traefik.http.routers.livekit-ssl.rule=Host(`livekit.${DOMAIN}`)"
+      - "traefik.http.routers.livekit-ssl.entryPoints=websecure"
+      - "traefik.http.routers.livekit-ssl.tls=true"
+      - "traefik.http.routers.livekit-ssl.tls.certresolver=myresolver"
+      - "traefik.http.routers.livekit-ssl.service=livekit"
       - "traefik.http.routers.livekit.entryPoints=web"
       - "traefik.http.services.livekit.loadbalancer.server.port=7880"
       - "traefik.udp.routers.livekit-udp.entrypoints=udp"
