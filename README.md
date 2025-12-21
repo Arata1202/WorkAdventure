@@ -122,12 +122,6 @@ vi .env
 make up
 ```
 
-```env
-LIVEKIT_HOST=https://livekit.<YOUR_FQDN>
-LIVEKIT_API_KEY=<LIVEKIT_API_KEY>
-LIVEKIT_API_SECRET=<LIVEKIT_API_SECRET>
-```
-
 ```
 # livekit-config.yaml
 # --------------------------------------------------
@@ -135,9 +129,15 @@ LIVEKIT_API_SECRET=<LIVEKIT_API_SECRET>
 # Replace these values with your own.
 # DO NOT use these example values in production.
 # --------------------------------------------------
+
 keys:
   devkey: 12345678901234567890123456789012
+```
 
+```env
+LIVEKIT_HOST=https://livekit.<YOUR_FQDN>
+LIVEKIT_API_KEY=<LIVEKIT_API_KEY>
+LIVEKIT_API_SECRET=<LIVEKIT_API_SECRET>
 ```
 
 1. Add an A record in Route 53 to point your domain to the EC2 public IP
