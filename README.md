@@ -32,6 +32,9 @@ terraform apply
 git clone git@github.com:Arata1202/WorkAdventure.git
 cd WorkAdventure
 
+# Generate random strings for .env values
+openssl rand -base64 16
+
 # Prepare and edit .env file
 cp .env.example .env
 vi .env
@@ -41,6 +44,15 @@ vi .env
 
 # Start server
 make up
+```
+
+```env
+SECRET_KEY=<RANDOM_STRING>
+DOMAIN=<YOUR_FQDN>
+VERSION=v1.27.10
+MAP_STORAGE_AUTHENTICATION_TOKEN=<RANDOM_STRING>
+MAP_STORAGE_AUTHENTICATION_USER=admin
+MAP_STORAGE_AUTHENTICATION_PASSWORD=<RANDOM_STRING>
 ```
 
 ### Upload a Map Edited with Tiled (Local)
@@ -68,8 +80,19 @@ zip -r map.zip map
 
 1. Open the Map Storage
    `https://<YOUR_FQDN>/map-storage`
+   - User: value of `MAP_STORAGE_AUTHENTICATION_USER` in `.env`
+   - Password: value of `MAP_STORAGE_AUTHENTICATION_PASSWORD` in `.env`
 2. Upload the map
    - Select a file to upload: `map.zip`
    - Directory: /
 3. Access the uploaded map
    `https://<YOUR_FQDN>/_/global/<YOUR_FQDN>/map-storage/map/office.tmj`
+
+```bash
+# Edit .env file
+vi .env
+```
+
+```env
+START_ROOM_URL=/_/global/<YOUR_FQDN>/map-storage/map/office.tmj
+```
