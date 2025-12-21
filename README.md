@@ -55,6 +55,12 @@ MAP_STORAGE_AUTHENTICATION_USER=admin
 MAP_STORAGE_AUTHENTICATION_PASSWORD=<RANDOM_STRING>
 ```
 
+1. Add an A record in Route 53 to point your domain to the EC2 public IP
+
+| Record Name | Type | Value                    | TTL |
+| ----------- | ---- | ------------------------ | --- |
+| <YOUR_FQDN> | A    | <YOUR_PUBLIC_IP_ADDRESS> | 60  |
+
 ### Upload a Map Edited with Tiled (Local)
 
 [map-starter-kit](https://github.com/workadventure/map-starter-kit)
@@ -99,3 +105,43 @@ START_ROOM_URL=/_/global/<YOUR_FQDN>/map-storage/map/office.tmj
 
 1. Access the uploaded map
    `https://<YOUR_FQDN>`
+
+### Set Up LiveKit (EC2)
+
+```bash
+# Generate random strings for LiveKit API secret
+openssl rand -hex 32
+
+# Edit LiveKit configuration
+vi livekit-config.yaml
+
+# Edit .env file
+vi .env
+
+# Start server
+make up
+```
+
+```env
+LIVEKIT_HOST=https://livekit.<YOUR_FQDN>
+LIVEKIT_API_KEY=<LIVEKIT_API_KEY>
+LIVEKIT_API_SECRET=<LIVEKIT_API_SECRET>
+```
+
+```
+# livekit-config.yaml
+# --------------------------------------------------
+# LiveKit API key and secret
+# Replace these values with your own.
+# DO NOT use these example values in production.
+# --------------------------------------------------
+keys:
+  devkey: 12345678901234567890123456789012
+
+```
+
+1. Add an A record in Route 53 to point your domain to the EC2 public IP
+
+| Record Name         | Type | Value                    | TTL |
+| ------------------- | ---- | ------------------------ | --- |
+| livekit.<YOUR_FQDN> | A    | <YOUR_PUBLIC_IP_ADDRESS> | 60  |
