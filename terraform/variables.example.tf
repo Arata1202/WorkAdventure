@@ -1,0 +1,23 @@
+variable "region" {
+  default = "ap-northeast-1"
+}
+
+variable "ami" {
+  default = "ami-038e94aea55c0f480"
+}
+
+variable "instance_type" {
+  default = "t4g.small"
+}
+
+variable "key_name" {
+  default = "workadventure_key"
+}
+
+variable "volume_type" {
+  default = "gp3"
+}
+
+variable "volume_size" {
+  default = "8"
+}
