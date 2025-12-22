@@ -80,9 +80,9 @@ MAP_STORAGE_ENABLE_BEARER_AUTHENTICATION=true
 [map-starter-kit](https://github.com/workadventure/map-starter-kit)
 
 ```bash
-# Clone repository
-git clone git@github.com:workadventure/map-starter-kit.git
-cd map-starter-kit.git
+# Download the repository as a ZIP file from GitHub
+unzip map-starter-kit-master.zip
+cd map-starter-kit-master.git
 
 # Edit the map file (office.tmj) using Tiled
 
@@ -92,8 +92,12 @@ npm install
 # Preview the map locally
 npm run dev
 
-# Upload the map
+# Prepare files for upload
 npm run build
+mv dist map
+zip -r map.zip map
+
+# Upload the map
 npm run upload
 
 Please enter your Map storage URL: https://<YOUR_FQDN>/map-storage/

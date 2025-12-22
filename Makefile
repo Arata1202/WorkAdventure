@@ -4,4 +4,7 @@ up:
 down:
 	@docker compose down
 
-PHONY: up down
+upload:
+	@./upload.sh
+
+PHONY: up down upload
