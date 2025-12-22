@@ -321,6 +321,7 @@ services:
     depends_on:
       redis:
         condition: service_started
+    restart: ${RESTART_POLICY}
 
   coturn:
    image: coturn/coturn:4.5.2
@@ -345,7 +346,10 @@ services:
      # use real-valid certificate/privatekey files
      #- --cert=/root/letsencrypt/fullchain.pem
      #- --pkey=/root/letsencrypt/privkey.pem
+     - --no-tls
+     - --no-dtls
    network_mode: host
+   restart: ${RESTART_POLICY}
 
 volumes:
   redisdata:
