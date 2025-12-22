@@ -321,6 +321,7 @@ services:
     depends_on:
       redis:
         condition: service_started
+    restart: ${RESTART_POLICY}
 
   coturn:
    image: coturn/coturn:4.5.2
@@ -340,12 +341,13 @@ services:
      # Enable Coturn "REST API" to validate temporary passwords.
      - --use-auth-secret
      - --static-auth-secret=${TURN_STATIC_AUTH_SECRET}
-     #- --userdb=/var/lib/turn/turndb
-     #- --user=workadventure:WorkAdventure123
      # use real-valid certificate/privatekey files
-     #- --cert=/root/letsencrypt/fullchain.pem
-     #- --pkey=/root/letsencrypt/privkey.pem
+     - --cert=${DATA_DIR}/letsencrypt/live/${DOMAIN}/fullchain.pem
+     - --pkey=${DATA_DIR}/letsencrypt/live/${DOMAIN}/privkey.pem
+   volumes:
+     - ${DATA_DIR}/letsencrypt:/letsencrypt:ro
    network_mode: host
+   restart: ${RESTART_POLICY}
 
 volumes:
   redisdata:
