@@ -63,6 +63,20 @@ MAP_STORAGE_AUTHENTICATION_PASSWORD=<RANDOM_STRING>
 
 ### Upload a Map Edited with Tiled (Local)
 
+[Upload your Map to WorkAdventure](https://docs.workadventu.re/map-building/tiled-editor/publish/wa-hosted/)
+
+```bash
+# Move repository
+cd WorkAdventure
+
+# Edit .env file
+vi .env
+```
+
+```env
+MAP_STORAGE_ENABLE_BEARER_AUTHENTICATION=true
+```
+
 [map-starter-kit](https://github.com/workadventure/map-starter-kit)
 
 ```bash
@@ -78,29 +92,25 @@ npm install
 # Preview the map locally
 npm run dev
 
-# Prepare files for upload
+# Upload the map
 npm run build
-mv dist map
-zip -r map.zip map
+npm run upload
+
+Please enter your Map storage URL: https://<YOUR_FQDN>/map-storage/
+Please enter your API Key: <MAP_STORAGE_AUTHENTICATION_TOKEN>
+Upload directory: maps
 ```
 
-1. Open the Map Storage
-   `https://<YOUR_FQDN>/map-storage`
-   - User: value of `MAP_STORAGE_AUTHENTICATION_USER` in `.env`
-   - Password: value of `MAP_STORAGE_AUTHENTICATION_PASSWORD` in `.env`
-2. Upload the map
-   - Select a file to upload: `map.zip`
-   - Directory: /
-3. Access the uploaded map
-   `https://<YOUR_FQDN>/_/global/<YOUR_FQDN>/map-storage/map/office.tmj`
-
 ```bash
+# Move repository
+cd WorkAdventure
+
 # Edit .env file
 vi .env
 ```
 
 ```env
-START_ROOM_URL=/_/global/<YOUR_FQDN>/map-storage/map/office.tmj
+START_ROOM_URL=/~/maps/map/office.wam
 ```
 
 1. Access the uploaded map
@@ -109,6 +119,9 @@ START_ROOM_URL=/_/global/<YOUR_FQDN>/map-storage/map/office.tmj
 ### Set Up LiveKit (EC2)
 
 ```bash
+# Move repository
+cd WorkAdventure
+
 # Generate random strings for LiveKit API secret
 openssl rand -hex 32
 
