@@ -57,9 +57,9 @@ MAP_STORAGE_AUTHENTICATION_PASSWORD=<RANDOM_STRING>
 
 1. Add an A record in Route 53 to point your domain to the EC2 public IP
 
-| Record Name | Type | Value                    | TTL |
-| ----------- | ---- | ------------------------ | --- |
-| <YOUR_FQDN> | A    | <YOUR_PUBLIC_IP_ADDRESS> | 60  |
+| Record Name | Type | Value                     | TTL |
+| ----------- | ---- | ------------------------- | --- |
+| <YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
 
 ### Upload a Map Edited with Tiled (Local)
 
@@ -120,6 +120,39 @@ START_ROOM_URL=/~/maps/map/office.wam
 1. Access the uploaded map
    `https://<YOUR_FQDN>`
 
+### Set Up Google OIDC (EC2)
+
+1. Access Google Cloud Platform
+2. Create a new project
+3. Go to APIs & Services -> OAuth consent screen
+   - App name: WorkAdventure
+   - User support email: <YOUR_EMAIL_ADDRESS>
+   - User Type: External
+   - Contact Information: <YOUR_EMAIL_ADDRESS>
+4. Go to APIs & Services -> Credentials
+5. Create OAuth client ID
+   - Application type: Web application
+   - Name: WorkAdventure
+   - Authorized redirect URIs: https://<YOUR_FQDN>//openid-callback
+6. Save the Client ID and Client Secret
+
+```bash
+# Move repository
+cd WorkAdventure
+
+# Edit .env file
+vi .env
+```
+
+```env
+OPENID_CLIENT_ID=<YOUR_GOOGLE_CLIENT_ID>
+OPENID_CLIENT_SECRET=<YOUR_GOOGLE_CLIENT_SECRET>
+OPENID_CLIENT_ISSUER=https://accounts.google.com
+OPENID_LOGOUT_REDIRECT_URL=https://<YOUR_FQDN>
+OPENID_USERNAME_CLAIM=email
+OPENID_SCOPE=openid email profile
+```
+
 ### Set Up LiveKit (EC2)
 
 ```bash
@@ -159,6 +192,6 @@ LIVEKIT_API_SECRET=<LIVEKIT_API_SECRET>
 
 1. Add an A record in Route 53 to point your domain to the EC2 public IP
 
-| Record Name         | Type | Value                    | TTL |
-| ------------------- | ---- | ------------------------ | --- |
-| livekit.<YOUR_FQDN> | A    | <YOUR_PUBLIC_IP_ADDRESS> | 60  |
+| Record Name         | Type | Value                     | TTL |
+| ------------------- | ---- | ------------------------- | --- |
+| livekit.<YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
