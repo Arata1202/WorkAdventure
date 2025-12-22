@@ -329,7 +329,7 @@ services:
      - turnserver
      #- -c=/etc/coturn/turnserver.conf
      - --log-file=stdout
-     - --external-ip=${PUBLIC_IP}
+     - --external-ip=$$(detect-external-ip)
      - --listening-port=3478
      - --min-port=10000
      - --max-port=10010
