@@ -1,4 +1,5 @@
 map-starter-kit/
+.env
 variables.tf
 **/.terraform*
 *.tfstate
