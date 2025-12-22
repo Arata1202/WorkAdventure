@@ -66,13 +66,6 @@ resource "aws_security_group" "workadventure_sg" {
   }
 
   ingress {
-    from_port   = 5349
-    to_port     = 5349
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
     from_port   = 10000
     to_port     = 10010
     protocol    = "udp"
