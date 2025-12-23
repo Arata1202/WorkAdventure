@@ -351,8 +351,8 @@ services:
      #- --userdb=/var/lib/turn/turndb
      #- --user=workadventure:WorkAdventure123
      # use real-valid certificate/privatekey files
-     - --cert=/letsencrypt/certs/${DOMAIN}/certificate.crt
-     - --pkey=/letsencrypt/certs/${DOMAIN}/privatekey.key
+     - --cert=/letsencrypt/certs/certs/${DOMAIN}.crt
+     - --pkey=/letsencrypt/certs/private/${DOMAIN}.key
    volumes:
      - ${DATA_DIR}/letsencrypt:/letsencrypt:ro
    network_mode: host
