@@ -61,6 +61,24 @@ MAP_STORAGE_AUTHENTICATION_PASSWORD=<RANDOM_STRING>
 | ----------- | ---- | ------------------------- | --- |
 | <YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
 
+### Edit .env file for basic settings (EC2)
+
+```bash
+# Move repository
+cd WorkAdventure
+
+# Edit .env file
+vi .env
+
+# Start server
+make up
+```
+
+```env
+TZ=Asia/Tokyo
+ACME_EMAIL=<YOUR_EMAIL_ADDRESS>
+```
+
 ### Upload a Map Edited with Tiled (Local)
 
 [Upload your Map to WorkAdventure](https://docs.workadventu.re/map-building/tiled-editor/publish/wa-hosted/)
