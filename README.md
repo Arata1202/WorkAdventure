@@ -181,13 +181,13 @@ make up
 # --------------------------------------------------
 
 keys:
-  devkey: 12345678901234567890123456789012
+  devkey: <RANDOM_STRING>
 ```
 
 ```env
 LIVEKIT_HOST=https://livekit.<YOUR_FQDN>
-LIVEKIT_API_KEY=<LIVEKIT_API_KEY>
-LIVEKIT_API_SECRET=<LIVEKIT_API_SECRET>
+LIVEKIT_API_KEY=devkey
+LIVEKIT_API_SECRET=<RANDOM_STRING>
 ```
 
 1. Add an A record in Route 53 to point your domain to the EC2 public IP
@@ -195,3 +195,24 @@ LIVEKIT_API_SECRET=<LIVEKIT_API_SECRET>
 | Record Name         | Type | Value                     | TTL |
 | ------------------- | ---- | ------------------------- | --- |
 | livekit.<YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
+
+### Set Up Coturn (EC2)
+
+```bash
+# Move repository
+cd WorkAdventure
+
+# Generate random strings for Turn static auth secret
+openssl rand -hex 32
+
+# Edit .env file
+vi .env
+
+# Start server
+make up
+```
+
+```env
+TURN_SERVER=turn:<YOUR_FQDN>:3478,turns:<YOUR_FQDN>:5349
+TURN_STATIC_AUTH_SECRET=<RANDOM_STRING>
+```
