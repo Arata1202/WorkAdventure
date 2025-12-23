@@ -77,6 +77,9 @@ make up
 ```env
 TZ=Asia/Tokyo
 ACME_EMAIL=<YOUR_EMAIL_ADDRESS>
+ENABLE_TELEMETRY=true
+SECURITY_EMAIL=<YOUR_EMAIL_ADDRESS>
+DISABLE_ANONYMOUS=true
 ```
 
 ### Upload a Map Edited with Tiled (Local)
@@ -233,4 +236,5 @@ make up
 ```env
 TURN_SERVER=turn:<YOUR_FQDN>:3478,turns:<YOUR_FQDN>:5349
 TURN_STATIC_AUTH_SECRET=<RANDOM_STRING>
+STUN_SERVER=stun:stun.l.google.com:19302
 ```
