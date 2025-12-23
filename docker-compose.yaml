@@ -323,6 +323,13 @@ services:
         condition: service_started
     restart: ${RESTART_POLICY}
 
+  cert-dumper:
+    image: ldez/traefik-certs-dumper:v2.8.1
+    volumes:
+      - ${DATA_DIR}/letsencrypt:/letsencrypt
+    command: file --version v2 --watch --source /letsencrypt/acme.json --dest /letsencrypt/certs
+    restart: ${RESTART_POLICY}
+
   coturn:
    image: coturn/coturn:4.5.2
    command:
@@ -333,7 +340,7 @@ services:
      - --listening-port=3478
      - --min-port=10000
      - --max-port=10010
-     #- --tls-listening-port=5349
+     - --tls-listening-port=5349
      - --listening-ip=0.0.0.0
      - --realm=${DOMAIN}
      - --server-name=${DOMAIN}
@@ -344,12 +351,14 @@ services:
      #- --userdb=/var/lib/turn/turndb
      #- --user=workadventure:WorkAdventure123
      # use real-valid certificate/privatekey files
-     #- --cert=/root/letsencrypt/fullchain.pem
-     #- --pkey=/root/letsencrypt/privkey.pem
-     - --no-tls
-     - --no-dtls
+     - --cert=/letsencrypt/certs/${DOMAIN}/certificate.crt
+     - --pkey=/letsencrypt/certs/${DOMAIN}/privatekey.key
+   volumes:
+     - ${DATA_DIR}/letsencrypt:/letsencrypt:ro
    network_mode: host
    restart: ${RESTART_POLICY}
+   depends_on:
+     - cert-dumper
 
 volumes:
   redisdata:
