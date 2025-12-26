@@ -302,7 +302,8 @@ services:
     command: --config /etc/livekit/config.yaml
     ports:
       - "7880:7880" # HTTP API
-      - "7881:7881/udp" # WebRTC UDP
+      - "7881:7881" # WebRTC TCP
+      - "7882:7882/udp" # WebRTC UDP
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.livekit.rule=Host(`livekit.${DOMAIN}`)"
@@ -360,7 +361,37 @@ services:
    depends_on:
      - cert-dumper
 
+  synapse:
+    # Note: v1.141.0 introduces a breaking change in OIDC authentication in http with Webkit
+    # See https://github.com/element-hq/synapse/pull/19309
+    image: matrixdotorg/synapse:v1.140.0
+    entrypoint: /data/start.sh
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.matrix.rule=Host(`matrix.${DOMAIN}`)"
+      - "traefik.http.routers.matrix.entryPoints=web"
+      - "traefik.http.services.matrix.loadbalancer.server.port=8008"
+      - "traefik.http.routers.matrix.service=matrix"
+      - "traefik.http.routers.matrix-ssl.rule=Host(`matrix.${DOMAIN}`)"
+      - "traefik.http.routers.matrix-ssl.entryPoints=websecure"
+      - "traefik.http.routers.matrix-ssl.tls=true"
+      - "traefik.http.routers.matrix-ssl.tls.certresolver=myresolver"
+      - "traefik.http.routers.matrix-ssl.service=matrix"
+    volumes:
+      - ./synapse:/data/
+      #- ./synapse/homeserver.template.yaml:/data/homeserver.template.yaml
+      - ./synapse/federation:/etc/nginx/vhost.d/matrix.${DOMAIN}
+    environment:
+      VIRTUAL_HOST: "matrix.${DOMAIN}"
+      VIRTUAL_PORT: 8008
+      LETSENCRYPT_HOST: "matrix.${DOMAIN}"
+      SYNAPSE_SERVER_NAME: "matrix.${DOMAIN}"
+      SYNAPSE_REPORT_STATS: "yes"
+      MATRIX_ADMIN_USER: admin
+      MATRIX_ADMIN_PASSWORD: MySecretPassword
+      JWT_SECRET: "$SECRET_KEY"
+    restart: ${RESTART_POLICY}
+
 volumes:
   redisdata:
   map-storage-data:
-  synapsedata:
