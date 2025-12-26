@@ -302,7 +302,8 @@ services:
     command: --config /etc/livekit/config.yaml
     ports:
       - "7880:7880" # HTTP API
-      - "7881:7881/udp" # WebRTC UDP
+      - "7881:7881" # WebRTC TCP
+      - "7882:7882/udp" # WebRTC UDP
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.livekit.rule=Host(`livekit.${DOMAIN}`)"
@@ -363,4 +364,3 @@ services:
 volumes:
   redisdata:
   map-storage-data:
-  synapsedata:
