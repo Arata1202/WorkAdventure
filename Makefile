@@ -5,13 +5,14 @@ down:
 	@docker compose down
 
 restart:
-	@docker compose restart
+	@docker compose down
+	@docker compose up -d
 
 logs:
 	@docker compose logs
 
 ps:
-	@docker compose ps
+	@docker compose ps -a
 
 upload:
 	@./upload.sh
