@@ -200,6 +200,14 @@ services:
       traefik.http.routers.back-ssl.service: "back"
       traefik.http.routers.back-ssl.tls: "true"
       traefik.http.routers.back-ssl.tls.certresolver: "myresolver"
+      traefik.http.routers.back-metrics.rule: "Host(`${DOMAIN}`) && PathPrefix(`/metrics`)"
+      traefik.http.routers.back-metrics.entryPoints: "web"
+      traefik.http.routers.back-metrics.service: "back"
+      traefik.http.routers.back-metrics-ssl.rule: "Host(`${DOMAIN}`) && PathPrefix(`/metrics`)"
+      traefik.http.routers.back-metrics-ssl.entryPoints: "websecure"
+      traefik.http.routers.back-metrics-ssl.service: "back"
+      traefik.http.routers.back-metrics-ssl.tls: "true"
+      traefik.http.routers.back-metrics-ssl.tls.certresolver: "myresolver"
     restart: ${RESTART_POLICY}
 
   uploader:
