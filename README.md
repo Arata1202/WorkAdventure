@@ -149,7 +149,7 @@ START_ROOM_URL=/~/maps/office.wam
 5. Create OAuth client ID
    - Application type: Web application
    - Name: WorkAdventure
-   - Authorized redirect URIs: https://<YOUR_FQDN>//openid-callback
+   - Authorized redirect URIs: `https://<YOUR_FQDN>//openid-callback`
 6. Save the Client ID and Client Secret
 
 ```bash
@@ -191,9 +191,7 @@ make up
 ```
 # livekit-config.yaml
 # --------------------------------------------------
-# LiveKit API key and secret
 # Replace these values with your own.
-# DO NOT use these example values in production.
 # --------------------------------------------------
 
 keys:
@@ -233,3 +231,71 @@ TURN_SERVER=turn:<YOUR_FQDN>:3478,turns:<YOUR_FQDN>:5349
 TURN_STATIC_AUTH_SECRET=<RANDOM_STRING>
 STUN_SERVER=stun:stun.l.google.com:19302
 ```
+
+### Set Up Matrix (EC2)
+
+1. Add the following redirect URI to the existing Google OAuth client used by WorkAdventure (LiveKit configuration).
+   - `https://matrix.<YOUR_FQDN>/_synapse/client/oidc/callback`
+
+```bash
+# Move repository
+cd WorkAdventure
+
+# Generate random strings for Matrix admin password
+openssl rand -base64 16
+
+# Generate Synapse configuration files
+docker compose run --rm synapse generate
+
+# Create a Matrix Admin User
+docker compose exec synapse register_new_matrix_user -c /data/homeserver.yaml -u admin -p '<RANDOM_STRING>' --admin http://localhost:8008
+
+# Edit .env file
+vi .env
+
+# Edit Synapse configuration
+docker compose exec synapse cat /data/homeserver.yaml > homeserver.yaml
+vi homeserver.yaml
+docker compose cp homeserver.yaml synapse:/data/homeserver.yaml
+
+# Start server
+make up
+```
+
+```
+# homeserver.yaml
+# --------------------------------------------------
+# Add the following settings to your existing configuration.
+# --------------------------------------------------
+
+# Public base URL of the Matrix server
+public_baseurl: "https://matrix.<YOUR_FQDN>/"
+
+# Google OIDC configuration
+oidc_providers:
+  - idp_id: google
+    idp_name: "Google"
+    issuer: "https://accounts.google.com"
+    client_id: "<OPENID_CLIENT_ID>"
+    client_secret: "<OPENID_CLIENT_SECRET>"
+    scopes: ["openid", "profile", "email"]
+    user_mapping_provider:
+      config:
+        subject_claim: "sub"
+        localpart_template: "{{ user.email.split('@')[0] }}"
+        display_name_template: "{{ user.name }}"
+        email_template: "{{ user.email }}"
+```
+
+```env
+MATRIX_API_URI=http://synapse:8008/
+MATRIX_PUBLIC_URI=https://matrix.<YOUR_FQDN>
+MATRIX_ADMIN_USER=admin
+MATRIX_ADMIN_PASSWORD=<RANDOM_STRING>
+```
+
+1. Add an A record in Route 53 to point your domain to the EC2 public IP
+
+| Record Name        | Type | Value                     | TTL |
+| ------------------ | ---- | ------------------------- | --- |
+| matrix.<YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
