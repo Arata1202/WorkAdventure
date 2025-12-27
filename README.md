@@ -113,11 +113,6 @@ npm install
 # Preview the map locally
 npm run dev
 
-# Prepare files for upload
-npm run build
-mv dist map
-zip -r map.zip map
-
 # Upload the map
 npm run upload
 
@@ -135,7 +130,7 @@ vi .env
 ```
 
 ```env
-START_ROOM_URL=/~/maps/map/office.wam
+START_ROOM_URL=/~/maps/office.wam
 ```
 
 1. Access the uploaded map
