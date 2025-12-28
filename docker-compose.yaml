@@ -364,7 +364,7 @@ services:
   synapse:
     # Note: v1.141.0 introduces a breaking change in OIDC authentication in http with Webkit
     # See https://github.com/element-hq/synapse/pull/19309
-    image: matrixdotorg/synapse:v1.140.0
+    image: matrixdotorg/synapse:v1.100.0
     # entrypoint: /data/start.sh
     labels:
       traefik.enable: "true"
