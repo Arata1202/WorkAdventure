@@ -1,5 +1,6 @@
 <div align="right">
 
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Arata1202/WorkAdventure/build-and-deploy.yml)
 ![GitHub License](https://img.shields.io/github/license/Arata1202/WorkAdventure)
 
 </div>
@@ -14,7 +15,7 @@ git clone git@github.com:Arata1202/WorkAdventure.git
 cd WorkAdventure/terraform
 
 # Prepare and edit variables file
-mv variables.example.tf variables.tf
+cp variables.tf.example variables.tf
 vi variables.tf
 
 # Create resources
