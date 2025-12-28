@@ -114,17 +114,19 @@ MAP_STORAGE_ENABLE_BEARER_AUTHENTICATION=true
 [map-starter-kit](https://github.com/workadventure/map-starter-kit)
 
 ```bash
-# Download the repository as a ZIP file from GitHub
-unzip map-starter-kit-master.zip
-cd map-starter-kit-master.git
+# Move repository
+cd WorkAdventure/map-starter-kit-master
 
-# Edit the map file (office.tmj) using Tiled
+# Prepare .env file
+cp .env.example .env
 
 # Install dependencies
 npm install
 
 # Preview the map locally
 npm run dev
+
+# Edit the map file (office.tmj) using Tiled
 
 # Upload the map
 npm run upload
@@ -149,6 +151,18 @@ START_ROOM_URL=/~/maps/office.wam
 
 1. Access the uploaded map
    `https://<YOUR_FQDN>`
+
+### Set Up GitHub Actions (Local)
+
+1. Configure GitHub Actions secrets
+
+```env
+# Required
+UPLOAD_MODE=MAP_STORAGE
+MAP_STORAGE_URL=https://<YOUR_FQDN>/map-storage/
+MAP_STORAGE_API_KEY=<MAP_STORAGE_AUTHENTICATION_TOKEN>
+UPLOAD_DIRECTORY=maps
+```
 
 ### Set Up Google OIDC (EC2)
 
