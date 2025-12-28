@@ -1,6 +1,7 @@
 map-starter-kit-master/
 wa/
 synapse/
+homeserver.yaml
 livekit-config.yaml
 .env
 .env.backup_*
