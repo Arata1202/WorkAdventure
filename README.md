@@ -198,6 +198,9 @@ cd WorkAdventure
 # Generate random strings for .env values
 openssl rand -hex 32
 
+# Create LiveKit configuration file
+touch livekit-config.yaml
+
 # Edit LiveKit configuration
 vi livekit-config.yaml
 
@@ -211,11 +214,29 @@ make up
 ```
 # livekit-config.yaml
 # --------------------------------------------------
-# Replace these values with your own.
+# Add the following settings.
 # --------------------------------------------------
 
+port: 7880
+rtc:
+  udp_port: 7882
+  tcp_port: 7881
+  use_external_ip: false
+#room:
+#    enabled_codecs:
+#        - mime: audio/opus
+#        - mime: video/h264
+redis:
+  address: redis:6379
+  username: ""
+  password: ""
+  db: 2
 keys:
   devkey: <RANDOM_STRING>
+logging:
+  json: false
+  #level: debug
+  level: info
 ```
 
 ```env
@@ -291,7 +312,7 @@ make up
 ```
 # homeserver.yaml
 # --------------------------------------------------
-# Add the following settings to your existing configuration.
+# Add the following settings.
 # --------------------------------------------------
 
 # Public base URL of the Matrix server

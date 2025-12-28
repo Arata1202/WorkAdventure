@@ -1,5 +1,7 @@
 map-starter-kit-master/
 wa/
+synapse/
+livekit-config.yaml
 .env
 .env.backup_*
 variables.tf
