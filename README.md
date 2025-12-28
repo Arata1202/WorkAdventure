@@ -47,8 +47,9 @@ make up
 ```
 
 ```env
+# Required
 SECRET_KEY=<RANDOM_STRING>
-DOMAIN=<FQDN>
+DOMAIN=<YOUR_FQDN>
 VERSION=v1.27.10
 MAP_STORAGE_AUTHENTICATION_TOKEN=<RANDOM_STRING>
 MAP_STORAGE_AUTHENTICATION_USER=admin
@@ -59,7 +60,7 @@ MAP_STORAGE_AUTHENTICATION_PASSWORD=<RANDOM_STRING>
 
 | Record Name | Type | Value                     | TTL |
 | ----------- | ---- | ------------------------- | --- |
-| <FQDN>      | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
+| <YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
 
 ### Edit .env file for basic settings (EC2)
 
@@ -128,7 +129,7 @@ npm run dev
 # Upload the map
 npm run upload
 
-Please enter your Map storage URL: https://<FQDN>/map-storage/
+Please enter your Map storage URL: https://<YOUR_FQDN>/map-storage/
 Please enter your API Key: <MAP_STORAGE_AUTHENTICATION_TOKEN>
 Upload directory: maps
 ```
@@ -147,7 +148,7 @@ START_ROOM_URL=/~/maps/office.wam
 ```
 
 1. Access the uploaded map
-   `https://<FQDN>`
+   `https://<YOUR_FQDN>`
 
 ### Set Up Google OIDC (EC2)
 
@@ -162,7 +163,7 @@ START_ROOM_URL=/~/maps/office.wam
 5. Create OAuth client ID
    - Application type: Web application
    - Name: WorkAdventure
-   - Authorized redirect URIs: `https://<FQDN>//openid-callback`
+   - Authorized redirect URIs: `https://<YOUR_FQDN>//openid-callback`
 6. Save the Client ID and Client Secret
 
 ```bash
@@ -178,7 +179,7 @@ vi .env
 OPENID_CLIENT_ID=<GOOGLE_CLIENT_ID>
 OPENID_CLIENT_SECRET=<GOOGLE_CLIENT_SECRET>
 OPENID_CLIENT_ISSUER=https://accounts.google.com
-OPENID_LOGOUT_REDIRECT_URL=https://<FQDN>
+OPENID_LOGOUT_REDIRECT_URL=https://<YOUR_FQDN>
 OPENID_USERNAME_CLAIM=email
 OPENID_SCOPE=openid email profile
 
@@ -219,7 +220,7 @@ keys:
 
 ```env
 # Required
-LIVEKIT_HOST=https://livekit.<FQDN>
+LIVEKIT_HOST=https://livekit.<YOUR_FQDN>
 LIVEKIT_API_KEY=devkey
 LIVEKIT_API_SECRET=<RANDOM_STRING>
 
@@ -230,9 +231,9 @@ MAX_USERS_FOR_WEBRTC=<NUMBER>
 
 1. Add an A record in Route 53 to point your domain to the EC2 public IP
 
-| Record Name    | Type | Value                     | TTL |
-| -------------- | ---- | ------------------------- | --- |
-| livekit.<FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
+| Record Name         | Type | Value                     | TTL |
+| ------------------- | ---- | ------------------------- | --- |
+| livekit.<YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
 
 ### Set Up Coturn (EC2)
 
@@ -252,7 +253,7 @@ make up
 
 ```env
 # Required
-TURN_SERVER=turn:<FQDN>:3478,turns:<FQDN>:5349
+TURN_SERVER=turn:<YOUR_FQDN>:3478,turns:<YOUR_FQDN>:5349
 TURN_STATIC_AUTH_SECRET=<RANDOM_STRING>
 STUN_SERVER=stun:stun.l.google.com:19302
 ```
@@ -260,7 +261,7 @@ STUN_SERVER=stun:stun.l.google.com:19302
 ### Set Up Matrix (EC2)
 
 1. Add the following redirect URI to the existing Google OAuth client used by WorkAdventure (LiveKit configuration).
-   - `https://matrix.<FQDN>/_synapse/client/oidc/callback`
+   - `https://matrix.<YOUR_FQDN>/_synapse/client/oidc/callback`
 
 ```bash
 # Move repository
@@ -294,7 +295,7 @@ make up
 # --------------------------------------------------
 
 # Public base URL of the Matrix server
-public_baseurl: "https://matrix.<FQDN>/"
+public_baseurl: "https://matrix.<YOUR_FQDN>/"
 
 # Google OIDC configuration
 oidc_providers:
@@ -315,13 +316,13 @@ oidc_providers:
 ```env
 # Required
 MATRIX_API_URI=http://synapse:8008/
-MATRIX_PUBLIC_URI=https://matrix.<FQDN>
+MATRIX_PUBLIC_URI=https://matrix.<YOUR_FQDN>
 MATRIX_ADMIN_USER=admin
 MATRIX_ADMIN_PASSWORD=<RANDOM_STRING>
 ```
 
 1. Add an A record in Route 53 to point your domain to the EC2 public IP
 
-| Record Name   | Type | Value                     | TTL |
-| ------------- | ---- | ------------------------- | --- |
-| matrix.<FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
+| Record Name        | Type | Value                     | TTL |
+| ------------------ | ---- | ------------------------- | --- |
+| matrix.<YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
