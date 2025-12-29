@@ -1,7 +1,6 @@
 wa/
-map-starter-kit-master/.env
+.env
 .env.backup_*
-.env.keys
 variables.tf
 **/.terraform*
 *.tfstate
