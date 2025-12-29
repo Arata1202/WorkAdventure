@@ -373,7 +373,14 @@ services:
         set -e
         if [ ! -f /data/homeserver.yaml ] || [ /homeserver.template.yaml -nt /data/homeserver.yaml ]; then
           echo "Generating homeserver.yaml from template..."
-          envsubst < /homeserver.template.yaml > /data/homeserver.yaml
+          python3 -c "
+          import os, sys
+          template = open('/homeserver.template.yaml').read()
+          for key, value in os.environ.items():
+              template = template.replace('\${' + key + '}', value)
+          open('/data/homeserver.yaml', 'w').write(template)
+          print('Generated /data/homeserver.yaml')
+          "
         fi
         exec /start.py
     labels:
