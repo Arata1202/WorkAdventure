@@ -327,7 +327,7 @@ services:
       - "traefik.http.services.livekit.loadbalancer.server.port=7880"
       - "traefik.udp.routers.livekit-udp.entrypoints=udp"
       - "traefik.udp.routers.livekit-udp.service=livekit-udp"
-      - "traefik.udp.services.livekit-udp.loadbalancer.server.port=7882"
+      - "traefik.udp.services.livekit-udp.loadbalancer.server.port=7881"
     volumes:
       - ./livekit-livekit-config.template.yaml:/etc/livekit/livekit-config.template.yaml:ro
     depends_on:
