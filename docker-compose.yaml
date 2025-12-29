@@ -373,7 +373,13 @@ services:
         set -e
         if [ ! -f /data/homeserver.yaml ] || [ /homeserver.template.yaml -nt /data/homeserver.yaml ]; then
           echo "Generating homeserver.yaml from template..."
-          envsubst < /homeserver.template.yaml > /data/homeserver.yaml
+          sed -e "s/\$${DOMAIN}/$${DOMAIN}/g" \
+              -e "s/\$${MATRIX_REGISTRATION_SHARED_SECRET}/$${MATRIX_REGISTRATION_SHARED_SECRET}/g" \
+              -e "s/\$${MATRIX_MACAROON_SECRET_KEY}/$${MATRIX_MACAROON_SECRET_KEY}/g" \
+              -e "s/\$${MATRIX_FORM_SECRET}/$${MATRIX_FORM_SECRET}/g" \
+              -e "s/\$${OPENID_CLIENT_ID}/$${OPENID_CLIENT_ID}/g" \
+              -e "s/\$${OPENID_CLIENT_SECRET}/$${OPENID_CLIENT_SECRET}/g" \
+              /homeserver.template.yaml > /data/homeserver.yaml
         fi
         exec /start.py
     labels:
