@@ -300,6 +300,8 @@ services:
   livekit:
     image: livekit/livekit-server:v1.8.4
     command: --config /etc/livekit/config.yaml
+    environment:
+      - LIVEKIT_API_SECRET
     ports:
       - "7880:7880" # HTTP API
       - "7881:7881" # WebRTC TCP
@@ -365,7 +367,15 @@ services:
     # Note: v1.141.0 introduces a breaking change in OIDC authentication in http with Webkit
     # See https://github.com/element-hq/synapse/pull/19309
     image: matrixdotorg/synapse:v1.100.0
-    # entrypoint: /data/start.sh
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        if [ ! -f /data/homeserver.yaml ] || [ /homeserver.template.yaml -nt /data/homeserver.yaml ]; then
+          echo "Generating homeserver.yaml from template..."
+          envsubst < /homeserver.template.yaml > /data/homeserver.yaml
+        fi
+        exec /start.py
     labels:
       traefik.enable: "true"
       traefik.http.routers.matrix.rule: "Host(`matrix.${DOMAIN}`)"
@@ -382,6 +392,7 @@ services:
       #- ./synapse/homeserver.template.yaml:/data/homeserver.template.yaml
       #- ./synapse/federation:/etc/nginx/vhost.d/matrix.workadventure.localhost
       - synapse-data:/data
+      - ./synapse/homeserver.template.yaml:/homeserver.template.yaml:ro
     environment:
       # VIRTUAL_HOST: "matrix.workadventure.localhost"
       # VIRTUAL_PORT: 8008
@@ -391,6 +402,12 @@ services:
       # MATRIX_ADMIN_USER: admin
       # MATRIX_ADMIN_PASSWORD: MySecretPassword
       # JWT_SECRET: "$SECRET_KEY"
+      DOMAIN: "${DOMAIN}"
+      MATRIX_REGISTRATION_SHARED_SECRET: "${MATRIX_REGISTRATION_SHARED_SECRET}"
+      MATRIX_MACAROON_SECRET_KEY: "${MATRIX_MACAROON_SECRET_KEY}"
+      MATRIX_FORM_SECRET: "${MATRIX_FORM_SECRET}"
+      OPENID_CLIENT_ID: "${OPENID_CLIENT_ID}"
+      OPENID_CLIENT_SECRET: "${OPENID_CLIENT_SECRET}"
     restart: ${RESTART_POLICY}
 
 volumes:

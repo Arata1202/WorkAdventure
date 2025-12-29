@@ -1,7 +1,4 @@
 wa/
-synapse/
-homeserver.yaml
-livekit-config.yaml
 .env
 .env.backup_*
 variables.tf

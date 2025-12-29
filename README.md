@@ -213,10 +213,7 @@ cd WorkAdventure
 # Generate random strings for .env values
 openssl rand -hex 32
 
-# Create LiveKit configuration file
-touch livekit-config.yaml
-
-# Edit LiveKit configuration
+# Create and edit LiveKit configuration file
 vi livekit-config.yaml
 
 # Edit .env file
