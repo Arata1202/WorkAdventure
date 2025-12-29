@@ -303,12 +303,12 @@ services:
     command:
       - |
         set -e
-        if [ ! -f /tmp/config.yaml ] || [ /etc/livekit/config.template.yaml -nt /tmp/config.yaml ]; then
+        if [ ! -f /tmp/livekit-config.yaml ] || [ /etc/livekit/livekit-config.template.yaml -nt /tmp/livekit-config.yaml ]; then
           echo "Generating config.yaml from template..."
           sed -e "s/\$${LIVEKIT_API_SECRET}/$${LIVEKIT_API_SECRET}/g" \
-              /etc/livekit/config.template.yaml > /tmp/config.yaml
+              /etc/livekit/livekit-config.template.yaml > /tmp/livekit-config.yaml
         fi
-        exec /livekit-server --config /tmp/config.yaml
+        exec /livekit-server --config /tmp/livekit-config.yaml
     environment:
       - LIVEKIT_API_SECRET
     ports:
@@ -327,9 +327,9 @@ services:
       - "traefik.http.services.livekit.loadbalancer.server.port=7880"
       - "traefik.udp.routers.livekit-udp.entrypoints=udp"
       - "traefik.udp.routers.livekit-udp.service=livekit-udp"
-      - "traefik.udp.services.livekit-udp.loadbalancer.server.port=7881"
+      - "traefik.udp.services.livekit-udp.loadbalancer.server.port=7882"
     volumes:
-      - ./livekit-config.template.yaml:/etc/livekit/config.template.yaml:ro
+      - ./livekit-livekit-config.template.yaml:/etc/livekit/livekit-config.template.yaml:ro
     depends_on:
       redis:
         condition: service_started
