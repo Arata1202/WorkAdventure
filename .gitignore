@@ -1,4 +1,5 @@
 wa/
+node_modules/
 map-starter-kit-master/.env
 .env.backup_*
 .env.keys

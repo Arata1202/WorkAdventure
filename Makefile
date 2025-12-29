@@ -14,6 +14,12 @@ logs:
 ps:
 	@dotenvx run -- docker compose ps -a
 
+encrypt:
+	@dotenvx encrypt
+
+decrypt:
+	@dotenvx decrypt
+
 upload:
 	@cd map-starter-kit-master && npm run upload
 

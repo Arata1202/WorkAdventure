@@ -1,0 +1,2 @@
+dotenvx encrypt
+git add .env
