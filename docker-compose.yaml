@@ -329,7 +329,7 @@ services:
       - "traefik.udp.routers.livekit-udp.service=livekit-udp"
       - "traefik.udp.services.livekit-udp.loadbalancer.server.port=7881"
     volumes:
-      - ./livekit-livekit-config.template.yaml:/etc/livekit/livekit-config.template.yaml:ro
+      - ./livekit-config.template.yaml:/etc/livekit/livekit-config.template.yaml:ro
     depends_on:
       redis:
         condition: service_started
