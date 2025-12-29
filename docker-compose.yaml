@@ -377,7 +377,7 @@ services:
           import os, sys
           template = open('/homeserver.template.yaml').read()
           for key, value in os.environ.items():
-              template = template.replace('$${' + key + '}', value)
+              template = template.replace('\${' + key + '}', value)
           open('/data/homeserver.yaml', 'w').write(template)
           print('Generated /data/homeserver.yaml')
           "
