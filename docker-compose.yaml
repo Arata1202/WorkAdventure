@@ -388,6 +388,7 @@ services:
               -e "s/\$${MATRIX_FORM_SECRET}/$${MATRIX_FORM_SECRET}/g" \
               -e "s/\$${OPENID_CLIENT_ID}/$${OPENID_CLIENT_ID}/g" \
               -e "s/\$${OPENID_CLIENT_SECRET}/$${OPENID_CLIENT_SECRET}/g" \
+              -e "s/\$${JWT_SECRET}/$${JWT_SECRET}/g" \
               /homeserver.template.yaml > /data/homeserver.yaml
         fi
         exec /start.py
@@ -416,7 +417,7 @@ services:
       SYNAPSE_REPORT_STATS: "no"
       # MATRIX_ADMIN_USER: admin
       # MATRIX_ADMIN_PASSWORD: MySecretPassword
-      # JWT_SECRET: "$SECRET_KEY"
+      JWT_SECRET: "${SECRET_KEY}"
       DOMAIN: "${DOMAIN}"
       MATRIX_REGISTRATION_SHARED_SECRET: "${MATRIX_REGISTRATION_SHARED_SECRET}"
       MATRIX_MACAROON_SECRET_KEY: "${MATRIX_MACAROON_SECRET_KEY}"

@@ -33,17 +33,61 @@ form_secret: "${MATRIX_FORM_SECRET}"
 signing_key_path: "/data/matrix.${DOMAIN}.signing.key"
 trusted_key_servers:
   - server_name: "matrix.org"
+suppress_key_server_warning: true
+
+jwt_config:
+  enabled: true
+  secret: "${JWT_SECRET}"
+  algorithm: "HS256"
+  subject_claim: "matrixUserId"
+
 oidc_providers:
   - idp_id: google
     idp_name: "Google"
     issuer: "https://accounts.google.com"
+    skip_verification: true
     client_id: "${OPENID_CLIENT_ID}"
     client_secret: "${OPENID_CLIENT_SECRET}"
     scopes: ["openid", "profile", "email"]
+    user_profile_method: "userinfo_endpoint"
     user_mapping_provider:
       config:
-        subject_claim: "sub"
         localpart_template: "{{ user.sub }}"
         display_name_template: "{{ user.name }}"
         email_template: "{{ user.email }}"
+
+sso:
+  client_whitelist:
+    - https://${DOMAIN}/
+
+enable_registration: true
+enable_registration_without_verification: true
+turn_allow_guests: true
+allow_guest_access: true
+
+# Development server only: we allow creating publicly visible rooms to anyone.
+room_list_publication_rules:
+  - "action": "allow"
+
+auto_join_rooms:
+  - "#general:matrix.${DOMAIN}"
+
+autocreate_auto_join_rooms: true
 # vim:ft=yaml
+
+user_directory:
+  search_all_users: true
+
+rc_login:
+  address:
+    per_second: 0.15
+    burst_count: 10
+  account:
+    per_second: 0.18
+    burst_count: 10
+  failed_attempts:
+    per_second: 0.19
+    burst_count: 10
+rc_room_creation:
+  per_second: 10
+  burst_count: 10000
