@@ -35,6 +35,7 @@ cd WorkAdventure
 
 # Generate random strings for .env values
 openssl rand -base64 16
+openssl rand -hex 32
 
 # Prepare and edit .env file
 cp .env.example .env
@@ -49,12 +50,12 @@ make up
 
 ```env
 # Required
-SECRET_KEY=<RANDOM_STRING>
+SECRET_KEY=<RANDOM_32_STRING>
 DOMAIN=<YOUR_FQDN>
 VERSION=v1.27.10
-MAP_STORAGE_AUTHENTICATION_TOKEN=<RANDOM_STRING>
+MAP_STORAGE_AUTHENTICATION_TOKEN=<RANDOM_32_STRING>
 MAP_STORAGE_AUTHENTICATION_USER=admin
-MAP_STORAGE_AUTHENTICATION_PASSWORD=<RANDOM_STRING>
+MAP_STORAGE_AUTHENTICATION_PASSWORD=<RANDOM_16_STRING>
 ```
 
 1. Add an A record in Route 53 to point your domain to the EC2 public IP
@@ -213,9 +214,6 @@ cd WorkAdventure
 # Generate random strings for .env values
 openssl rand -hex 32
 
-# Create and edit LiveKit configuration file
-vi livekit-config.yaml
-
 # Edit .env file
 vi .env
 
@@ -223,39 +221,11 @@ vi .env
 make up
 ```
 
-```
-# livekit-config.yaml
-# --------------------------------------------------
-# Add the following settings.
-# --------------------------------------------------
-
-port: 7880
-rtc:
-  udp_port: 7882
-  tcp_port: 7881
-  use_external_ip: false
-#room:
-#    enabled_codecs:
-#        - mime: audio/opus
-#        - mime: video/h264
-redis:
-  address: redis:6379
-  username: ""
-  password: ""
-  db: 2
-keys:
-  devkey: <RANDOM_STRING>
-logging:
-  json: false
-  #level: debug
-  level: info
-```
-
 ```env
 # Required
 LIVEKIT_HOST=https://livekit.<YOUR_FQDN>
 LIVEKIT_API_KEY=devkey
-LIVEKIT_API_SECRET=<RANDOM_STRING>
+LIVEKIT_API_SECRET=<RANDOM_32_STRING>
 
 # Optional
 MAX_PER_GROUP=<NUMBER>
@@ -287,7 +257,7 @@ make up
 ```env
 # Required
 TURN_SERVER=turn:<YOUR_FQDN>:3478,turns:<YOUR_FQDN>:5349
-TURN_STATIC_AUTH_SECRET=<RANDOM_STRING>
+TURN_STATIC_AUTH_SECRET=<RANDOM_32_STRING>
 STUN_SERVER=stun:stun.l.google.com:19302
 ```
 
@@ -302,48 +272,13 @@ cd WorkAdventure
 
 # Generate random strings for .env values
 openssl rand -base64 16
-
-# Generate Synapse configuration files
-docker compose run --rm synapse generate
-
-# Create a Matrix Admin User
-docker compose exec synapse register_new_matrix_user -c /data/homeserver.yaml -u admin -p '<RANDOM_STRING>' --admin http://localhost:8008
+openssl rand -hex 32
 
 # Edit .env file
 vi .env
 
-# Edit Synapse configuration
-docker compose exec synapse cat /data/homeserver.yaml > homeserver.yaml
-vi homeserver.yaml
-docker compose cp homeserver.yaml synapse:/data/homeserver.yaml
-
 # Start server
 make up
-```
-
-```
-# homeserver.yaml
-# --------------------------------------------------
-# Add the following settings.
-# --------------------------------------------------
-
-# Public base URL of the Matrix server
-public_baseurl: "https://matrix.<YOUR_FQDN>/"
-
-# Google OIDC configuration
-oidc_providers:
-  - idp_id: google
-    idp_name: "Google"
-    issuer: "https://accounts.google.com"
-    client_id: "<OPENID_CLIENT_ID>"
-    client_secret: "<OPENID_CLIENT_SECRET>"
-    scopes: ["openid", "profile", "email"]
-    user_mapping_provider:
-      config:
-        subject_claim: "sub"
-        localpart_template: "{{ user.sub }}"
-        display_name_template: "{{ user.name }}"
-        email_template: "{{ user.email }}"
 ```
 
 ```env
@@ -351,7 +286,10 @@ oidc_providers:
 MATRIX_API_URI=http://synapse:8008/
 MATRIX_PUBLIC_URI=https://matrix.<YOUR_FQDN>
 MATRIX_ADMIN_USER=admin
-MATRIX_ADMIN_PASSWORD=<RANDOM_STRING>
+MATRIX_ADMIN_PASSWORD=<RANDOM_16_STRING>
+MATRIX_REGISTRATION_SHARED_SECRET=<RANDOM_32_STRING>
+MATRIX_MACAROON_SECRET_KEY=<RANDOM_32_STRING>
+MATRIX_FORM_SECRET=<RANDOM_32_STRING>
 ```
 
 1. Add an A record in Route 53 to point your domain to the EC2 public IP

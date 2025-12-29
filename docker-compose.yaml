@@ -303,9 +303,11 @@ services:
     command:
       - |
         set -e
-        echo "Generating config.yaml from template..."
-        sed -e "s/\$${LIVEKIT_API_SECRET}/$${LIVEKIT_API_SECRET}/g" \
-            /etc/livekit/config.template.yaml > /tmp/config.yaml
+        if [ ! -f /tmp/config.yaml ] || [ /etc/livekit/config.template.yaml -nt /tmp/config.yaml ]; then
+          echo "Generating config.yaml from template..."
+          sed -e "s/\$${LIVEKIT_API_SECRET}/$${LIVEKIT_API_SECRET}/g" \
+              /etc/livekit/config.template.yaml > /tmp/config.yaml
+        fi
         exec /livekit-server --config /tmp/config.yaml
     environment:
       - LIVEKIT_API_SECRET
