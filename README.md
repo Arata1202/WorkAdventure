@@ -90,8 +90,8 @@ make decrypt
 vi .env
 make encrypt
 
-# Start server
-make up
+# Restart server
+make restart
 ```
 
 ```env
@@ -127,6 +127,9 @@ cd WorkAdventure
 make decrypt
 vi .env
 make encrypt
+
+# Restart server
+make restart
 ```
 
 ```env
@@ -171,6 +174,9 @@ cd WorkAdventure
 make decrypt
 vi .env
 make encrypt
+
+# Restart server
+make restart
 ```
 
 ```env
@@ -219,6 +225,9 @@ cd WorkAdventure
 make decrypt
 vi .env
 make encrypt
+
+# Restart server
+make restart
 ```
 
 ```env
@@ -252,8 +261,8 @@ make decrypt
 vi .env
 make encrypt
 
-# Start server
-make up
+# Restart server
+make restart
 ```
 
 ```env
@@ -289,8 +298,8 @@ make decrypt
 vi .env
 make encrypt
 
-# Start server
-make up
+# Restart server
+make restart
 ```
 
 ```env
@@ -320,8 +329,8 @@ make decrypt
 vi .env
 make encrypt
 
-# Start server
-make up
+# Restart server
+make restart
 ```
 
 ```env
