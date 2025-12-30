@@ -7,9 +7,11 @@
 
 ## Getting Started
 
-### Create Resources on AWS with Terraform（Local）
+### Create Resources on AWS with Terraform
 
 ```bash
+# Local
+
 # Clone repository
 git clone git@github.com:Arata1202/WorkAdventure.git
 cd WorkAdventure/terraform
@@ -24,14 +26,25 @@ terraform plan
 terraform apply
 ```
 
-### Set Up WorkAdventure Server (EC2)
+### Set Up WorkAdventure Server
 
 [Self-hosting WorkAdventure using Docker Compose](https://github.com/workadventure/workadventure/blob/develop/contrib/docker/README.md)
 
 ```bash
+# EC2
+
 # Clone repository
 git clone git@github.com:Arata1202/WorkAdventure.git
 cd WorkAdventure
+
+# Set up Ubuntu
+./ubuntu/setup.sh
+
+# Install dependencies
+npm install
+
+# Remove existing .env file
+rm -f .env
 
 # Generate random strings for .env values
 openssl rand -base64 16
@@ -41,8 +54,8 @@ openssl rand -hex 32
 cp .env.example .env
 vi .env
 
-# Set up Ubuntu
-./ubuntu/setup.sh
+# Encrypt .env file
+make encrypt
 
 # Start server
 make up
@@ -64,14 +77,18 @@ MAP_STORAGE_AUTHENTICATION_PASSWORD=<RANDOM_16_STRING>
 | ----------- | ---- | ------------------------- | --- |
 | <YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
 
-### Edit .env file for basic settings (EC2)
+### Edit .env file for basic settings
 
 ```bash
+# EC2
+
 # Move repository
 cd WorkAdventure
 
 # Edit .env file
+make decrypt
 vi .env
+make encrypt
 
 # Start server
 make up
@@ -96,16 +113,20 @@ CARDS_ENABLED=false
 TLDRAW_ENABLED=false
 ```
 
-### Upload a Map Edited with Tiled (Local)
+### Upload a Map Edited with Tiled
 
 [Upload your Map to WorkAdventure](https://docs.workadventu.re/map-building/tiled-editor/publish/wa-hosted/)
 
 ```bash
+# EC2
+
 # Move repository
 cd WorkAdventure
 
 # Edit .env file
+make decrypt
 vi .env
+make encrypt
 ```
 
 ```env
@@ -116,6 +137,8 @@ MAP_STORAGE_ENABLE_BEARER_AUTHENTICATION=true
 [map-starter-kit](https://github.com/workadventure/map-starter-kit)
 
 ```bash
+# Local
+
 # Move repository
 cd WorkAdventure/map-starter-kit-master
 
@@ -139,11 +162,15 @@ Upload directory: maps
 ```
 
 ```bash
+# EC2
+
 # Move repository
 cd WorkAdventure
 
 # Edit .env file
+make decrypt
 vi .env
+make encrypt
 ```
 
 ```env
@@ -154,7 +181,7 @@ START_ROOM_URL=/~/maps/office.wam
 1. Access the uploaded map
    `https://<YOUR_FQDN>`
 
-### Set Up GitHub Actions (Local)
+### Set Up GitHub Actions
 
 1. Configure GitHub Actions secrets
 
@@ -166,7 +193,7 @@ MAP_STORAGE_API_KEY=<MAP_STORAGE_AUTHENTICATION_TOKEN>
 UPLOAD_DIRECTORY=maps
 ```
 
-### Set Up Google OIDC (EC2)
+### Set Up Google OIDC
 
 1. Access Google Cloud Platform
 2. Create a new project
@@ -183,11 +210,15 @@ UPLOAD_DIRECTORY=maps
 6. Save the Client ID and Client Secret
 
 ```bash
+# EC2
+
 # Move repository
 cd WorkAdventure
 
 # Edit .env file
+make decrypt
 vi .env
+make encrypt
 ```
 
 ```env
@@ -205,9 +236,11 @@ MAP_EDITOR_ALLOWED_USERS=<EMAIL_ADDRESS>
 MAP_EDITOR_ALLOW_ALL_USERS=false
 ```
 
-### Set Up LiveKit (EC2)
+### Set Up LiveKit
 
 ```bash
+# EC2
+
 # Move repository
 cd WorkAdventure
 
@@ -215,7 +248,9 @@ cd WorkAdventure
 openssl rand -hex 32
 
 # Edit .env file
+make decrypt
 vi .env
+make encrypt
 
 # Start server
 make up
@@ -238,9 +273,11 @@ MAX_USERS_FOR_WEBRTC=<NUMBER>
 | ------------------- | ---- | ------------------------- | --- |
 | livekit.<YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
 
-### Set Up Coturn (EC2)
+### Set Up Coturn
 
 ```bash
+# EC2
+
 # Move repository
 cd WorkAdventure
 
@@ -248,7 +285,9 @@ cd WorkAdventure
 openssl rand -hex 32
 
 # Edit .env file
+make decrypt
 vi .env
+make encrypt
 
 # Start server
 make up
@@ -261,12 +300,14 @@ TURN_STATIC_AUTH_SECRET=<RANDOM_32_STRING>
 STUN_SERVER=stun:stun.l.google.com:19302
 ```
 
-### Set Up Matrix (EC2)
+### Set Up Matrix
 
 1. Add the following redirect URI to the existing Google OAuth client used by WorkAdventure (LiveKit configuration).
    - `https://matrix.<YOUR_FQDN>/_synapse/client/oidc/callback`
 
 ```bash
+# EC2
+
 # Move repository
 cd WorkAdventure
 
@@ -275,7 +316,9 @@ openssl rand -base64 16
 openssl rand -hex 32
 
 # Edit .env file
+make decrypt
 vi .env
+make encrypt
 
 # Start server
 make up
