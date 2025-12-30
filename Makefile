@@ -1,18 +1,24 @@
-up:
-	@dotenvx run -- docker compose up -d
+C ?=
 
-down:
-	@dotenvx run -- docker compose down
+# Docker
+
+up:
+	@dotenvx run -- docker compose up -d $(C)
+
+stop:
+	@dotenvx run -- docker compose stop $(C)
 
 restart:
-	@dotenvx run -- docker compose down
-	@dotenvx run -- docker compose up -d
+	@dotenvx run -- docker compose stop $(C)
+	@dotenvx run -- docker compose up -d $(C)
 
 logs:
-	@dotenvx run -- docker compose logs
+	@dotenvx run -- docker compose logs -f $(C)
 
 ps:
-	@dotenvx run -- docker compose ps -a
+	@dotenvx run -- docker compose ps -a $(C)
+
+# Dotenvx
 
 encrypt:
 	@dotenvx encrypt
@@ -20,7 +26,4 @@ encrypt:
 decrypt:
 	@dotenvx decrypt
 
-upload:
-	@cd map-starter-kit-master && npm run upload
-
-.PHONY: up down restart logs ps upload
+.PHONY: up stop restart logs ps encrypt decrypt
