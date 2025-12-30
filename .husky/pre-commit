@@ -1,2 +1,7 @@
-dotenvx encrypt
-git add .env
+if git diff --cached --name-only | grep -q '^\.env$'; then
+  dotenvx encrypt || exit 1
+
+  git diff --exit-code .env || {
+    exit 1
+  }
+fi
