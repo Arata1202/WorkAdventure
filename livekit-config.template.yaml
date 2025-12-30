@@ -1,12 +1,8 @@
 port: 7880
 rtc:
-  udp_port: 7882
   tcp_port: 7881
-  use_external_ip: false
-#room:
-#    enabled_codecs:
-#        - mime: audio/opus
-#        - mime: video/h264
+  udp_port: 7882
+  use_external_ip: true
 redis:
   address: redis:6379
   username: ""
@@ -16,5 +12,4 @@ keys:
   devkey: ${LIVEKIT_API_SECRET}
 logging:
   json: false
-  #level: debug
   level: info
