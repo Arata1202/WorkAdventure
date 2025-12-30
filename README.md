@@ -220,7 +220,7 @@ UPLOAD_DIRECTORY=maps
 5. Create OAuth client ID
    - Application type: Web application
    - Name: WorkAdventure
-   - Authorized redirect URIs: `https://<YOUR_FQDN>/openid-callback`
+   - Authorized redirect URIs: `https://<YOUR_FQDN>//openid-callback`
 6. Save the Client ID and Client Secret
 
 ```bash
