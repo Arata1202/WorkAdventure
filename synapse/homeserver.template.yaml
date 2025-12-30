@@ -1,14 +1,3 @@
-# Configuration file for Synapse.
-#
-# This is a YAML file: see [1] for a quick introduction. Note in particular
-# that *indentation is important*: all the elements of a list or dictionary
-# should have the same indentation.
-#
-# [1] https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
-#
-# For more information on how to configure Synapse, including a complete accounting of
-# each option, go to docs/usage/configuration/config_documentation.md or
-# https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html
 server_name: "matrix.${DOMAIN}"
 public_baseurl: "https://matrix.${DOMAIN}/"
 pid_file: /data/homeserver.pid
@@ -18,7 +7,7 @@ listeners:
     type: http
     x_forwarded: true
     resources:
-      - names: [client, federation]
+      - names: [client]
         compress: false
 database:
   name: sqlite3
@@ -35,12 +24,6 @@ trusted_key_servers:
   - server_name: "matrix.org"
 suppress_key_server_warning: true
 
-jwt_config:
-  enabled: false
-  secret: "${JWT_SECRET}"
-  algorithm: "HS256"
-  subject_claim: "matrixUserId"
-
 oidc_providers:
   - idp_id: google
     idp_name: "Google"
@@ -49,6 +32,7 @@ oidc_providers:
     client_id: "${OPENID_CLIENT_ID}"
     client_secret: "${OPENID_CLIENT_SECRET}"
     scopes: ["openid", "profile", "email"]
+
     user_profile_method: "userinfo_endpoint"
     user_mapping_provider:
       config:
@@ -60,20 +44,13 @@ sso:
   client_whitelist:
     - https://${DOMAIN}/
 
-enable_registration: true
-enable_registration_without_verification: true
-turn_allow_guests: true
-allow_guest_access: true
+enable_registration: false
+enable_registration_without_verification: false
+turn_allow_guests: false
+allow_guest_access: false
 
-# Development server only: we allow creating publicly visible rooms to anyone.
 room_list_publication_rules:
-  - "action": "allow"
-
-auto_join_rooms:
-  - "#general:matrix.${DOMAIN}"
-
-autocreate_auto_join_rooms: true
-# vim:ft=yaml
+  - "action": "deny"
 
 user_directory:
   search_all_users: true
