@@ -7,13 +7,25 @@
 
 ## Getting Started
 
+### Prepare Repository
+
+```bash
+# Local and EC2
+
+# Clone repository
+git clone git@github.com:Arata1202/WorkAdventure.git
+cd WorkAdventure
+
+# Install dependencies
+npm install
+```
+
 ### Create Resources on AWS with Terraform
 
 ```bash
 # Local
 
-# Clone repository
-git clone git@github.com:Arata1202/WorkAdventure.git
+# Move repository
 cd WorkAdventure/terraform
 
 # Prepare and edit variables file
@@ -33,15 +45,11 @@ terraform apply
 ```bash
 # EC2
 
-# Clone repository
-git clone git@github.com:Arata1202/WorkAdventure.git
-cd WorkAdventure
-
 # Set up Ubuntu
 ./ubuntu/setup.sh
 
-# Install dependencies
-npm install
+# Move repository
+cd WorkAdventure
 
 # Remove existing .env file
 rm -f .env
