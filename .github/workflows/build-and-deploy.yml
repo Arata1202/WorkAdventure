@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch: # allow manual execution
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -34,7 +34,7 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Set up Environment Variables
+      - name: Extract UPLOAD_MODE from Environment Variables
         run: |
           if [ -z "${{ secrets.UPLOAD_MODE }}" ]; then
             echo "Error: UPLOAD_MODE is not set in GitHub Secrets."
@@ -42,6 +42,8 @@ jobs:
           fi
           echo "UPLOAD_MODE=${{ secrets.UPLOAD_MODE }}" >> $GITHUB_ENV
 
+      - name: Set up Environment Variables
+        run: |
           if [ "${{ secrets.UPLOAD_MODE }}" = "MAP_STORAGE" ]; then
             if [ -z "${{ secrets.MAP_STORAGE_API_KEY }}" ]; then
               echo "Error: MAP_STORAGE_API_KEY is not set in GitHub Secrets."
