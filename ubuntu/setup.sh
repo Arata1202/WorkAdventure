@@ -6,7 +6,6 @@ sudo install -m 0755 -d /etc/apt/keyrings
 # Node.js
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
-sudo npm install -g @dotenvx/dotenvx
 
 # Docker
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null

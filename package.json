@@ -4,5 +4,8 @@
   },
   "scripts": {
     "prepare": "husky"
+  },
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.51.4"
   }
 }

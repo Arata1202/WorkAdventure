@@ -1,5 +1,5 @@
 if git diff --cached --name-only | grep -q '^\.env$'; then
-  dotenvx encrypt || exit 1
+  npx dotenvx encrypt || exit 1
 
   git diff --exit-code .env || {
     exit 1
