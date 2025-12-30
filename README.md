@@ -55,7 +55,7 @@ cd WorkAdventure
 rm -f .env
 
 # Generate random strings for .env values
-openssl rand -base64 16
+openssl rand -hex 16
 openssl rand -hex 32
 
 # Prepare and edit .env file
@@ -71,12 +71,12 @@ make up
 
 ```env
 # Required
-SECRET_KEY=<RANDOM_32_STRING>
+SECRET_KEY=<UNIQUE_RANDOM_64_HEX>
 DOMAIN=<YOUR_FQDN>
 VERSION=v1.27.10
-MAP_STORAGE_AUTHENTICATION_TOKEN=<RANDOM_32_STRING>
+MAP_STORAGE_AUTHENTICATION_TOKEN=<UNIQUE_RANDOM_64_HEX>
 MAP_STORAGE_AUTHENTICATION_USER=admin
-MAP_STORAGE_AUTHENTICATION_PASSWORD=<RANDOM_16_STRING>
+MAP_STORAGE_AUTHENTICATION_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 ```
 
 1. Add an A record in Route 53 to point your domain to the EC2 public IP
@@ -220,7 +220,7 @@ UPLOAD_DIRECTORY=maps
 5. Create OAuth client ID
    - Application type: Web application
    - Name: WorkAdventure
-   - Authorized redirect URIs: `https://<YOUR_FQDN>//openid-callback`
+   - Authorized redirect URIs: `https://<YOUR_FQDN>/openid-callback`
 6. Save the Client ID and Client Secret
 
 ```bash
@@ -277,7 +277,7 @@ make restart
 # Required
 LIVEKIT_HOST=https://livekit.<YOUR_FQDN>
 LIVEKIT_API_KEY=devkey
-LIVEKIT_API_SECRET=<RANDOM_32_STRING>
+LIVEKIT_API_SECRET=<UNIQUE_RANDOM_64_HEX>
 
 # Optional
 MAX_PER_GROUP=<NUMBER>
@@ -313,7 +313,7 @@ make restart
 ```env
 # Required
 TURN_SERVER=turn:<YOUR_FQDN>:3478,turns:<YOUR_FQDN>:5349
-TURN_STATIC_AUTH_SECRET=<RANDOM_32_STRING>
+TURN_STATIC_AUTH_SECRET=<UNIQUE_RANDOM_64_HEX>
 STUN_SERVER=stun:stun.l.google.com:19302
 ```
 
@@ -329,13 +329,19 @@ STUN_SERVER=stun:stun.l.google.com:19302
 cd WorkAdventure
 
 # Generate random strings for .env values
-openssl rand -base64 16
+openssl rand -hex 16
 openssl rand -hex 32
 
 # Edit .env file
 make decrypt
 vi .env
 make encrypt
+
+# Generate Synapse configuration files
+npx dotenvx run -- docker compose run --rm synapse generate
+
+# Create a Matrix Admin User
+npx dotenvx run -- docker compose exec synapse register_new_matrix_user -c /data/homeserver.yaml -u "$MATRIX_ADMIN_USER" -p "$MATRIX_ADMIN_PASSWORD" --admin http://localhost:8008
 
 # Restart server
 make restart
@@ -346,10 +352,10 @@ make restart
 MATRIX_API_URI=http://synapse:8008/
 MATRIX_PUBLIC_URI=https://matrix.<YOUR_FQDN>
 MATRIX_ADMIN_USER=admin
-MATRIX_ADMIN_PASSWORD=<RANDOM_16_STRING>
-MATRIX_REGISTRATION_SHARED_SECRET=<RANDOM_32_STRING>
-MATRIX_MACAROON_SECRET_KEY=<RANDOM_32_STRING>
-MATRIX_FORM_SECRET=<RANDOM_32_STRING>
+MATRIX_ADMIN_PASSWORD=<UNIQUE_RANDOM_32_HEX>
+MATRIX_REGISTRATION_SHARED_SECRET=<UNIQUE_RANDOM_64_HEX>
+MATRIX_MACAROON_SECRET_KEY=<UNIQUE_RANDOM_64_HEX>
+MATRIX_FORM_SECRET=<UNIQUE_RANDOM_64_HEX>
 ```
 
 1. Add an A record in Route 53 to point your domain to the EC2 public IP
