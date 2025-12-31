@@ -326,109 +326,6 @@
          "name":"floorLayer",
          "objects":[
                 {
-                 "height":61.6672851518306,
-                 "id":12,
-                 "name":"clockPopup",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":93.7162209047986,
-                 "x":483.919325398621,
-                 "y":14.0269116471316
-                }, 
-                {
-                 "height":128,
-                 "id":13,
-                 "name":"jitsiChillZone",
-                 "properties":[
-                        {
-                         "name":"focusable",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"jitsiRoom",
-                         "type":"string",
-                         "value":"ChillZone"
-                        }, 
-                        {
-                         "name":"jitsiTrigger",
-                         "type":"string",
-                         "value":"onaction"
-                        }, 
-                        {
-                         "name":"zoom_margin",
-                         "type":"float",
-                         "value":1
-                        }],
-                 "rotation":0,
-                 "type":"area",
-                 "visible":true,
-                 "width":192,
-                 "x":32,
-                 "y":96
-                }, 
-                {
-                 "height":128,
-                 "id":14,
-                 "name":"silentZone",
-                 "properties":[
-                        {
-                         "name":"silent",
-                         "type":"bool",
-                         "value":true
-                        }],
-                 "rotation":0,
-                 "type":"area",
-                 "visible":true,
-                 "width":224,
-                 "x":640,
-                 "y":544
-                }, 
-                {
-                 "height":224,
-                 "id":16,
-                 "name":"jitsiMeetingRoom",
-                 "properties":[
-                        {
-                         "name":"focusable",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"jitsiRoom",
-                         "type":"string",
-                         "value":"MeetingRoom"
-                        }, 
-                        {
-                         "name":"jitsiTrigger",
-                         "type":"string",
-                         "value":"onaction"
-                        }, 
-                        {
-                         "name":"zoom_margin",
-                         "type":"float",
-                         "value":1
-                        }],
-                 "rotation":0,
-                 "type":"area",
-                 "visible":true,
-                 "width":192,
-                 "x":768,
-                 "y":224
-                }, 
-                {
-                 "height":39.6969696969697,
-                 "id":17,
-                 "name":"clock",
-                 "rotation":0,
-                 "type":"area",
-                 "visible":true,
-                 "width":50.2727272727272,
-                 "x":438.484848484849,
-                 "y":96.3333333333333
-                }, 
-                {
                  "height":64,
                  "id":18,
                  "name":"to-conference",
@@ -572,7 +469,7 @@
          "value":"src\/main.ts"
         }],
  "renderorder":"right-down",
- "tiledversion":"1.10.2",
+ "tiledversion":"1.11.2",
  "tileheight":32,
  "tilesets":[
         {
