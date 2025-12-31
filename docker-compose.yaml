@@ -398,6 +398,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      LANG: C
+      LC_ALL: C
     volumes:
       - postgres-data:/var/lib/postgresql/data
     restart: ${RESTART_POLICY}
