@@ -117,7 +117,6 @@ services:
       - MATRIX_PUBLIC_URI
       - MATRIX_ADMIN_USER
       - MATRIX_ADMIN_PASSWORD
-      - MATRIX_DOMAIN
     labels:
       traefik.enable: "true"
 
