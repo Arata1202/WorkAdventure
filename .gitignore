@@ -8,6 +8,3 @@ variables.tf
 *.tfstate
 *.tfstate.*
 **/.terraform.lock.hcl
-
-# Basic Auth
-htpasswd
