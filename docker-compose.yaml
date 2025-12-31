@@ -337,6 +337,7 @@ services:
 
   coturn:
    image: coturn/coturn:4.5.2
+   user: "0:0"
    command:
      - turnserver
      - --log-file=stdout
