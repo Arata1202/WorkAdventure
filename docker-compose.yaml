@@ -339,7 +339,6 @@ services:
    image: coturn/coturn:4.5.2
    command:
      - turnserver
-     #- -c=/etc/coturn/turnserver.conf
      - --log-file=stdout
      - --external-ip=$$(detect-external-ip)
      - --listening-port=3478
@@ -349,13 +348,9 @@ services:
      - --listening-ip=0.0.0.0
      - --realm=${DOMAIN}
      - --server-name=${DOMAIN}
-     #- --lt-cred-mech
-     # Enable Coturn "REST API" to validate temporary passwords.
+     - --lt-cred-mech
      - --use-auth-secret
      - --static-auth-secret=${TURN_STATIC_AUTH_SECRET}
-     #- --userdb=/var/lib/turn/turndb
-     #- --user=workadventure:WorkAdventure123
-     # use real-valid certificate/privatekey files
      - --cert=/letsencrypt/certs/certs/${DOMAIN}.crt
      - --pkey=/letsencrypt/certs/private/${DOMAIN}.key
    volumes:
