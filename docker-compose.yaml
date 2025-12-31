@@ -369,6 +369,9 @@ services:
       MATRIX_REGISTRATION_SHARED_SECRET: "${MATRIX_REGISTRATION_SHARED_SECRET}"
       MATRIX_MACAROON_SECRET_KEY: "${MATRIX_MACAROON_SECRET_KEY}"
       MATRIX_FORM_SECRET: "${MATRIX_FORM_SECRET}"
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       OPENID_CLIENT_ID: "${OPENID_CLIENT_ID}"
       OPENID_CLIENT_SECRET: "${OPENID_CLIENT_SECRET}"
     labels:
@@ -386,8 +389,22 @@ services:
       - ./synapse/entrypoint.sh:/entrypoint.sh:ro
       - ./synapse/homeserver.template.yaml:/homeserver.template.yaml:ro
     restart: ${RESTART_POLICY}
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: ${RESTART_POLICY}
 
 volumes:
   redisdata:
   map-storage-data:
   synapse-data:
+  mysql-data:
