@@ -321,8 +321,8 @@ services:
       - "traefik.udp.routers.livekit-udp.service=livekit-udp"
       - "traefik.udp.services.livekit-udp.loadbalancer.server.port=7881"
     volumes:
-      - ./docker/livekit/entrypoint.sh:/entrypoint.sh:ro
-      - ./livekit-config.template.yaml:/etc/livekit/livekit-config.template.yaml:ro
+      - ./livekit/entrypoint.sh:/entrypoint.sh:ro
+      - ./livekit/livekit-config.template.yaml:/etc/livekit/livekit-config.template.yaml:ro
     depends_on:
       redis:
         condition: service_started
@@ -386,8 +386,8 @@ services:
       traefik.http.routers.matrix-ssl.tls.certresolver: "myresolver"
       traefik.http.routers.matrix-ssl.service: "matrix"
     volumes:
-      - ./docker/synapse/entrypoint.sh:/entrypoint.sh:ro
       - synapse-data:/data
+      - ./synapse/entrypoint.sh:/entrypoint.sh:ro
       - ./synapse/homeserver.template.yaml:/homeserver.template.yaml:ro
     restart: ${RESTART_POLICY}
 
