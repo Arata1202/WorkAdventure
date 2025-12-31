@@ -299,22 +299,13 @@ services:
 
   livekit:
     image: livekit/livekit-server:v1.8.4
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        set -e
-        if [ ! -f /tmp/livekit-config.yaml ] || [ /etc/livekit/livekit-config.template.yaml -nt /tmp/livekit-config.yaml ]; then
-          echo "Generating config.yaml from template..."
-          sed -e "s/\$${LIVEKIT_API_SECRET}/$${LIVEKIT_API_SECRET}/g" \
-              /etc/livekit/livekit-config.template.yaml > /tmp/livekit-config.yaml
-        fi
-        exec /livekit-server --config /tmp/livekit-config.yaml
+    entrypoint: ["/entrypoint.sh"]
     environment:
       - LIVEKIT_API_SECRET
     ports:
-      - "7880:7880" # HTTP API
-      - "7881:7881" # WebRTC TCP
-      - "7882:7882/udp" # WebRTC UDP
+      - "7880:7880"
+      - "7881:7881"
+      - "7882:7882/udp"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.livekit.rule=Host(`livekit.${DOMAIN}`)"
@@ -329,6 +320,7 @@ services:
       - "traefik.udp.routers.livekit-udp.service=livekit-udp"
       - "traefik.udp.services.livekit-udp.loadbalancer.server.port=7881"
     volumes:
+      - ./docker/livekit/entrypoint.sh:/entrypoint.sh:ro
       - ./livekit-config.template.yaml:/etc/livekit/livekit-config.template.yaml:ro
     depends_on:
       redis:
