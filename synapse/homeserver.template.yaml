@@ -10,9 +10,15 @@ listeners:
       - names: [client]
         compress: false
 database:
-  name: sqlite3
+  name: psycopg2
   args:
-    database: /data/homeserver.db
+    dbname: "${POSTGRES_DB}"
+    user: "${POSTGRES_USER}"
+    password: "${POSTGRES_PASSWORD}"
+    host: postgres
+    cp_min: 5
+    cp_max: 10
+
 log_config: "/data/matrix.${DOMAIN}.log.config"
 media_store_path: /data/media_store
 registration_shared_secret: "${MATRIX_REGISTRATION_SHARED_SECRET}"

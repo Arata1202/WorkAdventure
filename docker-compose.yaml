@@ -369,6 +369,9 @@ services:
       MATRIX_REGISTRATION_SHARED_SECRET: "${MATRIX_REGISTRATION_SHARED_SECRET}"
       MATRIX_MACAROON_SECRET_KEY: "${MATRIX_MACAROON_SECRET_KEY}"
       MATRIX_FORM_SECRET: "${MATRIX_FORM_SECRET}"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       OPENID_CLIENT_ID: "${OPENID_CLIENT_ID}"
       OPENID_CLIENT_SECRET: "${OPENID_CLIENT_SECRET}"
     labels:
@@ -386,8 +389,21 @@ services:
       - ./synapse/entrypoint.sh:/entrypoint.sh:ro
       - ./synapse/homeserver.template.yaml:/homeserver.template.yaml:ro
     restart: ${RESTART_POLICY}
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: ${RESTART_POLICY}
 
 volumes:
   redisdata:
   map-storage-data:
   synapse-data:
+  postgres-data:

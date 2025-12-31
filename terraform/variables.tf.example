@@ -7,7 +7,7 @@ variable "ami" {
 }
 
 variable "instance_type" {
-  default = "t4g.small"
+  default = "t4g.medium"
 }
 
 variable "key_name" {
@@ -19,5 +19,5 @@ variable "volume_type" {
 }
 
 variable "volume_size" {
-  default = "20"
+  default = "25"
 }
