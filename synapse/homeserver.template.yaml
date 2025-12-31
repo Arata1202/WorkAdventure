@@ -10,13 +10,9 @@ listeners:
       - names: [client]
         compress: false
 database:
-  name: mysql
+  name: sqlite3
   args:
-    host: mysql
-    port: 3306
-    database: "${MYSQL_DATABASE}"
-    user: "${MYSQL_USER}"
-    password: "${MYSQL_PASSWORD}"
+    database: /data/homeserver.db
 log_config: "/data/matrix.${DOMAIN}.log.config"
 media_store_path: /data/media_store
 registration_shared_secret: "${MATRIX_REGISTRATION_SHARED_SECRET}"
