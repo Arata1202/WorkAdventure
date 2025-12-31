@@ -351,12 +351,16 @@ make restart
 ```env
 # Required
 MATRIX_API_URI=http://synapse:8008/
+MATRIX_DOMAIN=matrix.<YOUR_FQDN>
 MATRIX_PUBLIC_URI=https://matrix.<YOUR_FQDN>
 MATRIX_ADMIN_USER=admin
 MATRIX_ADMIN_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 MATRIX_REGISTRATION_SHARED_SECRET=<UNIQUE_RANDOM_64_HEX>
 MATRIX_MACAROON_SECRET_KEY=<UNIQUE_RANDOM_64_HEX>
 MATRIX_FORM_SECRET=<UNIQUE_RANDOM_64_HEX>
+POSTGRES_DB=synapse
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 ```
 
 1. Add an A record in Route 53 to point your domain to the EC2 public IP
@@ -364,3 +368,16 @@ MATRIX_FORM_SECRET=<UNIQUE_RANDOM_64_HEX>
 | Record Name        | Type | Value                     | TTL |
 | ------------------ | ---- | ------------------------- | --- |
 | matrix.<YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
+
+## Log in to Matrix using Element
+
+1. Access Element Web: `https://element.io`
+2. Click Sign in -> Open Element web
+3. Click Sign in
+4. Enter your Matrix homeserver URL: `https://matrix.<YOUR_FQDN>`
+5. Click Continue
+6. Enter your Matrix credentials:
+   - Username: admin
+   - Password: <MATRIX_ADMIN_PASSWORD>
+7. Click Sign in
+8. After successful authentication, you will be redirected back to Element and logged in
