@@ -26,6 +26,9 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DATA_DIR}/letsencrypt/:/letsencrypt/
+
+      # Basic Auth
+      - ./htpasswd:/htpasswd:ro
     restart: ${RESTART_POLICY}
 
   play:
@@ -121,6 +124,9 @@ services:
     labels:
       traefik.enable: "true"
 
+      # Basic Auth
+      traefik.http.middlewares.basic-auth.basicauth.usersfile: "/htpasswd"
+
       traefik.http.routers.play.rule: "Host(`${DOMAIN}`) && PathPrefix(`/`)"
       traefik.http.routers.play.entryPoints: "web"
       traefik.http.routers.play.service: play
@@ -131,6 +137,9 @@ services:
       traefik.http.routers.play-ssl.tls: "true"
       traefik.http.routers.play-ssl.tls.certresolver: "myresolver"
       traefik.http.routers.play-ssl.service: "play"
+
+      # Basic Auth
+      traefik.http.routers.play-ssl.middlewares: "basic-auth@docker"
 
       traefik.http.routers.play-ws.rule: "Host(`${DOMAIN}`) && PathPrefix(`/ws/`)"
       traefik.http.routers.play-ws.entryPoints: "web"
