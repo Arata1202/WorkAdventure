@@ -277,7 +277,7 @@ make restart
 ```env
 # Required
 LIVEKIT_HOST=https://livekit.<YOUR_FQDN>
-LIVEKIT_API_KEY=devkey
+LIVEKIT_API_KEY=<UNIQUE_RANDOM_64_HEX>
 LIVEKIT_API_SECRET=<UNIQUE_RANDOM_64_HEX>
 
 # Optional

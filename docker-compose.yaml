@@ -301,6 +301,7 @@ services:
     image: livekit/livekit-server:v1.8.4
     entrypoint: ["/entrypoint.sh"]
     environment:
+      - LIVEKIT_API_KEY
       - LIVEKIT_API_SECRET
     ports:
       - "7880:7880"
