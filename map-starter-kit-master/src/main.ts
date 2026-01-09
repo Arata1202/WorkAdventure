@@ -21,11 +21,15 @@ WA.onInit().then(() => {
 
     WA.room.area.onLeave('clock').subscribe(closePopup)
 
-    WA.ui.registerMenuCommand('録画開始', () => {
-        if (isRecording) {
-            stopRecording();
-        } else {
-            startRecording();
+    recordButton = WA.ui.actionBar.addButton({
+        id: 'record-button',
+        label: '録画開始',
+        callback: () => {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
         }
     });
 
@@ -45,6 +49,7 @@ function closePopup(){
 
 async function startRecording() {
     isRecording = true;
+    recordButton.update({ label: '録画停止' });
     await fetch(`/api/recording/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -54,6 +59,7 @@ async function startRecording() {
 
 async function stopRecording() {
     isRecording = false;
+    recordButton.update({ label: '録画開始' });
     await fetch(`/api/recording/stop`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
