@@ -341,6 +341,9 @@ services:
     environment:
       LIVEKIT_API_KEY:
       LIVEKIT_API_SECRET:
+      MINIO_REGION:
+      MINIO_ACCESS_KEY:
+      MINIO_SECRET_KEY:
       EGRESS_CONFIG_FILE: /tmp/egress-config.yaml
       DISABLE_CUDA: "true"
       DISABLE_NVENC: "true"
