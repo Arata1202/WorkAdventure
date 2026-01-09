@@ -2,6 +2,13 @@ version: "3.6"
 services:
   reverse-proxy:
     image: traefik:v3.6.1
+    networks:
+      default:
+        aliases:
+          - "livekit.${DOMAIN}"
+          - "egress.${DOMAIN}"
+          - "minio-livekit.${DOMAIN}"
+          - "cdn-livekit.${DOMAIN}"
     command:
       - --log.level=${LOG_LEVEL}
       - --providers.docker
@@ -186,7 +193,7 @@ services:
       - LIVEKIT_HOST
       - LIVEKIT_API_KEY
       - LIVEKIT_API_SECRET
-      - EGRESS_HOST
+      - EGRESS_HOST=http://egress.${DOMAIN}
     labels:
       traefik.enable: "true"
       traefik.http.middlewares.strip-api-prefix.stripprefix.prefixes: "/api"
@@ -326,6 +333,81 @@ services:
     depends_on:
       redis:
         condition: service_started
+    restart: ${RESTART_POLICY}
+
+  egress:
+    image: livekit/egress:v1.9.0
+    entrypoint: ["/entrypoint.sh"]
+    environment:
+      LIVEKIT_API_KEY:
+      LIVEKIT_API_SECRET:
+      EGRESS_CONFIG_FILE: /tmp/egress-config.yaml
+      DISABLE_CUDA: "true"
+      DISABLE_NVENC: "true"
+      EGRESS_OUTPUT_DIR: "/out"
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+      - "7980:7980"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.egress.rule=Host(`egress.${DOMAIN}`)"
+      - "traefik.http.routers.egress.entryPoints=web"
+      - "traefik.http.services.egress.loadbalancer.server.port=8080"
+      - "traefik.http.routers.egress-ssl.rule=Host(`egress.${DOMAIN}`)"
+      - "traefik.http.routers.egress-ssl.entryPoints=websecure"
+      - "traefik.http.routers.egress-ssl.tls=true"
+      - "traefik.http.routers.egress-ssl.tls.certresolver=myresolver"
+      - "traefik.http.routers.egress-ssl.service=egress"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./egress/entrypoint.sh:/entrypoint.sh:ro
+      - ./egress/egress-config.template.yaml:/etc/egress/egress-config.template.yaml:ro
+      - ./out:/out:rw
+      - /tmp:/tmp:rw
+    cap_add:
+      - SYS_ADMIN
+    privileged: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      redis:
+        condition: service_started
+      livekit:
+        condition: service_started
+    restart: ${RESTART_POLICY}
+
+  minio-livekit:
+    image: bitnami/minio:2025.4.22
+    environment:
+      MINIO_ROOT_USER: "${MINIO_ACCESS_KEY}"
+      MINIO_ROOT_PASSWORD: "${MINIO_SECRET_KEY}"
+      MINIO_DEFAULT_BUCKETS: "livekit-recording:public"
+      MINIO_SITE_REGION: "ap-northeast-1"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio-livekit.rule=Host(`minio-livekit.${DOMAIN}`)"
+      - "traefik.http.routers.minio-livekit.entryPoints=web"
+      - "traefik.http.services.minio-livekit.loadbalancer.server.port=9001"
+      - "traefik.http.routers.minio-livekit.service=minio-livekit"
+      - "traefik.http.routers.minio-livekit-ssl.rule=Host(`minio-livekit.${DOMAIN}`)"
+      - "traefik.http.routers.minio-livekit-ssl.entryPoints=websecure"
+      - "traefik.http.routers.minio-livekit-ssl.tls=true"
+      - "traefik.http.routers.minio-livekit-ssl.tls.certresolver=myresolver"
+      - "traefik.http.routers.minio-livekit-ssl.service=minio-livekit"
+      - "traefik.http.routers.cdn-livekit.rule=Host(`cdn-livekit.${DOMAIN}`)"
+      - "traefik.http.routers.cdn-livekit.entryPoints=web"
+      - "traefik.http.services.cdn-livekit.loadbalancer.server.port=9000"
+      - "traefik.http.routers.cdn-livekit.service=cdn-livekit"
+      - "traefik.http.routers.cdn-livekit-ssl.rule=Host(`cdn-livekit.${DOMAIN}`)"
+      - "traefik.http.routers.cdn-livekit-ssl.entryPoints=websecure"
+      - "traefik.http.routers.cdn-livekit-ssl.tls=true"
+      - "traefik.http.routers.cdn-livekit-ssl.tls.certresolver=myresolver"
+      - "traefik.http.routers.cdn-livekit-ssl.service=cdn-livekit"
     restart: ${RESTART_POLICY}
 
   cert-dumper:
