@@ -353,7 +353,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.egress.rule=Host(`egress.${DOMAIN}`)"
       - "traefik.http.routers.egress.entryPoints=web"
-      - "traefik.http.services.egress.loadbalancer.server.port=8080"
+      - "traefik.http.services.egress.loadbalancer.server.port=8081"
       - "traefik.http.routers.egress-ssl.rule=Host(`egress.${DOMAIN}`)"
       - "traefik.http.routers.egress-ssl.entryPoints=websecure"
       - "traefik.http.routers.egress-ssl.tls=true"
