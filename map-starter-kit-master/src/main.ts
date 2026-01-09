@@ -5,8 +5,6 @@ import { bootstrapExtra } from "@workadventure/scripting-api-extra";
 console.log('Script started successfully');
 
 let currentPopup: any = undefined;
-let isRecording = false;
-let recordButton: any = undefined;
 
 // Waiting for the API to be ready
 WA.onInit().then(() => {
@@ -21,18 +19,6 @@ WA.onInit().then(() => {
 
     WA.room.area.onLeave('clock').subscribe(closePopup)
 
-    recordButton = WA.ui.actionBar.addButton({
-        id: 'record-button',
-        label: '録画開始',
-        callback: () => {
-            if (isRecording) {
-                stopRecording();
-            } else {
-                startRecording();
-            }
-        }
-    });
-
     // The line below bootstraps the Scripting API Extra library that adds a number of advanced properties/features to WorkAdventure
     bootstrapExtra().then(() => {
         console.log('Scripting API Extra ready');
@@ -45,25 +31,6 @@ function closePopup(){
         currentPopup.close();
         currentPopup = undefined;
     }
-}
-
-async function startRecording() {
-    isRecording = true;
-    recordButton.update({ label: '録画停止' });
-    await fetch(`/api/recording/start`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roomName: WA.room.id })
-    });
-}
-
-async function stopRecording() {
-    isRecording = false;
-    recordButton.update({ label: '録画開始' });
-    await fetch(`/api/recording/stop`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-    });
 }
 
 export {};
