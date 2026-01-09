@@ -13,4 +13,4 @@ if [ ! -f /tmp/egress-config.yaml ] || [ /etc/egress/egress-config.template.yaml
       /etc/egress/egress-config.template.yaml > /tmp/egress-config.yaml
 fi
 
-exec /egress --config /tmp/egress-config.yaml
+exec /bin/egress --config /tmp/egress-config.yaml
