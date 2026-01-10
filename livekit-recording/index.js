@@ -25,11 +25,11 @@ app.post('/api/recording/start', async (req, res) => {
 
     const egressClient = new EgressClient(config.livekitUrl, config.apiKey, config.apiSecret);
 
-    const info = await egressClient.startRoomCompositeEgress({
-      roomName: room_name,
+    const info = await egressClient.startRoomCompositeEgress(room_name, {
       layout: 'grid',
       audioOnly: false,
-      file: {
+      videoOnly: false,
+      fileOutputs: [{
         fileType: EncodedFileType.MP4,
         filepath: filename,
         s3: {
@@ -40,7 +40,7 @@ app.post('/api/recording/start', async (req, res) => {
           region: config.minioRegion,
           forcePathStyle: true,
         },
-      },
+      }],
     });
 
     console.log(`Recording started: ${info.egressId}`);
