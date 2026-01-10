@@ -35,8 +35,9 @@ TRACK_IDS=$(
 [ -z "$TRACK_IDS" ] && { echo "Error: No audio tracks"; exit 1; }
 
 echo "$TRACK_IDS" | while IFS=$'\t' read -r IDENTITY TRACK_ID; do
+  SAFE_IDENTITY=$(echo "$IDENTITY" | tr '/ :@' '____')
   JSON="/tmp/egress_track_${TRACK_ID}.json"
-  FILE="$OUT/${ROOM}__${IDENTITY}__${START_TS}__${TRACK_ID}.ogg"
+  FILE="$OUT/${ROOM}__${SAFE_IDENTITY}__${START_TS}__${TRACK_ID}.ogg"
 
   cat > "$JSON" <<EOF
 {
