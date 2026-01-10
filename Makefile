@@ -35,9 +35,9 @@ lk-egress-list:
 	@npx dotenvx run -- lk egress list --url http://localhost:7880
 
 lk-egress-start:
-	@npx dotenvx run -- ./livekit/bin/start.sh $(P)
+	@npx dotenvx run -- ./egress/bin/start.sh $(P)
 
 lk-egress-stop:
-	@npx dotenvx run -- ./livekit/bin/stop.sh $(P)
+	@npx dotenvx run -- ./egress/bin/stop.sh $(P)
 
 .PHONY: up stop restart logs ps encrypt decrypt lk-room-list lk-egress-list lk-egress-start lk-egress-stop

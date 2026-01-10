@@ -9,7 +9,7 @@ LIVEKIT_URL="http://localhost:7880"
 OUT="/out"
 JSON="/tmp/egress_room_mix.json"
 FILE="$OUT/${ROOM}_$(date +%s).mp4"
-LOG_DIR="/livekit/logs"
+LOG_DIR="/egress/logs"
 
 mkdir -p "$LOG_DIR"
 

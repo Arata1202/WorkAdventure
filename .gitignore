@@ -12,5 +12,5 @@ variables.tf
 out/*
 !out/.gitkeep
 
-livekit/logs/*
-!livekit/logs/.gitkeep
+egress/logs/*
+!egress/logs/.gitkeep

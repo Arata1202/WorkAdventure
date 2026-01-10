@@ -367,7 +367,7 @@ services:
     volumes:
       - ./egress/entrypoint.sh:/entrypoint.sh:ro
       - ./egress/egress-config.template.yaml:/etc/egress/egress-config.template.yaml:ro
-      - ./logs:/livekit/logs:rw
+      - ./logs:/egress/logs:rw
       - ./out:/out:rw
       - /tmp:/tmp:rw
     cap_add:
