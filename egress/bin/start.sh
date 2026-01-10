@@ -29,7 +29,7 @@ TRACK_IDS=$(
     --data "{\"room\":\"$ROOM\"}" \
     "$LIVEKIT_URL/twirp/livekit.RoomService/ListParticipants" \
   | jq -r '.participants[]
-           | .identity as $id
+           | .name as $id
            | (.tracks[]? | select(.type=="AUDIO" or .type=="audio") | [$id, .sid] | @tsv)'
 )
 [ -z "$TRACK_IDS" ] && { echo "Error: No audio tracks"; exit 1; }
