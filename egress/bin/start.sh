@@ -29,8 +29,8 @@ cat > "$JSON" <<EOF
 EOF
 
 EGRESS_ID=$(
-  dotenvx run -- lk egress start --type room --url "$LIVEKIT_URL" --output json "$JSON" \
-  | jq -r '.egress_id // .egressId // empty'
+  dotenvx run -- lk egress start --type room --url "$LIVEKIT_URL" "$JSON" \
+  | sed -n 's/.*\(EG_[A-Za-z0-9]\+\).*/\1/p'
 )
 [ -z "$EGRESS_ID" ] && { echo "Error: failed to parse egress_id"; exit 1; }
 
