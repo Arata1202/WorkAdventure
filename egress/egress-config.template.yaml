@@ -6,10 +6,6 @@ insecure: true
 template_port: 7980
 health_port: 8081
 prometheus_port: 9000
-cpu_cost:
-  room_composite_cpu_cost: 2
-  track_composite_cpu_cost: 2
-  track_cpu_cost: 1
 redis:
   address: "redis:6379"
   username: ""
