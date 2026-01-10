@@ -390,7 +390,7 @@ services:
       MINIO_ROOT_USER: "${MINIO_ACCESS_KEY}"
       MINIO_ROOT_PASSWORD: "${MINIO_SECRET_KEY}"
       MINIO_DEFAULT_BUCKETS: "livekit-recording:public"
-      MINIO_SITE_REGION: "ap-northeast-1"
+      MINIO_SITE_REGION: "${MINIO_REGION}"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.minio-livekit.rule=Host(`minio-livekit.${DOMAIN}`)"
@@ -411,6 +411,35 @@ services:
       - "traefik.http.routers.cdn-livekit-ssl.tls=true"
       - "traefik.http.routers.cdn-livekit-ssl.tls.certresolver=myresolver"
       - "traefik.http.routers.cdn-livekit-ssl.service=cdn-livekit"
+    restart: ${RESTART_POLICY}
+
+  livekit-recording:
+    build: ./livekit-recording
+    environment:
+      - LIVEKIT_API_KEY=${LIVEKIT_API_KEY}
+      - LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET}
+      - LIVEKIT_URL=ws://livekit:7880
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_REGION=${MINIO_REGION}
+      - MINIO_ENDPOINT=http://minio-livekit:9000
+      - PORT=8080
+    labels:
+      traefik.enable: "true"
+      traefik.http.middlewares.strip-livekit-recording-prefix.stripprefix.prefixes: "/livekit-recording"
+      traefik.http.routers.livekit-recording.rule: "Host(`${DOMAIN}`) && PathPrefix(`/livekit-recording`)"
+      traefik.http.routers.livekit-recording.middlewares: "strip-livekit-recording-prefix@docker"
+      traefik.http.routers.livekit-recording.entryPoints: "web"
+      traefik.http.services.livekit-recording.loadbalancer.server.port: "8080"
+      traefik.http.routers.livekit-recording-ssl.middlewares: "strip-livekit-recording-prefix@docker"
+      traefik.http.routers.livekit-recording-ssl.rule: "Host(`${DOMAIN}`) && PathPrefix(`/livekit-recording`)"
+      traefik.http.routers.livekit-recording-ssl.entryPoints: "websecure"
+      traefik.http.routers.livekit-recording-ssl.service: "livekit-recording"
+      traefik.http.routers.livekit-recording-ssl.tls: "true"
+      traefik.http.routers.livekit-recording-ssl.tls.certresolver: "myresolver"
+    depends_on:
+      - livekit
+      - minio-livekit
     restart: ${RESTART_POLICY}
 
   cert-dumper:
