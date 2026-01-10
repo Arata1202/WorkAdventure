@@ -11,6 +11,8 @@ LOG_DIR="./logs"
 
 mkdir -p "$LOG_DIR"
 
+: > "$LOG"
+
 TOKEN=$(
   dotenvx run -- lk --curl room participants list \
     --url "$LIVEKIT_URL" "$ROOM" \
