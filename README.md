@@ -381,3 +381,48 @@ POSTGRES_PASSWORD=<UNIQUE_RANDOM_32_HEX>
    - Password: <MATRIX_ADMIN_PASSWORD>
 7. Click Sign in
 8. After successful authentication, you will be redirected back to Element and logged in
+
+## Set up Egress with MinIO
+
+```bash
+# EC2
+
+# Move repository
+cd WorkAdventure
+
+# Generate random strings for .env values
+openssl rand -hex 32
+
+# Edit .env file
+make decrypt
+vi .env
+make encrypt
+
+# Restart server
+make restart
+```
+
+```env
+# Required
+MAX_USERS_FOR_WEBRTC=0
+MINIO_REGION=ap-northeast-1
+MINIO_ACCESS_KEY=<UNIQUE_RANDOM_64_HEX>
+MINIO_SECRET_KEY=<UNIQUE_RANDOM_64_HEX>
+```
+
+1. Add A records in Route 53 to point your domain to the EC2 public IP
+
+| Record Name               | Type | Value                     | TTL |
+| ------------------------- | ---- | ------------------------- | --- |
+| egress.<YOUR_FQDN>        | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
+| cdn-livekit.<YOUR_FQDN>   | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
+| minio-livekit.<YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
+
+## Log in to MinIO
+
+1. Access MinIO Web: `https://minio-livekit.<YOUR_FQDN>`
+2. Enter your MinIO credentials:
+   - Username: <MINIO_ACCESS_KEY>
+   - Password: <MINIO_SECRET_KEY>
+3. Click Sign in
+4. After successful authentication, you will be logged in
