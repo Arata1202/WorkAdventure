@@ -6,7 +6,7 @@ ROOM="${1:-}"
 [ -z "$ROOM" ] && { echo "usage: $0 <ROOM>"; exit 1; }
 
 LIVEKIT_URL="http://localhost:7880"
-LOG="/egress/logs/egress_${ROOM}.log"
+LOG="./logs/egress_${ROOM}.log"
 [ ! -f "$LOG" ] && { echo "Error: no log found: $LOG"; exit 1; }
 
 EGRESS_ID=$(tail -n 1 "$LOG" | awk '{print $1}')
