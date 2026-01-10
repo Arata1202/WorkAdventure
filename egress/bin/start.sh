@@ -7,8 +7,6 @@ ROOM="${1:-}"
 
 LIVEKIT_URL="http://localhost:7880"
 OUT="./out"
-JSON="/tmp/egress_room_mix.json"
-FILE="$OUT/${ROOM}_$(date +%s).mp4"
 LOG_DIR="./logs"
 
 mkdir -p "$LOG_DIR"
@@ -20,20 +18,35 @@ TOKEN=$(
 )
 [ -z "$TOKEN" ] && { echo "Error: failed to get token"; exit 1; }
 
-cat > "$JSON" <<EOF
+TRACK_IDS=$(
+  curl -s -X POST \
+    -H "Authorization: Bearer $TOKEN" \
+    -H "Content-Type: application/json" \
+    --data "{\"room\":\"$ROOM\"}" \
+    "$LIVEKIT_URL/twirp/livekit.RoomService/ListParticipants" \
+  | jq -r '.participants[].tracks[] | select(.type=="AUDIO") | .sid'
+)
+[ -z "$TRACK_IDS" ] && { echo "Error: No audio tracks"; exit 1; }
+
+for TRACK_ID in $TRACK_IDS; do
+  JSON="/tmp/egress_track_${TRACK_ID}.json"
+  FILE="$OUT/${ROOM}_${TRACK_ID}.ogg"
+
+  cat > "$JSON" <<EOF
 {
   "room_name": "$ROOM",
-  "audio_only": true,
+  "track_id": "$TRACK_ID",
   "file": { "filepath": "$FILE" }
 }
 EOF
 
-EGRESS_ID=$(
-  dotenvx run -- lk egress start --url "$LIVEKIT_URL" "$JSON" \
-  | sed -n 's/.*\(EG_[A-Za-z0-9]\+\).*/\1/p'
-)
-[ -z "$EGRESS_ID" ] && { echo "Error: failed to parse egress_id"; exit 1; }
+  EGRESS_ID=$(
+    dotenvx run -- lk egress start --type track --url "$LIVEKIT_URL" "$JSON" \
+    | sed -n 's/.*\(EG_[A-Za-z0-9]\+\).*/\1/p'
+  )
+  [ -z "$EGRESS_ID" ] && { echo "Error: failed to parse egress_id"; exit 1; }
 
-echo "$EGRESS_ID $FILE" >> "${LOG_DIR}/egress_${ROOM}.log"
+  echo "$EGRESS_ID $FILE" >> "${LOG_DIR}/egress_${ROOM}.log"
 
-echo "started: room=$ROOM file=$FILE"
+  echo "started: room=$ROOM track=$TRACK_ID file=$FILE"
+done

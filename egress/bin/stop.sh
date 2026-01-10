@@ -9,8 +9,7 @@ LIVEKIT_URL="http://localhost:7880"
 LOG="./logs/egress_${ROOM}.log"
 [ ! -f "$LOG" ] && { echo "Error: no log found: $LOG"; exit 1; }
 
-EGRESS_ID=$(tail -n 1 "$LOG" | awk '{print $1}')
-[ -z "$EGRESS_ID" ] && { echo "Error: failed to read egress id"; exit 1; }
-
-dotenvx run -- lk egress stop --url "$LIVEKIT_URL" --id "$EGRESS_ID"
-echo "stopped: room=$ROOM id=$EGRESS_ID"
+awk '{print $1}' "$LOG" | while read -r EGRESS_ID; do
+  dotenvx run -- lk egress stop --url "$LIVEKIT_URL" --id "$EGRESS_ID"
+  echo "stopped: room=$ROOM id=$EGRESS_ID"
+done
