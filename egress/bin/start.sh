@@ -53,6 +53,8 @@ EOF
   )
   [ -z "$EGRESS_ID" ] && { echo "Error: failed to parse egress_id"; exit 1; }
 
+  rm -f "$JSON"
+
   echo "$EGRESS_ID $FILE $IDENTITY $TRACK_ID $START_TS" >> "$LOG"
 
   echo "started: room=$ROOM identity=$IDENTITY track=$TRACK_ID file=$FILE"
