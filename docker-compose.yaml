@@ -356,7 +356,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.egress.rule=Host(`egress.${DOMAIN}`)"
       - "traefik.http.routers.egress.entryPoints=web"
-      - "traefik.http.services.egress.loadbalancer.server.port=8081"
+      - "traefik.http.services.egress.loadbalancer.server.port=8080"
       - "traefik.http.routers.egress-ssl.rule=Host(`egress.${DOMAIN}`)"
       - "traefik.http.routers.egress-ssl.entryPoints=websecure"
       - "traefik.http.routers.egress-ssl.tls=true"
@@ -367,6 +367,7 @@ services:
     volumes:
       - ./egress/entrypoint.sh:/entrypoint.sh:ro
       - ./egress/egress-config.template.yaml:/etc/egress/egress-config.template.yaml:ro
+      - ./logs:/livekit/logs:rw
       - ./out:/out:rw
       - /tmp:/tmp:rw
     cap_add:

@@ -1,22 +1,22 @@
-C ?=
+P ?=
 
 # Docker
 
 up:
-	@npx dotenvx run -- docker compose up -d $(C)
+	@npx dotenvx run -- docker compose up -d $(P)
 
 stop:
-	@npx dotenvx run -- docker compose stop $(C)
+	@npx dotenvx run -- docker compose stop $(P)
 
 restart:
-	@npx dotenvx run -- docker compose stop $(C)
-	@npx dotenvx run -- docker compose up -d $(C)
+	@npx dotenvx run -- docker compose stop $(P)
+	@npx dotenvx run -- docker compose up -d $(P)
 
 logs:
-	@npx dotenvx run -- docker compose logs -f $(C)
+	@npx dotenvx run -- docker compose logs -f $(P)
 
 ps:
-	@npx dotenvx run -- docker compose ps -a $(C)
+	@npx dotenvx run -- docker compose ps -a $(P)
 
 # Dotenvx
 
@@ -26,4 +26,18 @@ encrypt:
 decrypt:
 	@npx dotenvx decrypt
 
-.PHONY: up stop restart logs ps encrypt decrypt
+# LiveKit
+
+lk-room-list:
+	@npx dotenvx run -- lk room list --url http://localhost:7880
+
+lk-egress-list:
+	@npx dotenvx run -- lk egress list --url http://localhost:7880
+
+lk-egress-start:
+	@npx dotenvx run -- ./livekit/bin/start.sh $(P)
+
+lk-egress-stop:
+	@npx dotenvx run -- ./livekit/bin/stop.sh $(P)
+
+.PHONY: up stop restart logs ps encrypt decrypt lk-room-list lk-egress-list lk-egress-start lk-egress-stop

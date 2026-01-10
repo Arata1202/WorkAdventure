@@ -7,6 +7,9 @@ sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
 
+# LiveKit CLI
+curl -sSL https://get.livekit.io/cli | bash
+
 # Docker
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null
 echo \

@@ -8,3 +8,9 @@ variables.tf
 *.tfstate
 *.tfstate.*
 **/.terraform.lock.hcl
+
+out/*
+!out/.gitkeep
+
+livekit/logs/*
+!livekit/logs/.gitkeep
