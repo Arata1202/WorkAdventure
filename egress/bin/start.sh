@@ -7,7 +7,7 @@ ROOM="${1:-}"
 
 LIVEKIT_URL="http://localhost:7880"
 OUT="./out"
-LOG_DIR="./logs"
+LOG_DIR="./egress/logs"
 LOG="${LOG_DIR}/egress_${ROOM}.log"
 START_TS=$(date +%s.%3N)
 
