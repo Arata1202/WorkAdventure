@@ -7,12 +7,13 @@ ROOM="${1:-}"
 
 LIVEKIT_URL="http://localhost:7880"
 MEETING_TS=$(date +%s.%3N)
-OUT="./out/${MEETING_TS}__${ROOM}"
+OUT_HOST="./out/${MEETING_TS}__${ROOM}"
+OUT_CONT="/out/${MEETING_TS}__${ROOM}"
 LOG_DIR="./egress/logs"
 LOG="${LOG_DIR}/egress_${ROOM}.log"
 STARTED="/tmp/egress_started_${ROOM}_${MEETING_TS}.txt"
 
-mkdir -p "$OUT" "$LOG_DIR"
+mkdir -p "$OUT_HOST" "$LOG_DIR"
 : > "$STARTED"
 
 TOKEN=$(
@@ -54,7 +55,7 @@ while :; do
       REC_TS=$(date +%s.%3N)
       SAFE_IDENTITY=$(echo "$IDENTITY" | tr '/ :@' '____')
       JSON="/tmp/egress_track_${TRACK_ID}.json"
-      FILE="$OUT/${REC_TS}__${SAFE_IDENTITY}__${TRACK_ID}.ogg"
+      FILE="$OUT_CONT/${REC_TS}__${SAFE_IDENTITY}__${TRACK_ID}.ogg"
 
       cat > "$JSON" <<EOF
 {
