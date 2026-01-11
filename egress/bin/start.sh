@@ -6,10 +6,10 @@ ROOM="${1:-}"
 [ -z "$ROOM" ] && { echo "usage: $0 <ROOM>"; exit 1; }
 
 LIVEKIT_URL="http://localhost:7880"
-OUT="./out"
+START_TS=$(date +%s.%3N)
+OUT="./out/${$ROOM}__${START_TS}"
 LOG_DIR="./egress/logs"
 LOG="${LOG_DIR}/egress_${ROOM}.log"
-START_TS=$(date +%s.%3N)
 
 mkdir -p "$OUT" "$LOG_DIR"
 
