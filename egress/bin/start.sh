@@ -39,13 +39,13 @@ AUDIO_TRACKS=$(
 while IFS=$'\t' read -r IDENTITY PARTICIPANT_NAME TRACK_ID; do
   EGRESS_JSON="/tmp/egress_track_${TRACK_ID}.json"
   BASE_PATH="$OUT_DIR/${START_TS}__${ROOM_ID}__${TRACK_ID}"
-  REC_FILE="${BASE_PATH}.ogg"
+  REC_OGG="${BASE_PATH}.ogg"
   REC_JSON="${BASE_PATH}.json"
 
   jq -n \
     --arg room "$ROOM_ID" \
     --arg track_id "$TRACK_ID" \
-    --arg filepath "$REC_FILE" \
+    --arg filepath "$REC_OGG" \
     '{
       room_name: $room,
       track_id: $track_id,

@@ -43,4 +43,9 @@ lk-egress-start:
 lk-egress-stop:
 	@npx dotenvx run -- ./egress/bin/stop.sh $(P)
 
-.PHONY: up up-f stop restart logs ps encrypt decrypt lk-room-list lk-egress-list lk-egress-start lk-egress-stop
+# MinIO Client
+
+mc-upload:
+	@npx dotenvx run -- ./egress/bin/upload.sh
+
+.PHONY: up up-f stop restart logs ps encrypt decrypt lk-room-list lk-egress-list lk-egress-start lk-egress-stop mc-upload
