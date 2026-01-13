@@ -5,6 +5,9 @@ P ?=
 up:
 	@npx dotenvx run -- docker compose up -d $(P)
 
+up-f:
+	@npx dotenvx run -- docker compose up -d --force-recreate $(P)
+
 stop:
 	@npx dotenvx run -- docker compose stop $(P)
 
@@ -40,4 +43,4 @@ lk-egress-start:
 lk-egress-stop:
 	@npx dotenvx run -- ./egress/bin/stop.sh $(P)
 
-.PHONY: up stop restart logs ps encrypt decrypt lk-room-list lk-egress-list lk-egress-start lk-egress-stop
+.PHONY: up up-f stop restart logs ps encrypt decrypt lk-room-list lk-egress-list lk-egress-start lk-egress-stop

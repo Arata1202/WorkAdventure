@@ -11,11 +11,3 @@ redis:
   username: ""
   password: ""
   db: 2
-
-file_output:
-  s3:
-    access_key: ${MINIO_ACCESS_KEY}
-    secret: ${MINIO_SECRET_KEY}
-    region: ${MINIO_REGION}
-    endpoint: http://minio-livekit:9000
-    bucket: livekit-recording
