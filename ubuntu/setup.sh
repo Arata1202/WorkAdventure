@@ -17,11 +17,11 @@ curl -sSL https://get.livekit.io/cli | bash
 # MinIO Client
 case "$ARCH" in
   amd64)
-    curl --progress-bar -L https://dl.min.io/client/mc/release/linux-amd64/mc \
+    sudo curl --progress-bar -L https://dl.min.io/client/mc/release/linux-amd64/mc \
     -o /usr/local/bin/mc
     ;;
   arm64)
-    curl --progress-bar -L https://dl.min.io/client/mc/release/linux-arm64/mc \
+    sudo curl --progress-bar -L https://dl.min.io/client/mc/release/linux-arm64/mc \
     -o /usr/local/bin/mc
     ;;
   *)
