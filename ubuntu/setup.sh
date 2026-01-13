@@ -17,18 +17,19 @@ curl -sSL https://get.livekit.io/cli | bash
 # MinIO Client
 case "$ARCH" in
   amd64)
-    curl --progress-bar -L https://dl.min.io/aistor/minio/release/linux-amd64/minio.deb -o minio.deb
-    sudo dpkg -i minio.deb
+    curl --progress-bar -L https://dl.min.io/client/mc/release/linux-amd64/mc \
+    -o /usr/local/bin/mc
     ;;
   arm64)
-    curl --progress-bar -L https://dl.min.io/aistor/minio/release/linux-arm64/minio.deb -o minio.deb
-    sudo dpkg -i minio.deb
+    curl --progress-bar -L https://dl.min.io/client/mc/release/linux-arm64/mc \
+    -o /usr/local/bin/mc
     ;;
   *)
     echo "Error: unsupported architecture: $ARCH"
     exit 1
     ;;
 esac
+sudo chmod +x /usr/local/bin/mc
 
 # Docker
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null
