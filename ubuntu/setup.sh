@@ -1,3 +1,7 @@
+#!/bin/bash
+
+ARCH="$(dpkg --print-architecture)"
+
 # Ubuntu
 sudo apt update
 sudo apt install -y ca-certificates curl gnupg make
@@ -10,10 +14,26 @@ sudo apt install -y nodejs
 # LiveKit CLI
 curl -sSL https://get.livekit.io/cli | bash
 
+# MinIO Client
+case "$ARCH" in
+  amd64)
+    curl --progress-bar -L https://dl.min.io/aistor/minio/release/linux-amd64/minio.deb -o minio.deb
+    sudo dpkg -i minio.deb
+    ;;
+  arm64)
+    curl --progress-bar -L https://dl.min.io/aistor/minio/release/linux-arm64/minio.deb -o minio.deb
+    sudo dpkg -i minio.deb
+    ;;
+  *)
+    echo "Error: unsupported architecture: $ARCH"
+    exit 1
+    ;;
+esac
+
 # Docker
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null
 echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  "deb [arch=${ARCH} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt update
