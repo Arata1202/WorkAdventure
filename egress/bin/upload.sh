@@ -7,7 +7,7 @@ set -euo pipefail
 
 OUT_DIR="./out"
 MINIO_ALIAS="minio"
-MINIO_URL="http://minio-livekit:9000"
+MINIO_URL="http://localhost:9000"
 MINIO_BUCKET="livekit-recording"
 
 [ ! -d "$OUT_DIR" ] && { echo "Error: no out dir: $OUT_DIR"; exit 1; }
