@@ -515,7 +515,7 @@ services:
         chmod +x /usr/local/bin/mc
         /bin/bash /upload.sh
     volumes:
-      - ./out:/out:ro
+      - ./out:/out:rw
       - ./minio/bin/upload.sh:/upload.sh:ro
     depends_on:
       - minio-livekit
