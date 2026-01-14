@@ -2,16 +2,17 @@
 
 set -euo pipefail
 
+: "${EGRESS_OUT_DIR:?Error: EGRESS_OUT_DIR is not set}"
+: "${EGRESS_LOG_DIR:?Error: EGRESS_LOG_DIR is not set}"
+
 ROOM_ID="${1:-}"
 [ -z "$ROOM_ID" ] && { echo "usage: $0 <ROOM_ID>"; exit 1; }
 
 LIVEKIT_URL="http://localhost:7880"
-OUT_DIR="./out"
-LOG_DIR="./egress/logs"
-LOG_FILE="${LOG_DIR}/egress_room_${ROOM_ID}.log"
+LOG_FILE="${EGRESS_LOG_DIR}/egress_room_${ROOM_ID}.log"
 START_TS=$(date +%s.%3N)
 
-mkdir -p "$OUT_DIR" "$LOG_DIR"
+mkdir -p "$EGRESS_OUT_DIR" "$EGRESS_LOG_DIR"
 
 ACCESS_TOKEN=$(
   lk --curl room participants list \
@@ -38,7 +39,7 @@ AUDIO_TRACKS=$(
 
 while IFS=$'\t' read -r IDENTITY PARTICIPANT_NAME TRACK_ID; do
   EGRESS_JSON="/tmp/egress_track_${TRACK_ID}.json"
-  BASE_PATH="$OUT_DIR/${START_TS}__${ROOM_ID}__${TRACK_ID}"
+  BASE_PATH="$EGRESS_OUT_DIR/${START_TS}__${ROOM_ID}__${TRACK_ID}"
   REC_OGG="${BASE_PATH}.ogg"
   REC_JSON="${BASE_PATH}.json"
 
