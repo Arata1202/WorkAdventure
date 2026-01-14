@@ -494,8 +494,12 @@ services:
   mc-upload:
     image: alpine:latest
     environment:
+      EGRESS_OUT_DIR: "${EGRESS_OUT_DIR}"
+      EGRESS_LOG_DIR: "${EGRESS_LOG_DIR}"
       MINIO_ACCESS_KEY: "${MINIO_ACCESS_KEY}"
       MINIO_SECRET_KEY: "${MINIO_SECRET_KEY}"
+      MINIO_ALIAS: "${MINIO_ALIAS}"
+      MINIO_BUCKET: "${MINIO_BUCKET}"
     command:
       - /bin/sh
       - -c
