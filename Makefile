@@ -46,6 +46,6 @@ lk-egress-stop:
 # MinIO Client
 
 mc-upload:
-	@npx dotenvx run -- ./egress/bin/upload.sh
+	@npx dotenvx run -- docker compose run --rm mc-upload
 
 .PHONY: up up-f stop restart logs ps encrypt decrypt lk-room-list lk-egress-list lk-egress-start lk-egress-stop mc-upload

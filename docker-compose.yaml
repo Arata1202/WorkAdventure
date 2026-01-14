@@ -416,9 +416,9 @@ services:
 
   cert-dumper:
     image: ldez/traefik-certs-dumper:v2.8.1
+    command: file --version v2 --watch --source /letsencrypt/acme.json --dest /letsencrypt/certs
     volumes:
       - ${DATA_DIR}/letsencrypt:/letsencrypt
-    command: file --version v2 --watch --source /letsencrypt/acme.json --dest /letsencrypt/certs
     restart: ${RESTART_POLICY}
 
   coturn:
@@ -443,9 +443,9 @@ services:
    volumes:
      - ${DATA_DIR}/letsencrypt:/letsencrypt:ro
    network_mode: host
-   restart: ${RESTART_POLICY}
    depends_on:
      - cert-dumper
+   restart: ${RESTART_POLICY}
 
   synapse:
     image: matrixdotorg/synapse:v1.100.0
@@ -474,9 +474,9 @@ services:
       - synapse-data:/data
       - ./synapse/entrypoint.sh:/entrypoint.sh:ro
       - ./synapse/homeserver.template.yaml:/homeserver.template.yaml:ro
-    restart: ${RESTART_POLICY}
     depends_on:
       - postgres
+    restart: ${RESTART_POLICY}
 
   postgres:
     image: postgres:16
@@ -490,6 +490,33 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     restart: ${RESTART_POLICY}
+
+  mc-upload:
+    image: alpine:latest
+    environment:
+      MINIO_ACCESS_KEY: "${MINIO_ACCESS_KEY}"
+      MINIO_SECRET_KEY: "${MINIO_SECRET_KEY}"
+    command:
+      - /bin/sh
+      - -c
+      - |
+        apk add --no-cache bash curl findutils grep
+        ARCH=$(uname -m)
+        case "$$ARCH" in
+          x86_64) MC_ARCH="amd64" ;;
+          aarch64) MC_ARCH="arm64" ;;
+          *) echo "Error: unsupported architecture: $$ARCH"; exit 1 ;;
+        esac
+        curl -o /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-$${MC_ARCH}/mc
+        chmod +x /usr/local/bin/mc
+        /bin/bash /upload.sh
+    volumes:
+      - ./out:/out:ro
+      - ./minio/bin/upload.sh:/upload.sh:ro
+    depends_on:
+      - minio-livekit
+    profiles:
+      - tools
 
 volumes:
   redisdata:

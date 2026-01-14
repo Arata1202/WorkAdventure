@@ -7,7 +7,7 @@ set -euo pipefail
 
 OUT_DIR="./out"
 MINIO_ALIAS="minio"
-MINIO_URL="http://localhost:9000"
+MINIO_URL="http://minio-livekit:9000"
 MINIO_BUCKET="livekit-recording"
 
 [ ! -d "$OUT_DIR" ] && { echo "Error: no out dir: $OUT_DIR"; exit 1; }
@@ -22,7 +22,7 @@ fi
 
 while read -r REC_FILES; do
   BASENAME=$(basename "$REC_FILES")
-  mc cp --overwrite "$REC_FILES" "${MINIO_ALIAS}/${MINIO_BUCKET}/${BASENAME}"
+  mc cp "$REC_FILES" "${MINIO_ALIAS}/${MINIO_BUCKET}/${BASENAME}"
 done < <(
   find "$OUT_DIR" -maxdepth 1 -type f \
   \( -name "*.ogg" -o -name "*.json" \)

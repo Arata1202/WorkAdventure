@@ -14,23 +14,6 @@ sudo apt install -y nodejs
 # LiveKit CLI
 curl -sSL https://get.livekit.io/cli | bash
 
-# MinIO Client
-case "$ARCH" in
-  amd64)
-    sudo curl --progress-bar -L https://dl.min.io/client/mc/release/linux-amd64/mc \
-    -o /usr/local/bin/mc
-    ;;
-  arm64)
-    sudo curl --progress-bar -L https://dl.min.io/client/mc/release/linux-arm64/mc \
-    -o /usr/local/bin/mc
-    ;;
-  *)
-    echo "Error: unsupported architecture: $ARCH"
-    exit 1
-    ;;
-esac
-sudo chmod +x /usr/local/bin/mc
-
 # Docker
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null
 echo \
