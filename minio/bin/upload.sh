@@ -23,7 +23,11 @@ fi
 
 while read -r REC_FILES; do
   BASENAME=$(basename "$REC_FILES")
-  mc cp "$REC_FILES" "${MINIO_ALIAS}/${MINIO_BUCKET}/${BASENAME}"
+  if mc cp "$REC_FILES" "${MINIO_ALIAS}/${MINIO_BUCKET}/${BASENAME}"; then
+    rm -f "$REC_FILES"
+  else
+    echo "Error: failed to upload: $REC_FILES"
+  fi
 done < <(
   find "$EGRESS_OUT_DIR" -maxdepth 1 -type f \
   \( -name "*.ogg" -o -name "*.json" \)
