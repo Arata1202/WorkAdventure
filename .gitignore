@@ -1,6 +1,6 @@
 wa/
 node_modules/
-map-starter-kit-master/.env
+maps/.env
 .env.backup_*
 .env.keys
 variables.tf

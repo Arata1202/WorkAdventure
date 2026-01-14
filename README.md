@@ -152,7 +152,7 @@ MAP_STORAGE_ENABLE_BEARER_AUTHENTICATION=true
 # Local
 
 # Move repository
-cd WorkAdventure/map-starter-kit-master
+cd WorkAdventure/maps
 
 # Prepare .env file
 cp .env.example .env

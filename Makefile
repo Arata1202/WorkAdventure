@@ -29,6 +29,11 @@ encrypt:
 decrypt:
 	@npx dotenvx decrypt
 
+# WorkAdventure
+
+wa-upload:
+	@cd maps && npx dotenvx run -- npm run upload
+
 # LiveKit
 
 lk-room-list:
@@ -48,4 +53,4 @@ lk-egress-stop:
 mc-upload:
 	@npx dotenvx run -- docker compose run --rm mc-upload
 
-.PHONY: up up-f stop restart logs ps encrypt decrypt lk-room-list lk-egress-list lk-egress-start lk-egress-stop mc-upload
+.PHONY: up up-f stop restart logs ps encrypt decrypt wa-upload lk-room-list lk-egress-list lk-egress-start lk-egress-stop mc-upload
