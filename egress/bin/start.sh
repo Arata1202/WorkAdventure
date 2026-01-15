@@ -14,9 +14,22 @@ LIVEKIT_URL="http://localhost:7880"
 MINIO_URL="http://minio-livekit:9000"
 START_TS=$(date +%s.%3N)
 
+if lk egress list --url "$LIVEKIT_URL" --json \
+  | jq -e --arg room "$ROOM_ID" '
+      any(
+        .type=="room_composite"
+        and .source==$room
+        and (.status=="EGRESS_ACTIVE" or .status=="EGRESS_STARTING")
+      )
+    ' >/dev/null; then
+  exit 0
+fi
+
 BASE_PATH="${START_TS}__${ROOM_ID}"
 EGRESS_JSON="/tmp/${BASE_PATH}.json"
-FILENAME="${BASE_PATH}.mp4"
+FILENAME="${BASE_PATH}.ogg"
+
+trap 'rm -f "$EGRESS_JSON"' EXIT
 
 jq -n \
   --arg room "$ROOM_ID" \
