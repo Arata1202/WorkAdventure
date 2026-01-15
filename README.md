@@ -404,7 +404,6 @@ make restart
 
 ```env
 # Required
-EGRESS_LOG_DIR=./egress/logs
 MINIO_REGION=ap-northeast-1
 MINIO_ACCESS_KEY=<UNIQUE_RANDOM_64_HEX>
 MINIO_SECRET_KEY=<UNIQUE_RANDOM_64_HEX>

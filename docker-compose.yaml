@@ -344,10 +344,10 @@ services:
       MINIO_REGION:
       MINIO_ACCESS_KEY:
       MINIO_SECRET_KEY:
+      MINIO_BUCKET:
       EGRESS_CONFIG_FILE: /tmp/egress-config.yaml
       DISABLE_CUDA: "true"
       DISABLE_NVENC: "true"
-      EGRESS_OUTPUT_DIR: "/out"
     ports:
       - "8080:8080"
       - "8081:8081"
@@ -367,8 +367,6 @@ services:
     volumes:
       - ./egress/entrypoint.sh:/entrypoint.sh:ro
       - ./egress/egress-config.template.yaml:/etc/egress/egress-config.template.yaml:ro
-      - ./egress/logs:/egress/logs:rw
-      - ./out:/out:rw
       - /tmp:/tmp:rw
     cap_add:
       - SYS_ADMIN
@@ -390,7 +388,7 @@ services:
     environment:
       MINIO_ROOT_USER: "${MINIO_ACCESS_KEY}"
       MINIO_ROOT_PASSWORD: "${MINIO_SECRET_KEY}"
-      MINIO_DEFAULT_BUCKETS: "livekit-recording:public"
+      MINIO_DEFAULT_BUCKETS: "${MINIO_BUCKET}:public"
       MINIO_SITE_REGION: "${MINIO_REGION}"
     labels:
       - "traefik.enable=true"

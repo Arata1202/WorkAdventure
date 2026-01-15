@@ -45,7 +45,4 @@ lk-egress-list:
 lk-egress-start:
 	@npx dotenvx run -- ./egress/bin/start.sh $(P)
 
-lk-egress-stop:
-	@npx dotenvx run -- ./egress/bin/stop.sh $(P)
-
-.PHONY: up up-f stop restart logs ps encrypt decrypt wa-upload lk-room-list lk-egress-list lk-egress-start lk-egress-stop
+.PHONY: up up-f stop restart logs ps encrypt decrypt wa-upload lk-room-list lk-egress-list lk-egress-start
