@@ -491,37 +491,6 @@ services:
       - postgres-data:/var/lib/postgresql/data
     restart: ${RESTART_POLICY}
 
-  mc-upload:
-    image: alpine:latest
-    environment:
-      EGRESS_OUT_DIR: "${EGRESS_OUT_DIR}"
-      EGRESS_LOG_DIR: "${EGRESS_LOG_DIR}"
-      MINIO_ACCESS_KEY: "${MINIO_ACCESS_KEY}"
-      MINIO_SECRET_KEY: "${MINIO_SECRET_KEY}"
-      MINIO_ALIAS: "${MINIO_ALIAS}"
-      MINIO_BUCKET: "${MINIO_BUCKET}"
-    command:
-      - /bin/sh
-      - -c
-      - |
-        apk add --no-cache bash curl findutils grep
-        ARCH=$(uname -m)
-        case "$$ARCH" in
-          x86_64) MC_ARCH="amd64" ;;
-          aarch64) MC_ARCH="arm64" ;;
-          *) echo "Error: unsupported architecture: $$ARCH"; exit 1 ;;
-        esac
-        curl -o /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-$${MC_ARCH}/mc
-        chmod +x /usr/local/bin/mc
-        /bin/bash /upload.sh
-    volumes:
-      - ./out:/out:rw
-      - ./minio/bin/upload.sh:/upload.sh:ro
-    depends_on:
-      - minio-livekit
-    profiles:
-      - tools
-
 volumes:
   redisdata:
   map-storage-data:

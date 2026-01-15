@@ -48,9 +48,4 @@ lk-egress-start:
 lk-egress-stop:
 	@npx dotenvx run -- ./egress/bin/stop.sh $(P)
 
-# MinIO Client
-
-mc-upload:
-	@npx dotenvx run -- docker compose run --rm mc-upload
-
-.PHONY: up up-f stop restart logs ps encrypt decrypt wa-upload lk-room-list lk-egress-list lk-egress-start lk-egress-stop mc-upload
+.PHONY: up up-f stop restart logs ps encrypt decrypt wa-upload lk-room-list lk-egress-list lk-egress-start lk-egress-stop

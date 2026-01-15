@@ -11,3 +11,15 @@ redis:
   username: ""
   password: ""
   db: 2
+
+cpu_cost:
+  room_composite_cpu_cost: 2.0
+  web_cpu_cost: 2.0
+
+file_output:
+  s3:
+    region: ${MINIO_REGION}
+    access_key: ${MINIO_ACCESS_KEY}
+    secret: ${MINIO_SECRET_KEY}
+    bucket: ${MINIO_BUCKET}
+    endpoint: http://minio-livekit:9000

@@ -5,6 +5,11 @@ set -eu
 : "${LIVEKIT_API_KEY:?Error: LIVEKIT_API_KEY is not set}"
 : "${LIVEKIT_API_SECRET:?Error: LIVEKIT_API_SECRET is not set}"
 
+if command -v pulseaudio >/dev/null 2>&1; then
+  pulseaudio --check >/dev/null 2>&1 || \
+    pulseaudio --daemonize=yes --exit-idle-time=-1 --log-level=error
+fi
+
 if [ ! -f /tmp/egress-config.yaml ] || [ /etc/egress/egress-config.template.yaml -nt /tmp/egress-config.yaml ]; then
     echo "Generating egress-config.yaml from egress-config.template.yaml..."
     sed \
