@@ -17,11 +17,12 @@ START_TS=$(date +%s.%3N)
 if lk egress list --url "$LIVEKIT_URL" --json \
   | jq -e --arg room "$ROOM_ID" '
       any(
-        .type=="room_composite"
-        and .source==$room
-        and (.status=="EGRESS_ACTIVE" or .status=="EGRESS_STARTING")
+        (.room_name == $room)
+        and (.Request.RoomComposite != null)
+        and (.status == 1 or .status == 2)
       )
     ' >/dev/null; then
+  echo "WARN: already running for room: $ROOM_ID"
   exit 0
 fi
 
