@@ -10,6 +10,10 @@ redis:
   db: 2
 keys:
   "${LIVEKIT_API_KEY}": "${LIVEKIT_API_SECRET}"
+webhook:
+  api_key: "${LIVEKIT_API_KEY}"
+  urls:
+    - "http://webhook:8080/webhook"
 logging:
   json: false
   level: info

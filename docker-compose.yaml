@@ -335,6 +335,31 @@ services:
         condition: service_started
     restart: ${RESTART_POLICY}
 
+  webhook:
+    build:
+      context: .
+      dockerfile: webhook/Dockerfile
+    environment:
+      - LIVEKIT_API_KEY
+      - LIVEKIT_API_SECRET
+      - MINIO_REGION
+      - MINIO_ACCESS_KEY
+      - MINIO_SECRET_KEY
+      - MINIO_BUCKET
+      - LIVEKIT_URL=http://livekit:7880
+      - MINIO_URL=http://minio-livekit:9000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      livekit:
+        condition: service_started
+      egress:
+        condition: service_started
+    restart: ${RESTART_POLICY}
+
   egress:
     image: livekit/egress:v1.9.0
     entrypoint: ["/entrypoint.sh"]

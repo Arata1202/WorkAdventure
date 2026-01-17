@@ -10,8 +10,8 @@ set -euo pipefail
 ROOM_ID="${1:-}"
 [ -z "$ROOM_ID" ] && { echo "usage: $0 <ROOM_ID>"; exit 1; }
 
-LIVEKIT_URL="http://localhost:7880"
-MINIO_URL="http://minio-livekit:9000"
+LIVEKIT_URL="${LIVEKIT_URL:-http://localhost:7880}"
+MINIO_URL="${MINIO_URL:-http://minio-livekit:9000}"
 START_TS=$(date +%s.%3N)
 
 if lk egress list --url "$LIVEKIT_URL" --json 2>/dev/null \
