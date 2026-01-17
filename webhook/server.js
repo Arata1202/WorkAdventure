@@ -74,7 +74,7 @@ const server = http.createServer(async (req, res) => {
       return json(res, 401, { error: 'unauthorized' });
     }
 
-    if (event?.event !== 'track_published') {
+    if (event?.event !== 'room_started') {
       return json(res, 200, { ok: true });
     }
 
