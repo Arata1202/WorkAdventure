@@ -14,7 +14,7 @@ LIVEKIT_URL="http://localhost:7880"
 MINIO_URL="http://minio-livekit:9000"
 START_TS=$(date +%s.%3N)
 
-if lk egress list --url "$LIVEKIT_URL" --json \
+if lk egress list --url "$LIVEKIT_URL" --json 2>/dev/null \
   | jq -e --arg room "$ROOM_ID" '
       any(
         (.room_name == $room)
@@ -22,13 +22,16 @@ if lk egress list --url "$LIVEKIT_URL" --json \
         and (.status == 1 or .status == 2)
       )
     ' >/dev/null; then
-  echo "WARN: already running for room: $ROOM_ID"
+  echo "WARN: already running for room: $ROOM_ID" >&2
   exit 0
 fi
 
 BASE_PATH="${START_TS}__${ROOM_ID}"
 EGRESS_JSON="/tmp/${BASE_PATH}.json"
-FILENAME="${BASE_PATH}.ogg"
+ROOM_NAME=$(echo "$ROOM_ID" | sed -E 's/.*-([^-]+)$/\1/')
+DATE=$(date +%Y-%m-%d)
+TIME=$(date +%H-%M-%S)
+FILENAME="${DATE}/${ROOM_NAME}/${TIME}.ogg"
 
 trap 'rm -f "$EGRESS_JSON"' EXIT
 
