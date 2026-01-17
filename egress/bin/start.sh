@@ -15,6 +15,7 @@ MINIO_URL="${MINIO_URL:-http://minio-livekit:9000}"
 START_TS=$(date +%s.%3N)
 
 if lk egress list --url "$LIVEKIT_URL" --json 2>/dev/null \
+  | sed -n '/^\[/,$p' \
   | jq -e --arg room "$ROOM_ID" '
       any(
         (.room_name == $room)
