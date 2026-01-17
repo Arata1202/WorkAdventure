@@ -339,6 +339,8 @@ services:
     build:
       context: .
       dockerfile: webhook/Dockerfile
+    volumes:
+      - ./egress/bin/start.sh:/app/start.sh:ro
     environment:
       - LIVEKIT_API_KEY
       - LIVEKIT_API_SECRET
