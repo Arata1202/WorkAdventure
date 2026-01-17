@@ -1,5 +1,8 @@
 P ?=
 
+init:
+	@npm install && cd maps && npm install
+
 # Docker
 
 up:
@@ -29,7 +32,15 @@ encrypt:
 decrypt:
 	@npx dotenvx decrypt
 
+# Terraform
+
+apply:
+	@cd terraform && terraform apply
+
 # WorkAdventure
+
+wa-dev:
+	@cd maps && npx dotenvx run -- npm run dev
 
 wa-upload:
 	@cd maps && npx dotenvx run -- npm run upload
@@ -45,4 +56,4 @@ lk-egress-list:
 lk-egress-start:
 	@npx dotenvx run -- ./egress/bin/start.sh $(P)
 
-.PHONY: up up-f stop restart logs ps encrypt decrypt wa-upload lk-room-list lk-egress-list lk-egress-start
+.PHONY: init up up-f stop restart logs ps encrypt decrypt apply wa-dev wa-upload lk-room-list lk-egress-list lk-egress-start

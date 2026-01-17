@@ -17,7 +17,7 @@ git clone git@github.com:Arata1202/WorkAdventure.git
 cd WorkAdventure
 
 # Install dependencies
-npm install
+make init
 ```
 
 ### Create Resources on AWS with Terraform
@@ -157,16 +157,13 @@ cd WorkAdventure/maps
 # Prepare .env file
 cp .env.example .env
 
-# Install dependencies
-npm install
-
 # Preview the map locally
-npm run dev
+make wa-dev
 
 # Edit the map file (office.tmj) using Tiled
 
 # Upload the map
-npm run upload
+make wa-upload
 
 Please enter your Map storage URL: https://<YOUR_FQDN>/map-storage/
 Please enter your API Key: <MAP_STORAGE_AUTHENTICATION_TOKEN>
