@@ -38,6 +38,34 @@ terraform plan
 terraform apply
 ```
 
+### Configure SSH Access
+
+```bash
+# Local
+
+# Move repository
+cd WorkAdventure
+
+# Prepare and edit .envrc file
+cp .envrc.example .envrc
+vi .envrc
+
+# Allow direnv to load variables
+direnv allow .
+
+# Connect to EC2 via SSH
+make ssh
+
+# Sync Repository to EC2
+make rsync
+```
+
+```env
+# Required
+export EC2_SSH_KEY_PATH=<EC2_SSH_KEY_PATH>
+export EC2_PUBLIC_IPV4_ADDRESS=<EC2_PUBLIC_IPV4_ADDRESS>
+```
+
 ### Set Up WorkAdventure Server
 
 [Self-hosting WorkAdventure using Docker Compose](https://github.com/workadventure/workadventure/blob/develop/contrib/docker/README.md)

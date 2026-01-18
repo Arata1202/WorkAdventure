@@ -3,6 +3,29 @@ P ?=
 init:
 	@npm install && cd maps && npm install
 
+# SSH
+
+ssh:
+	@ssh -i $(EC2_SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new ubuntu@$(EC2_PUBLIC_IPV4_ADDRESS)
+
+rsync:
+	@set -e; \
+	echo ""; \
+	echo "== (review changes) =="; \
+	echo ""; \
+	rsync -avz --dry-run --itemize-changes --filter='merge .rsyncignore' -e "ssh -i $(EC2_SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new" ./ ubuntu@$(EC2_PUBLIC_IPV4_ADDRESS):~/WorkAdventure/; \
+	echo ""; \
+	printf "Proceed with rsync? [y/N] "; \
+	read ans; \
+	echo ""; \
+	case "$$ans" in \
+		y|Y|yes|YES) ;; \
+		*) echo "Aborted"; exit 1 ;; \
+	esac; \
+	echo "== (result) =="; \
+	echo ""; \
+	rsync -avz --filter='merge .rsyncignore' -e "ssh -i $(EC2_SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new" ./ ubuntu@$(EC2_PUBLIC_IPV4_ADDRESS):~/WorkAdventure/
+
 # Docker
 
 up:
@@ -56,4 +79,4 @@ lk-egress-list:
 lk-egress-start:
 	@npx dotenvx run -- ./egress/bin/start.sh $(P)
 
-.PHONY: init up up-f stop restart logs ps encrypt decrypt apply wa-dev wa-upload lk-room-list lk-egress-list lk-egress-start
+.PHONY: init ssh rsync up up-f stop restart logs ps encrypt decrypt apply wa-dev wa-upload lk-room-list lk-egress-list lk-egress-start

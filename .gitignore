@@ -3,6 +3,7 @@ node_modules/
 maps/.env
 .env.backup_*
 .env.keys
+.envrc
 variables.tf
 **/.terraform*
 *.tfstate
