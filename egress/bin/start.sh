@@ -21,7 +21,7 @@ if lk egress list --url "$LIVEKIT_URL" --json 2>/dev/null \
         and (.Request.RoomComposite != null)
         and (.status == 1 or .status == 2)
       )
-    ' >/dev/null; then
+    ' >/dev/null 2>/dev/null; then
   echo "WARN: already running for room: $ROOM_ID" >&2
   exit 0
 fi
