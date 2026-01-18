@@ -61,4 +61,38 @@ jq -n \
     }
   }' > "$EGRESS_JSON"
 
-lk egress start --type room-composite --url "$LIVEKIT_URL" "$EGRESS_JSON"
+MAX_RETRIES=5
+RETRY_DELAY_SECONDS="0.5"
+
+attempt=1
+delay="$RETRY_DELAY_SECONDS"
+while true; do
+  output=""
+  if output=$(lk egress start --type room-composite --url "$LIVEKIT_URL" "$EGRESS_JSON" 2>&1); then
+    echo "$output"
+    break
+  fi
+  rc=$?
+
+  if echo "$output" | grep -qiE 'twirp error unavailable|no response from servers|context deadline exceeded|timeout'; then
+    if [ "$attempt" -ge "$MAX_RETRIES" ]; then
+      echo "$output" >&2
+      exit "$rc"
+    fi
+
+    jitter_ms=$((RANDOM % 200))
+    jitter=$(awk -v ms="$jitter_ms" 'BEGIN{printf "%.3f", ms/1000}')
+    sleep_for=$(awk -v d="$delay" -v j="$jitter" 'BEGIN{printf "%.3f", d + j}')
+
+    echo "WARN: lk egress start failed (attempt ${attempt}/${MAX_RETRIES}) for room: ${ROOM_ID}; retrying in ${sleep_for}s" >&2
+    echo "$output" >&2
+    sleep "$sleep_for"
+
+    attempt=$((attempt + 1))
+    delay=$(awk -v d="$delay" 'BEGIN{d*=2; if(d>10)d=10; printf "%.3f", d}')
+    continue
+  fi
+
+  echo "$output" >&2
+  exit "$rc"
+done
