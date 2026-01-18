@@ -12,7 +12,6 @@ ROOM_ID="${1:-}"
 
 LIVEKIT_URL="${LIVEKIT_URL:-http://localhost:7880}"
 MINIO_URL="${MINIO_URL:-http://minio-livekit:9000}"
-START_TS=$(date +%s.%3N)
 
 if lk egress list --url "$LIVEKIT_URL" --json 2>/dev/null \
   | jq -e --arg room "$ROOM_ID" '
@@ -26,6 +25,20 @@ if lk egress list --url "$LIVEKIT_URL" --json 2>/dev/null \
   exit 0
 fi
 
+LOCK_FILE="/tmp/${ROOM_ID}.lock"
+RETRY_SEC=3
+
+exec 9>"$LOCK_FILE"
+if ! flock -n 9; then
+  echo "WARN: locked, retry once after ${RETRY_SEC}s: $ROOM_ID" >&2
+  sleep "$RETRY_SEC"
+  if ! flock -n 9; then
+    echo "WARN: still locked, giving up: $ROOM_ID" >&2
+    exit 0
+  fi
+fi
+
+START_TS=$(date +%s.%3N)
 BASE_PATH="${START_TS}__${ROOM_ID}"
 EGRESS_JSON="/tmp/${BASE_PATH}.json"
 ROOM_NAME=$(echo "$ROOM_ID" | sed -E 's/.*-([^-]+)$/\1/')
