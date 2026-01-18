@@ -15,21 +15,13 @@ MINIO_URL="${MINIO_URL:-http://minio-livekit:9000}"
 START_TS=$(date +%s.%3N)
 
 if lk egress list --url "$LIVEKIT_URL" --json 2>/dev/null \
-  | jq -Rns '
-      split("\n")
-      | map(fromjson?)
-      | map(select(. != null))
-      | first
-      | (if type=="array" then . else [] end)
-    ' \
   | jq -e --arg room "$ROOM_ID" '
       any(
         (.room_name == $room)
         and (.Request.RoomComposite != null)
         and (.status == 1 or .status == 2)
       )
-    ' >/dev/null
-then
+    ' >/dev/null; then
   echo "WARN: already running for room: $ROOM_ID" >&2
   exit 0
 fi
