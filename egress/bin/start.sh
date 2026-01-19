@@ -8,9 +8,12 @@ set -euo pipefail
 : "${MINIO_BUCKET:?Error: MINIO_BUCKET is not set}"
 
 ROOM_ID="${1:-}"
-[ -z "$ROOM_ID" ] && { echo "usage: $0 <ROOM_ID>"; exit 1; }
 TRACK_ID="${2:-}"
-[ -z "$TRACK_ID" ] && { echo "usage: $0 <TRACK_ID>"; exit 1; }
+MEETING_DATE="${3:-$(date +%Y-%m-%d)}"
+MEETING_TIME="${4:-$(date +%H-%M-%S)}"
+TRACK_TIME="${5:-$(date +%H-%M-%S)}"
+SPEAKER_NAME="${6:-unknown_speaker}"
+[ -z "$ROOM_ID" ] || [ -z "$TRACK_ID" ] && { echo "usage: $0 <ROOM_ID> <TRACK_ID> [MEETING_DATE] [MEETING_TIME] [TRACK_TIME] [SPEAKER_NAME]"; exit 1; }
 
 LIVEKIT_URL="${LIVEKIT_URL:-http://localhost:7880}"
 MINIO_URL="${MINIO_URL:-http://minio-livekit:9000}"
@@ -35,10 +38,23 @@ fi
 
 BASE_PATH="${START_TS}_${ROOM_ID}"
 EGRESS_JSON="/tmp/${BASE_PATH}.json"
-ROOM_NAME=$(echo "$ROOM_ID" | sed -E 's/.*-([^-]+)$/\1/')
-DATE=$(date +%Y-%m-%d)
-TIME=$(date +%H-%M-%S)
-FILENAME="${DATE}/${ROOM_NAME}/${TIME}/${TRACK_ID}.ogg"
+SAFE_ROOM_ID=$(printf '%s' "$ROOM_ID" \
+  | tr -d '\000' \
+  | sed -E 's%/%_%g' \
+  | sed -E 's/[[:cntrl:]]+/_/g' \
+  | sed -E 's/^_+|_+$//g')
+if [ -z "$SAFE_ROOM_ID" ]; then
+  SAFE_ROOM_ID="unknown_room"
+fi
+SAFE_SPEAKER_NAME=$(printf '%s' "$SPEAKER_NAME" \
+  | tr -d '\000' \
+  | sed -E 's%/%_%g' \
+  | sed -E 's/[[:cntrl:]]+/_/g' \
+  | sed -E 's/^_+|_+$//g')
+if [ -z "$SAFE_SPEAKER_NAME" ]; then
+  SAFE_SPEAKER_NAME="unknown_speaker"
+fi
+FILENAME="${MEETING_DATE}/${SAFE_ROOM_ID}/${MEETING_TIME}/${SAFE_SPEAKER_NAME}/${TRACK_TIME}_${TRACK_ID}.ogg"
 
 trap 'rm -f "$EGRESS_JSON"' EXIT
 

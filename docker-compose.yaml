@@ -341,6 +341,7 @@ services:
       dockerfile: webhook/Dockerfile
     volumes:
       - ./egress/bin/start.sh:/app/start.sh:ro
+      - ./egress/logs:/logs
     environment:
       - LIVEKIT_API_KEY
       - LIVEKIT_API_SECRET
@@ -350,6 +351,7 @@ services:
       - MINIO_BUCKET
       - LIVEKIT_URL=http://livekit:7880
       - MINIO_URL=http://minio-livekit:9000
+      - META_JSONL_PATH=/logs/meta.jsonl
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
       interval: 5s

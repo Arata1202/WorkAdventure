@@ -1,12 +1,22 @@
 import http from 'node:http';
 import { spawn } from 'node:child_process';
-import { WebhookReceiver } from 'livekit-server-sdk';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { RoomServiceClient, WebhookReceiver } from 'livekit-server-sdk';
 
 const apiKey = process.env.LIVEKIT_API_KEY;
-const apiSecret = process.env.LIVEKIT_API_SECRET;
 if (!apiKey) throw new Error('Error: LIVEKIT_API_KEY is not set');
+
+const apiSecret = process.env.LIVEKIT_API_SECRET;
 if (!apiSecret) throw new Error('Error: LIVEKIT_API_SECRET is not set');
 
+const metaJsonlPath = process.env.META_JSONL_PATH;
+if (!metaJsonlPath) throw new Error('Error: META_JSONL_PATH is not set');
+
+const livekitHost = process.env.LIVEKIT_URL;
+if (!livekitHost) throw new Error('Error: LIVEKIT_URL is not set');
+
+const roomService = new RoomServiceClient(livekitHost, apiKey, apiSecret);
 const receiver = new WebhookReceiver(apiKey, apiSecret);
 
 function readBody(req) {
@@ -27,17 +37,40 @@ function json(res, statusCode, payload) {
   res.end(body);
 }
 
-function spawnStart(roomName, trackId) {
-  const child = spawn('/bin/bash', ['/app/start.sh', roomName, trackId], {
-    env: process.env,
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
+function spawnStart(
+  roomName,
+  trackId,
+  meetingDate,
+  meetingTime,
+  trackTime,
+  speakerName
+) {
+  const child = spawn(
+    '/bin/bash',
+    [
+      '/app/start.sh',
+      roomName,
+      trackId,
+      meetingDate,
+      meetingTime,
+      trackTime,
+      speakerName,
+    ],
+    {
+      env: process.env,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    }
+  );
 
   child.stdout.on('data', (d) =>
-    process.stdout.write(`[start.sh:${roomName}:${trackId}] ${d}`)
+    process.stdout.write(
+      `[start.sh:${roomName}:${trackId}:${meetingTime}:${trackTime}:${speakerName}] ${d}`
+    )
   );
   child.stderr.on('data', (d) =>
-    process.stderr.write(`[start.sh:${roomName}:${trackId}] ${d}`)
+    process.stderr.write(
+      `[start.sh:${roomName}:${trackId}:${meetingTime}:${trackTime}:${speakerName}] ${d}`
+    )
   );
 
   return { spawned: true };
@@ -51,6 +84,135 @@ function normalizeTrackType(type) {
     if (type === 2) return 'data';
   }
   return '';
+}
+
+const ROOM_START_TTL_MS = 1000 * 60 * 60 * 24;
+const roomStartTimes = new Map();
+const NAME_CACHE_TTL_MS = 1000 * 60 * 30;
+const participantNameCache = new Map();
+
+function toDateFromTimestamp(value) {
+  if (value == null) return null;
+  if (typeof value === 'string') {
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+    const numeric = Number(value);
+    if (Number.isFinite(numeric)) return toDateFromTimestamp(numeric);
+    return null;
+  }
+  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
+  let ms;
+  if (value >= 1e14) {
+    ms = Math.round(value / 1e6);
+  } else if (value >= 1e11) {
+    ms = Math.round(value);
+  } else if (value >= 1e9) {
+    ms = Math.round(value * 1000);
+  } else {
+    return null;
+  }
+  return new Date(ms);
+}
+
+function formatDateLocal(date) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+  const year = parts.find((p) => p.type === 'year')?.value ?? '0000';
+  const month = parts.find((p) => p.type === 'month')?.value ?? '00';
+  const day = parts.find((p) => p.type === 'day')?.value ?? '00';
+  return `${year}-${month}-${day}`;
+}
+
+function formatTimeLocal(date) {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Tokyo',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).formatToParts(date);
+  const hours = parts.find((p) => p.type === 'hour')?.value ?? '00';
+  const minutes = parts.find((p) => p.type === 'minute')?.value ?? '00';
+  const seconds = parts.find((p) => p.type === 'second')?.value ?? '00';
+  return `${hours}-${minutes}-${seconds}`;
+}
+
+function trackRoomStart(roomName, startedAt) {
+  if (!roomName) return;
+  const now = Date.now();
+  roomStartTimes.set(roomName, { startedAt, updatedAt: now });
+  for (const [name, entry] of roomStartTimes) {
+    if (now - entry.updatedAt > ROOM_START_TTL_MS) {
+      roomStartTimes.delete(name);
+    }
+  }
+}
+
+async function appendRecord(entry) {
+  try {
+    await fs.mkdir(path.dirname(metaJsonlPath), { recursive: true });
+    await fs.appendFile(metaJsonlPath, `${JSON.stringify(entry)}\n`);
+  } catch (err) {
+    process.stderr.write(
+      `[records] failed to append ${metaJsonlPath}: ${err}\n`
+    );
+  }
+}
+
+async function resolveParticipantName(roomName, participantIdentity, trackId) {
+  const cacheKey = `${roomName || ''}::${participantIdentity || ''}`;
+  const cached = participantNameCache.get(cacheKey);
+  if (cached && Date.now() - cached.updatedAt < NAME_CACHE_TTL_MS) {
+    return cached.name;
+  }
+  try {
+    const participants = await roomService.listParticipants(roomName);
+    if (participantIdentity) {
+      const byIdentity = participants.find(
+        (p) => p.identity === participantIdentity
+      );
+      if (byIdentity) {
+        const resolved = byIdentity.name || byIdentity.identity || null;
+        if (resolved) {
+          participantNameCache.set(cacheKey, {
+            name: resolved,
+            updatedAt: Date.now(),
+          });
+        }
+        return resolved;
+      }
+    }
+    if (trackId) {
+      const byTrack = participants.find((p) =>
+        (p.tracks ?? []).some(
+          (t) =>
+            t.sid === trackId ||
+            t.trackSid === trackId ||
+            t.track_id === trackId ||
+            t.trackId === trackId
+        )
+      );
+      if (byTrack) {
+        const resolved = byTrack.name || byTrack.identity || null;
+        if (resolved) {
+          participantNameCache.set(
+            `${roomName || ''}::${byTrack.identity || ''}`,
+            { name: resolved, updatedAt: Date.now() }
+          );
+        }
+        return resolved;
+      }
+    }
+  } catch (err) {
+    process.stderr.write(
+      `[records] failed to resolve participant name: ${err}\n`
+    );
+  }
+  return null;
 }
 
 const server = http.createServer(async (req, res) => {
@@ -84,11 +246,22 @@ const server = http.createServer(async (req, res) => {
       return json(res, 401, { error: 'unauthorized' });
     }
 
+    const roomName = event?.room?.name;
+    if (event?.event === 'room_started') {
+      const startedAt =
+        toDateFromTimestamp(event?.room?.startedAt) ||
+        toDateFromTimestamp(event?.room?.createdAt) ||
+        toDateFromTimestamp(event?.room?.creationTime) ||
+        toDateFromTimestamp(event?.timestamp) ||
+        new Date();
+      trackRoomStart(roomName, startedAt);
+      return json(res, 200, { ok: true });
+    }
+
     if (event?.event !== 'track_published') {
       return json(res, 200, { ok: true });
     }
 
-    const roomName = event?.room?.name;
     const track = event?.track;
     const trackId = track?.sid;
     const trackType = normalizeTrackType(track?.type);
@@ -102,9 +275,65 @@ const server = http.createServer(async (req, res) => {
       return json(res, 200, { ok: true });
     }
 
+    const now = new Date();
+    const roomStartEntry = roomStartTimes.get(roomName);
+    const meetingStart =
+      roomStartEntry?.startedAt ||
+      toDateFromTimestamp(event?.room?.startedAt) ||
+      toDateFromTimestamp(event?.room?.createdAt) ||
+      toDateFromTimestamp(event?.room?.creationTime) ||
+      now;
+    const trackStart =
+      toDateFromTimestamp(track?.startedAt) ||
+      toDateFromTimestamp(track?.publishedAt) ||
+      toDateFromTimestamp(event?.timestamp) ||
+      now;
+
+    const meetingDate = formatDateLocal(meetingStart);
+    const meetingTime = formatTimeLocal(meetingStart);
+    const trackTime = formatTimeLocal(trackStart);
+    const participantIdentity = event?.participant?.identity ?? null;
+    let participantName =
+      (typeof event?.participant?.name === 'string' &&
+        event.participant.name) ||
+      null;
+    if (!participantName) {
+      participantName = await resolveParticipantName(
+        roomName,
+        participantIdentity,
+        trackId
+      );
+    }
+    if (!participantName) {
+      participantName = participantIdentity || 'unknown';
+    }
+
+    const started = spawnStart(
+      roomName,
+      trackId,
+      meetingDate,
+      meetingTime,
+      trackTime,
+      participantName
+    );
+
+    await appendRecord({
+      room: {
+        name: roomName,
+      },
+      participant: {
+        name: participantName,
+      },
+      track: {
+        sid: trackId,
+      },
+      meeting_started_at: meetingStart.toISOString(),
+      track_started_at: trackStart.toISOString(),
+    });
+
     return json(res, 200, {
       ok: true,
-      started: spawnStart(roomName, trackId),
+      started,
     });
   } catch {
     return json(res, 500, { error: 'internal_server_error' });

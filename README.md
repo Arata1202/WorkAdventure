@@ -150,6 +150,10 @@ CARDS_ENABLED=false
 TLDRAW_ENABLED=false
 ```
 
+### Notes
+
+- Ensure that meeting room names and user display names are unique.
+
 ### Upload a Map Edited with Tiled
 
 [Upload your Map to WorkAdventure](https://docs.workadventu.re/map-building/tiled-editor/publish/wa-hosted/)

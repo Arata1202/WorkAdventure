@@ -53,6 +53,9 @@ rsync:
 	echo ""; \
 	rsync -avz --filter='merge .rsyncignore' -e "ssh -i $(EC2_SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new" ./ ubuntu@$(EC2_PUBLIC_IPV4_ADDRESS):~/WorkAdventure/
 
+meta:
+	@ssh -i $(EC2_SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new ubuntu@$(EC2_PUBLIC_IPV4_ADDRESS) "cat ~/WorkAdventure/egress/logs/meta.jsonl"
+
 # Docker
 
 up:
@@ -117,4 +120,4 @@ lk-egress-start:
 	$(REQUIRED_P)
 	@npx dotenvx run -- ./egress/bin/start.sh $(P)
 
-.PHONY: init ssh rsync up up-f up-b stop restart logs ps encrypt decrypt apply wa-dev wa-upload lk-room-list lk-egress-list lk-egress-start
+.PHONY: init ssh rsync meta up up-f up-b stop restart logs ps encrypt decrypt apply wa-dev wa-upload lk-room-list lk-egress-list lk-egress-start
