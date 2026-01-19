@@ -50,6 +50,7 @@ jq -n \
     audio_only: true,
     file: {
       filepath: $filename,
+      disable_manifest: true,
       s3: {
         region: $region,
         access_key: $access_key,
