@@ -9,6 +9,8 @@ set -euo pipefail
 
 ROOM_ID="${1:-}"
 [ -z "$ROOM_ID" ] && { echo "usage: $0 <ROOM_ID>"; exit 1; }
+TRACK_ID="${2:-}"
+[ -z "$TRACK_ID" ] && { echo "usage: $0 <TRACK_ID>"; exit 1; }
 
 LIVEKIT_URL="${LIVEKIT_URL:-http://localhost:7880}"
 MINIO_URL="${MINIO_URL:-http://minio-livekit:9000}"
@@ -16,15 +18,18 @@ START_TS=$(date +%s.%3N)
 
 if lk egress list --url "$LIVEKIT_URL" --json 2>/dev/null \
   | sed -n '/^[\[{n]/,$p' \
-  | jq -e --arg room "$ROOM_ID" '
+  | jq -e --arg room "$ROOM_ID" --arg track "$TRACK_ID" '
       (. // [])
       | any(
           (.room_name == $room)
-          and (.Request.RoomComposite != null)
+          and (.Request.Track != null)
+          and (
+            (.Request.Track.track_id? // .Request.Track.trackId? // .Request.Track.TrackId? // .Request.Track.track_sid? // .Request.Track.trackSid? // .Request.Track.TrackSid? // "") == $track
+          )
           and (.status == 1 or .status == 2)
         )
     ' >/dev/null; then
-  echo "WARN: already running for room: $ROOM_ID" >&2
+  echo "WARN: already running for room: $ROOM_ID track: $TRACK_ID" >&2
   exit 0
 fi
 
@@ -33,12 +38,13 @@ EGRESS_JSON="/tmp/${BASE_PATH}.json"
 ROOM_NAME=$(echo "$ROOM_ID" | sed -E 's/.*-([^-]+)$/\1/')
 DATE=$(date +%Y-%m-%d)
 TIME=$(date +%H-%M-%S)
-FILENAME="${DATE}/${ROOM_NAME}/${TIME}.ogg"
+FILENAME="${DATE}/${ROOM_NAME}/${TIME}/${TRACK_ID}.ogg"
 
 trap 'rm -f "$EGRESS_JSON"' EXIT
 
 jq -n \
   --arg room "$ROOM_ID" \
+  --arg track_id "$TRACK_ID" \
   --arg filename "$FILENAME" \
   --arg region "$MINIO_REGION" \
   --arg access_key "$MINIO_ACCESS_KEY" \
@@ -47,7 +53,7 @@ jq -n \
   --arg endpoint "$MINIO_URL" \
   '{
     room_name: $room,
-    audio_only: true,
+    track_id: $track_id,
     file: {
       filepath: $filename,
       disable_manifest: true,
@@ -69,7 +75,7 @@ attempt=1
 delay="$RETRY_DELAY_SECONDS"
 while true; do
   output=""
-  if output=$(lk egress start --type room-composite --url "$LIVEKIT_URL" "$EGRESS_JSON" 2>&1); then
+  if output=$(lk egress start --type track --url "$LIVEKIT_URL" "$EGRESS_JSON" 2>&1); then
     echo "$output"
     break
   fi

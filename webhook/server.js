@@ -27,20 +27,30 @@ function json(res, statusCode, payload) {
   res.end(body);
 }
 
-function spawnStart(roomName) {
-  const child = spawn('/bin/bash', ['/app/start.sh', roomName], {
+function spawnStart(roomName, trackId) {
+  const child = spawn('/bin/bash', ['/app/start.sh', roomName, trackId], {
     env: process.env,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 
   child.stdout.on('data', (d) =>
-    process.stdout.write(`[start.sh:${roomName}] ${d}`)
+    process.stdout.write(`[start.sh:${roomName}:${trackId}] ${d}`)
   );
   child.stderr.on('data', (d) =>
-    process.stderr.write(`[start.sh:${roomName}] ${d}`)
+    process.stderr.write(`[start.sh:${roomName}:${trackId}] ${d}`)
   );
 
   return { spawned: true };
+}
+
+function normalizeTrackType(type) {
+  if (typeof type === 'string') return type.toLowerCase();
+  if (typeof type === 'number') {
+    if (type === 0) return 'audio';
+    if (type === 1) return 'video';
+    if (type === 2) return 'data';
+  }
+  return '';
 }
 
 const server = http.createServer(async (req, res) => {
@@ -74,16 +84,28 @@ const server = http.createServer(async (req, res) => {
       return json(res, 401, { error: 'unauthorized' });
     }
 
-    if (event?.event !== 'room_started') {
+    if (event?.event !== 'track_published') {
       return json(res, 200, { ok: true });
     }
 
     const roomName = event?.room?.name;
+    const track = event?.track;
+    const trackId = track?.sid;
+    const trackType = normalizeTrackType(track?.type);
     if (typeof roomName !== 'string' || roomName.length === 0) {
       return json(res, 400, { error: 'bad_request' });
     }
+    if (typeof trackId !== 'string' || trackId.length === 0) {
+      return json(res, 400, { error: 'bad_request' });
+    }
+    if (trackType !== 'audio') {
+      return json(res, 200, { ok: true });
+    }
 
-    return json(res, 200, { ok: true, started: spawnStart(roomName) });
+    return json(res, 200, {
+      ok: true,
+      started: spawnStart(roomName, trackId),
+    });
   } catch {
     return json(res, 500, { error: 'internal_server_error' });
   }
