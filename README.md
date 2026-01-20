@@ -7,6 +7,10 @@
 
 ## Getting Started
 
+### Notes
+
+- Ensure that meeting room names and user display names are unique.
+
 ### Prepare Repository
 
 ```bash
@@ -68,7 +72,8 @@ export EC2_PUBLIC_IPV4_ADDRESS=<EC2_PUBLIC_IPV4_ADDRESS>
 
 ### Set Up WorkAdventure Server
 
-[Self-hosting WorkAdventure using Docker Compose](https://github.com/workadventure/workadventure/blob/develop/contrib/docker/README.md)
+- https://github.com/workadventure/workadventure/blob/develop/contrib/docker/README.md
+- https://github.com/workadventure/workadventure/releases
 
 ```bash
 # EC2
@@ -101,7 +106,7 @@ make up
 # Required
 SECRET_KEY=<UNIQUE_RANDOM_64_HEX>
 DOMAIN=<YOUR_FQDN>
-VERSION=v1.27.10
+VERSION=<VERSION>
 MAP_STORAGE_AUTHENTICATION_TOKEN=<UNIQUE_RANDOM_64_HEX>
 MAP_STORAGE_AUTHENTICATION_USER=admin
 MAP_STORAGE_AUTHENTICATION_PASSWORD=<UNIQUE_RANDOM_32_HEX>
@@ -139,46 +144,11 @@ ACME_EMAIL=<EMAIL_ADDRESS>
 ENABLE_TELEMETRY=true
 SECURITY_EMAIL=<EMAIL_ADDRESS>
 FEATURE_FLAG_BROADCAST_AREAS=true
-YOUTUBE_ENABLED=false
-GOOGLE_DRIVE_ENABLED=false
-GOOGLE_DOCS_ENABLED=false
-GOOGLE_SHEETS_ENABLED=false
-GOOGLE_SLIDES_ENABLED=false
-ERASER_ENABLED=false
-EXCALIDRAW_ENABLED=false
-CARDS_ENABLED=false
-TLDRAW_ENABLED=false
 ```
-
-### Notes
-
-- Ensure that meeting room names and user display names are unique.
 
 ### Upload a Map Edited with Tiled
 
-[Upload your Map to WorkAdventure](https://docs.workadventu.re/map-building/tiled-editor/publish/wa-hosted/)
-
-```bash
-# EC2
-
-# Move repository
-cd WorkAdventure
-
-# Edit .env file
-make decrypt
-vi .env
-make encrypt
-
-# Restart server
-make restart
-```
-
-```env
-# Required
-MAP_STORAGE_ENABLE_BEARER_AUTHENTICATION=true
-```
-
-[map-starter-kit](https://github.com/workadventure/map-starter-kit)
+- https://docs.workadventu.re/map-building/tiled-editor/publish/wa-hosted
 
 ```bash
 # Local
@@ -311,7 +281,6 @@ LIVEKIT_API_SECRET=<UNIQUE_RANDOM_64_HEX>
 
 # Optional
 MAX_PER_GROUP=<NUMBER>
-MAX_USERS_FOR_WEBRTC=<NUMBER>
 ```
 
 1. Add an A record in Route 53 to point your domain to the EC2 public IP
