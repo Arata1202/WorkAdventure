@@ -1,4 +1,4 @@
-P ?=
+DR := npx dotenvx run --
 
 define REQUIRED_P
 	@set -e; \
@@ -27,13 +27,18 @@ define OPTIONAL_P
 	fi
 endef
 
-init:
-	@npm install && cd maps && npm install
-
 # SSH
 
+SSH := ssh -i $(EC2_SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new ubuntu@$(EC2_PUBLIC_IPV4_ADDRESS)
+
 ssh:
-	@ssh -i $(EC2_SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new ubuntu@$(EC2_PUBLIC_IPV4_ADDRESS)
+	@$(SSH)
+
+ssh-git-pull:
+	@$(SSH) "cd ~/WorkAdventure && git pull"
+
+ssh-cat-meta:
+	@$(SSH) "cat ~/WorkAdventure/egress/logs/meta.jsonl"
 
 rsync:
 	@set -e; \
@@ -53,39 +58,38 @@ rsync:
 	echo ""; \
 	rsync -avz --filter='merge .rsyncignore' -e "ssh -i $(EC2_SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new" ./ ubuntu@$(EC2_PUBLIC_IPV4_ADDRESS):~/WorkAdventure/
 
-meta:
-	@ssh -i $(EC2_SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new ubuntu@$(EC2_PUBLIC_IPV4_ADDRESS) "cat ~/WorkAdventure/egress/logs/meta.jsonl"
-
 # Docker
+
+DC:=docker compose
 
 up:
 	$(OPTIONAL_P)
-	@npx dotenvx run -- docker compose up -d $(P)
+	@${DR} ${DC} up -d $(P)
 
 up-f:
 	$(OPTIONAL_P)
-	@npx dotenvx run -- docker compose up -d --force-recreate $(P)
+	@${DR} ${DC} up -d --force-recreate $(P)
 
 up-b:
 	$(OPTIONAL_P)
-	@npx dotenvx run -- docker compose up -d --build $(P)
+	@${DR} ${DC} up -d --build $(P)
 
 stop:
 	$(OPTIONAL_P)
-	@npx dotenvx run -- docker compose stop $(P)
+	@${DR} ${DC} stop $(P)
 
 restart:
 	$(OPTIONAL_P)
-	@npx dotenvx run -- docker compose stop $(P)
-	@npx dotenvx run -- docker compose up -d $(P)
+	@${DR} ${DC} stop $(P)
+	@${DR} ${DC} up -d $(P)
 
 logs:
 	$(OPTIONAL_P)
-	@npx dotenvx run -- docker compose logs -f $(P)
+	@${DR} ${DC} logs -f $(P)
 
 ps:
 	$(OPTIONAL_P)
-	@npx dotenvx run -- docker compose ps -a $(P)
+	@${DR} ${DC} ps -a $(P)
 
 # Dotenvx
 
@@ -102,25 +106,28 @@ apply:
 
 # WorkAdventure
 
+wa-init:
+	@npm install && cd maps && npm install
+
 wa-update:
 	@./scripts/wa-update.sh
 
 wa-dev:
-	@cd maps && npx dotenvx run -- npm run dev
+	@cd maps && ${DR} npm run dev
 
 wa-upload:
-	@cd maps && npx dotenvx run -- npm run upload
+	@cd maps && ${DR} npm run upload
 
 # LiveKit
 
 lk-room-list:
-	@npx dotenvx run -- lk room list --url http://localhost:7880
+	@${DR} lk room list --url http://localhost:7880
 
 lk-egress-list:
-	@npx dotenvx run -- lk egress list --url http://localhost:7880
+	@${DR} lk egress list --url http://localhost:7880
 
 lk-egress-start:
 	$(REQUIRED_P)
-	@npx dotenvx run -- ./egress/bin/start.sh $(P)
+	@${DR} ./egress/bin/start.sh $(P)
 
-.PHONY: init ssh rsync meta up up-f up-b stop restart logs ps encrypt decrypt apply wa-update wa-dev wa-upload lk-room-list lk-egress-list lk-egress-start
+.PHONY: ssh ssh-git-pull ssh-cat-meta rsync up up-f up-b stop restart logs ps encrypt decrypt apply wa-init wa-update wa-dev wa-upload lk-room-list lk-egress-list lk-egress-start

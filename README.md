@@ -21,7 +21,7 @@ git clone git@github.com:Arata1202/WorkAdventure.git
 cd WorkAdventure
 
 # Install dependencies
-make init
+make wa-init
 ```
 
 ### Create Resources on AWS with Terraform
