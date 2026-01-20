@@ -1,0 +1,45 @@
+name: Check WA version
+
+on:
+  schedule:
+    - cron: "0 22 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Fetch latest release tag
+        id: latest
+        run: |
+          repo_url="https://github.com/workadventure/workadventure"
+          latest_url="$(curl -sL -o /dev/null -w '%{url_effective}' "${repo_url}/releases/latest")"
+          tag="${latest_url##*/}"
+          if [ -z "${tag}" ] || [ "${tag}" = "latest" ]; then
+            echo "ERROR: Failed to detect latest release tag from ${repo_url}" >&2
+            exit 1
+          fi
+          echo "tag=${tag}" >> "${GITHUB_OUTPUT}"
+
+      - name: Update version file
+        run: |
+          echo "${{ steps.latest.outputs.tag }}" > wa.version
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore: update WA version to ${{ steps.latest.outputs.tag }}"
+          title: "chore: update WA version to ${{ steps.latest.outputs.tag }}"
+          body: |
+            Update `wa.version` to the latest release.
+
+            Release: https://github.com/workadventure/workadventure/releases/tag/${{ steps.latest.outputs.tag }}
+          branch: "chore/update-wa-version"
+          delete-branch: true

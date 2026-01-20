@@ -102,6 +102,9 @@ apply:
 
 # WorkAdventure
 
+wa-update:
+	@./scripts/wa-update.sh
+
 wa-dev:
 	@cd maps && npx dotenvx run -- npm run dev
 
@@ -120,4 +123,4 @@ lk-egress-start:
 	$(REQUIRED_P)
 	@npx dotenvx run -- ./egress/bin/start.sh $(P)
 
-.PHONY: init ssh rsync meta up up-f up-b stop restart logs ps encrypt decrypt apply wa-dev wa-upload lk-room-list lk-egress-list lk-egress-start
+.PHONY: init ssh rsync meta up up-f up-b stop restart logs ps encrypt decrypt apply wa-update wa-dev wa-upload lk-room-list lk-egress-list lk-egress-start
