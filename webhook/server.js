@@ -115,30 +115,40 @@ function toDateFromTimestamp(value) {
 }
 
 function formatDateLocal(date) {
-  const parts = new Intl.DateTimeFormat('en-CA', {
+  const parts = new Intl.DateTimeFormat('ja-JP', {
     timeZone: 'Asia/Tokyo',
     year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+    month: 'numeric',
+    day: 'numeric',
   }).formatToParts(date);
-  const year = parts.find((p) => p.type === 'year')?.value ?? '0000';
-  const month = parts.find((p) => p.type === 'month')?.value ?? '00';
-  const day = parts.find((p) => p.type === 'day')?.value ?? '00';
-  return `${year}-${month}-${day}`;
+  const year = parts.find((p) => p.type === 'year')?.value ?? '0';
+  const month = parts.find((p) => p.type === 'month')?.value ?? '0';
+  const day = parts.find((p) => p.type === 'day')?.value ?? '0';
+  const monthNum = Number.parseInt(month, 10);
+  const dayNum = Number.parseInt(day, 10);
+  const safeMonth = Number.isFinite(monthNum) ? String(monthNum) : '0';
+  const safeDay = Number.isFinite(dayNum) ? String(dayNum) : '0';
+  return `${year}年${safeMonth}月${safeDay}日`;
 }
 
 function formatTimeLocal(date) {
-  const parts = new Intl.DateTimeFormat('en-GB', {
+  const parts = new Intl.DateTimeFormat('ja-JP', {
     timeZone: 'Asia/Tokyo',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
     hour12: false,
   }).formatToParts(date);
-  const hours = parts.find((p) => p.type === 'hour')?.value ?? '00';
-  const minutes = parts.find((p) => p.type === 'minute')?.value ?? '00';
-  const seconds = parts.find((p) => p.type === 'second')?.value ?? '00';
-  return `${hours}-${minutes}-${seconds}`;
+  const hours = parts.find((p) => p.type === 'hour')?.value ?? '0';
+  const minutes = parts.find((p) => p.type === 'minute')?.value ?? '0';
+  const seconds = parts.find((p) => p.type === 'second')?.value ?? '0';
+  const hoursNum = Number.parseInt(hours, 10);
+  const minutesNum = Number.parseInt(minutes, 10);
+  const secondsNum = Number.parseInt(seconds, 10);
+  const safeHours = Number.isFinite(hoursNum) ? String(hoursNum) : '0';
+  const safeMinutes = Number.isFinite(minutesNum) ? String(minutesNum) : '0';
+  const safeSeconds = Number.isFinite(secondsNum) ? String(secondsNum) : '0';
+  return `${safeHours}時${safeMinutes}分${safeSeconds}秒`;
 }
 
 function trackRoomStart(roomName, startedAt) {

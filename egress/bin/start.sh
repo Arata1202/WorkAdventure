@@ -9,9 +9,9 @@ set -euo pipefail
 
 ROOM_ID="${1:-}"
 TRACK_ID="${2:-}"
-MEETING_DATE="${3:-$(date +%Y-%m-%d)}"
-MEETING_TIME="${4:-$(date +%H-%M-%S)}"
-TRACK_TIME="${5:-$(date +%H-%M-%S)}"
+MEETING_DATE="${3:-$(date +%Y年%-m月%-d日)}"
+MEETING_TIME="${4:-$(date +%-H時%-M分%-S秒)}"
+TRACK_TIME="${5:-$(date +%-H時%-M分%-S秒)}"
 SPEAKER_NAME="${6:-unknown_speaker}"
 [ -z "$ROOM_ID" ] || [ -z "$TRACK_ID" ] && { echo "usage: $0 <ROOM_ID> <TRACK_ID> [MEETING_DATE] [MEETING_TIME] [TRACK_TIME] [SPEAKER_NAME]"; exit 1; }
 
@@ -38,7 +38,11 @@ fi
 
 BASE_PATH="${START_TS}_${ROOM_ID}"
 EGRESS_JSON="/tmp/${BASE_PATH}.json"
-SAFE_ROOM_ID=$(printf '%s' "$ROOM_ID" \
+ROOM_LABEL="$ROOM_ID"
+if [[ "$ROOM_ID" =~ ^localWorld\.[^-]+-(.+)$ ]]; then
+  ROOM_LABEL="${BASH_REMATCH[1]}"
+fi
+SAFE_ROOM_ID=$(printf '%s' "$ROOM_LABEL" \
   | tr -d '\000' \
   | sed -E 's%/%_%g' \
   | sed -E 's/[[:cntrl:]]+/_/g' \

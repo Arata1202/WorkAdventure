@@ -102,7 +102,7 @@ decrypt:
 # Terraform
 
 apply:
-	@cd terraform && terraform apply
+	@cd terraform/aws && terraform apply
 
 # WorkAdventure
 
