@@ -446,7 +446,8 @@ services:
    command:
      - turnserver
      - --log-file=stdout
-     - --external-ip=$$(detect-external-ip)
+     - --external-ip=${TURN_EXTERNAL_IP}
+     - --relay-ip=${TURN_RELAY_IP}
      - --listening-port=3478
      - --min-port=10000
      - --max-port=10010
@@ -459,9 +460,13 @@ services:
      - --static-auth-secret=${TURN_STATIC_AUTH_SECRET}
      - --cert=/letsencrypt/certs/certs/${DOMAIN}.crt
      - --pkey=/letsencrypt/certs/private/${DOMAIN}.key
+   ports:
+     - "3478:3478/tcp"
+     - "3478:3478/udp"
+     - "5349:5349/tcp"
+     - "10000-10010:10000-10010/udp"
    volumes:
      - ${DATA_DIR}/letsencrypt:/letsencrypt:ro
-   network_mode: host
    depends_on:
      - cert-dumper
    restart: ${RESTART_POLICY}
