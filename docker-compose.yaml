@@ -333,34 +333,34 @@ services:
         condition: service_started
     restart: ${RESTART_POLICY}
 
-  webhook:
-    build:
-      context: .
-      dockerfile: webhook/Dockerfile
-    volumes:
-      - ./egress/bin/start.sh:/app/start.sh:ro
-      - ./egress/logs:/logs
-    environment:
-      - LIVEKIT_API_KEY
-      - LIVEKIT_API_SECRET
-      - MINIO_REGION
-      - MINIO_ACCESS_KEY
-      - MINIO_SECRET_KEY
-      - MINIO_BUCKET
-      - LIVEKIT_URL=http://livekit:7880
-      - MINIO_URL=http://minio-livekit:9000
-      - META_JSONL_PATH=/logs/meta.jsonl
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
-      interval: 5s
-      timeout: 3s
-      retries: 3
-    depends_on:
-      livekit:
-        condition: service_started
-      egress:
-        condition: service_started
-    restart: ${RESTART_POLICY}
+  # webhook:
+  #   build:
+  #     context: .
+  #     dockerfile: webhook/Dockerfile
+  #   volumes:
+  #     - ./egress/bin/start.sh:/app/start.sh:ro
+  #     - ./egress/logs:/logs
+  #   environment:
+  #     - LIVEKIT_API_KEY
+  #     - LIVEKIT_API_SECRET
+  #     - MINIO_REGION
+  #     - MINIO_ACCESS_KEY
+  #     - MINIO_SECRET_KEY
+  #     - MINIO_BUCKET
+  #     - LIVEKIT_URL=http://livekit:7880
+  #     - MINIO_URL=http://minio-livekit:9000
+  #     - META_JSONL_PATH=/logs/meta.jsonl
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 3
+  #   depends_on:
+  #     livekit:
+  #       condition: service_started
+  #     egress:
+  #       condition: service_started
+  #   restart: ${RESTART_POLICY}
 
   egress:
     image: livekit/egress:v1.9.0
@@ -381,6 +381,9 @@ services:
       - ./egress/entrypoint.sh:/entrypoint.sh:ro
       - ./egress/egress-config.template.yaml:/etc/egress/egress-config.template.yaml:ro
       - /tmp:/tmp:rw
+    cap_add:
+      - SYS_ADMIN
+    privileged: true
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
       interval: 5s
