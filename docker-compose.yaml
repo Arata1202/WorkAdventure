@@ -311,8 +311,7 @@ services:
       - LIVEKIT_API_KEY
       - LIVEKIT_API_SECRET
     ports:
-      - "7880:7880"
-      - "7881:7881"
+      - "7881:7881/udp"
       - "7882:7882/udp"
     labels:
       - "traefik.enable=true"
@@ -377,10 +376,6 @@ services:
       EGRESS_CONFIG_FILE: /tmp/egress-config.yaml
       DISABLE_CUDA: "true"
       DISABLE_NVENC: "true"
-    ports:
-      - "8080:8080"
-      - "8081:8081"
-      - "7980:7980"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.egress.rule=Host(`egress.${DOMAIN}`)"
