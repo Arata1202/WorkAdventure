@@ -381,9 +381,6 @@ services:
       - ./egress/entrypoint.sh:/entrypoint.sh:ro
       - ./egress/egress-config.template.yaml:/etc/egress/egress-config.template.yaml:ro
       - /tmp:/tmp:rw
-    cap_add:
-      - SYS_ADMIN
-    privileged: true
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
       interval: 5s
