@@ -62,6 +62,10 @@ rsync:
 
 DC:=docker compose
 
+exec:
+	$(REQUIRED_P)
+	@${DR} ${DC} exec $(P) bash
+
 up:
 	$(OPTIONAL_P)
 	@${DR} ${DC} up -d $(P)
@@ -121,13 +125,9 @@ wa-upload:
 # LiveKit
 
 lk-room-list:
-	@${DR} lk room list --url http://localhost:7880
+	@${DR} ${DC} exec webhook bash -c 'lk room list'
 
 lk-egress-list:
-	@${DR} lk egress list --url http://localhost:7880
+	@${DR} ${DC} exec webhook bash -c 'lk egress list'
 
-lk-egress-start:
-	$(REQUIRED_P)
-	@${DR} ./egress/bin/start.sh $(P)
-
-.PHONY: ssh ssh-git-pull ssh-cat-meta rsync up up-f up-b stop restart logs ps encrypt decrypt apply wa-init wa-update wa-dev wa-upload lk-room-list lk-egress-list lk-egress-start
+.PHONY: ssh ssh-git-pull ssh-cat-meta rsync exec up up-f up-b stop restart logs ps encrypt decrypt apply wa-init wa-update wa-dev wa-upload lk-room-list lk-egress-list
