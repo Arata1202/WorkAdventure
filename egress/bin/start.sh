@@ -36,8 +36,6 @@ if lk egress list --url "$LIVEKIT_URL" --json 2>/dev/null \
   exit 0
 fi
 
-BASE_PATH="${START_TS}_${ROOM_ID}"
-EGRESS_JSON="/tmp/${BASE_PATH}.json"
 ROOM_LABEL="$ROOM_ID"
 if [[ "$ROOM_ID" =~ ^localWorld\.[^-]+-(.+)$ ]]; then
   ROOM_LABEL="${BASH_REMATCH[1]}"
@@ -46,14 +44,18 @@ SAFE_ROOM_ID=$(printf '%s' "$ROOM_LABEL" \
   | tr -d '\000' \
   | sed -E 's%/%_%g' \
   | sed -E 's/[[:cntrl:]]+/_/g' \
+  | sed -E 's/[#?&]+/_/g' \
   | sed -E 's/^_+|_+$//g')
 if [ -z "$SAFE_ROOM_ID" ]; then
   SAFE_ROOM_ID="unknown_room"
 fi
+BASE_PATH="${START_TS}_${SAFE_ROOM_ID}"
+EGRESS_JSON="/tmp/${BASE_PATH}.json"
 SAFE_SPEAKER_NAME=$(printf '%s' "$SPEAKER_NAME" \
   | tr -d '\000' \
   | sed -E 's%/%_%g' \
   | sed -E 's/[[:cntrl:]]+/_/g' \
+  | sed -E 's/[#?&]+/_/g' \
   | sed -E 's/^_+|_+$//g')
 if [ -z "$SAFE_SPEAKER_NAME" ]; then
   SAFE_SPEAKER_NAME="unknown_speaker"
