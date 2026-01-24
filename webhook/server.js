@@ -16,11 +16,6 @@ if (!metaJsonlPath) throw new Error('Error: META_JSONL_PATH is not set');
 const livekitHost = process.env.LIVEKIT_URL;
 if (!livekitHost) throw new Error('Error: LIVEKIT_URL is not set');
 
-const recordingRoomList = (process.env.RECORDING_ALLOWED_ROOMS || '')
-  .split(',')
-  .map((value) => value.trim())
-  .filter((value) => value.length > 0);
-
 const roomService = new RoomServiceClient(livekitHost, apiKey, apiSecret);
 const receiver = new WebhookReceiver(apiKey, apiSecret);
 
@@ -89,16 +84,6 @@ function normalizeTrackType(type) {
     if (type === 2) return 'data';
   }
   return '';
-}
-
-function isRecordingRoomAllowed(roomName) {
-  if (!recordingRoomList.length) return true;
-  return recordingRoomList.some((value) => {
-    if (value.includes('localWorld.')) {
-      return roomName === value;
-    }
-    return roomName.endsWith(value);
-  });
 }
 
 const ROOM_START_TTL_MS = 1000 * 60 * 60 * 24;
@@ -292,9 +277,6 @@ const server = http.createServer(async (req, res) => {
     const trackType = normalizeTrackType(track?.type);
     if (typeof roomName !== 'string' || roomName.length === 0) {
       return json(res, 400, { error: 'bad_request' });
-    }
-    if (!isRecordingRoomAllowed(roomName)) {
-      return json(res, 200, { ok: true, skipped: true });
     }
     if (typeof trackId !== 'string' || trackId.length === 0) {
       return json(res, 400, { error: 'bad_request' });
