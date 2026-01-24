@@ -1,6 +1,5 @@
 wa/
 node_modules/
-egress/logs/meta.jsonl
 maps/.env
 .env.backup_*
 .env.keys

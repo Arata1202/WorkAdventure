@@ -37,9 +37,6 @@ ssh:
 ssh-git-pull:
 	@$(SSH) "cd ~/WorkAdventure && git pull"
 
-ssh-cat-meta:
-	@$(SSH) "cat ~/WorkAdventure/egress/logs/meta.jsonl"
-
 rsync:
 	@set -e; \
 	echo ""; \
@@ -130,4 +127,4 @@ lk-room-list:
 lk-egress-list:
 	@${DR} ${DC} exec webhook bash -c 'lk egress list'
 
-.PHONY: ssh ssh-git-pull ssh-cat-meta rsync exec up up-f up-b stop restart logs ps encrypt decrypt apply wa-init wa-update wa-dev wa-upload lk-room-list lk-egress-list
+.PHONY: ssh ssh-git-pull rsync exec up up-f up-b stop restart logs ps encrypt decrypt apply wa-init wa-update wa-dev wa-upload lk-room-list lk-egress-list

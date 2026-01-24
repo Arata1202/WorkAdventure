@@ -1,7 +1,5 @@
 import http from 'node:http';
 import { spawn } from 'node:child_process';
-import fs from 'node:fs/promises';
-import path from 'node:path';
 import { RoomServiceClient, WebhookReceiver } from 'livekit-server-sdk';
 
 const apiKey = process.env.LIVEKIT_API_KEY;
@@ -9,9 +7,6 @@ if (!apiKey) throw new Error('Error: LIVEKIT_API_KEY is not set');
 
 const apiSecret = process.env.LIVEKIT_API_SECRET;
 if (!apiSecret) throw new Error('Error: LIVEKIT_API_SECRET is not set');
-
-const metaJsonlPath = process.env.META_JSONL_PATH;
-if (!metaJsonlPath) throw new Error('Error: META_JSONL_PATH is not set');
 
 const livekitHost = process.env.LIVEKIT_URL;
 if (!livekitHost) throw new Error('Error: LIVEKIT_URL is not set');
@@ -159,17 +154,6 @@ function trackRoomStart(roomName, startedAt) {
     if (now - entry.updatedAt > ROOM_START_TTL_MS) {
       roomStartTimes.delete(name);
     }
-  }
-}
-
-async function appendRecord(entry) {
-  try {
-    await fs.mkdir(path.dirname(metaJsonlPath), { recursive: true });
-    await fs.appendFile(metaJsonlPath, `${JSON.stringify(entry)}\n`);
-  } catch (err) {
-    process.stderr.write(
-      `[records] failed to append ${metaJsonlPath}: ${err}\n`
-    );
   }
 }
 
@@ -326,20 +310,6 @@ const server = http.createServer(async (req, res) => {
       trackTime,
       participantName
     );
-
-    await appendRecord({
-      room: {
-        name: roomName,
-      },
-      participant: {
-        name: participantName,
-      },
-      track: {
-        sid: trackId,
-      },
-      meeting_started_at: meetingStart.toISOString(),
-      track_started_at: trackStart.toISOString(),
-    });
 
     return json(res, 200, {
       ok: true,
