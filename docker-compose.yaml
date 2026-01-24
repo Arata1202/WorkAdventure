@@ -6,7 +6,6 @@ services:
       default:
         aliases:
           - "livekit.${DOMAIN}"
-          - "egress.${DOMAIN}"
           - "minio-livekit.${DOMAIN}"
           - "cdn-livekit.${DOMAIN}"
     command:
@@ -193,7 +192,7 @@ services:
       - LIVEKIT_HOST
       - LIVEKIT_API_KEY
       - LIVEKIT_API_SECRET
-      - EGRESS_HOST=http://egress.${DOMAIN}
+      - EGRESS_HOST=http://egress:8080
     labels:
       traefik.enable: "true"
       traefik.http.middlewares.strip-api-prefix.stripprefix.prefixes: "/api"
@@ -376,16 +375,6 @@ services:
       EGRESS_CONFIG_FILE: /tmp/egress-config.yaml
       DISABLE_CUDA: "true"
       DISABLE_NVENC: "true"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.egress.rule=Host(`egress.${DOMAIN}`)"
-      - "traefik.http.routers.egress.entryPoints=web"
-      - "traefik.http.services.egress.loadbalancer.server.port=8080"
-      - "traefik.http.routers.egress-ssl.rule=Host(`egress.${DOMAIN}`)"
-      - "traefik.http.routers.egress-ssl.entryPoints=websecure"
-      - "traefik.http.routers.egress-ssl.tls=true"
-      - "traefik.http.routers.egress-ssl.tls.certresolver=myresolver"
-      - "traefik.http.routers.egress-ssl.service=egress"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

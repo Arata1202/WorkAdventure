@@ -412,7 +412,6 @@ MAX_USERS_FOR_WEBRTC=0
 
 | Record Name               | Type | Value                     | TTL |
 | ------------------------- | ---- | ------------------------- | --- |
-| egress.<YOUR_FQDN>        | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
 | cdn-livekit.<YOUR_FQDN>   | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
 | minio-livekit.<YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
 
