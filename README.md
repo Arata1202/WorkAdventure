@@ -7,7 +7,7 @@
 
 ## Getting Started
 
-This guide uses AWS EC2 as the baseline, but you can also provision an Azure VM with Terraform.
+This guide supports both AWS EC2 and Azure VM with Terraform.
 
 ### Notes
 
@@ -16,7 +16,7 @@ This guide uses AWS EC2 as the baseline, but you can also provision an Azure VM 
 ### Prepare Repository
 
 ```bash
-# Local and EC2
+# Local and VM
 
 # Clone repository
 git clone git@github.com:Arata1202/WorkAdventure.git
@@ -26,13 +26,14 @@ cd WorkAdventure
 make wa-init
 ```
 
-### Create Resources on AWS with Terraform
+### Create Resources with Terraform
 
 ```bash
 # Local
 
 # Move repository
-cd WorkAdventure/terraform/aws
+cd WorkAdventure
+cd terraform/aws # or terraform/azure
 
 # Prepare and edit variables file
 cp variables.tf.example variables.tf
@@ -59,17 +60,23 @@ vi .envrc
 # Allow direnv to load variables
 direnv allow .
 
-# Connect to EC2 via SSH
-make ssh P=aws
+# Connect to VM via SSH
+make ssh P=aws # or P=azure
 
-# Sync Repository to EC2
-make rsync P=aws
+# Sync Repository to VM
+make rsync P=aws # or P=azure
 ```
 
 ```env
 # Required
 export EC2_SSH_KEY_PATH=<EC2_SSH_KEY_PATH>
 export EC2_PUBLIC_IPV4_ADDRESS=<EC2_PUBLIC_IPV4_ADDRESS>
+
+# or
+
+export ARM_SUBSCRIPTION_ID=<AZURE_SUBSCRIPTION_ID>
+export AZURE_SSH_KEY_PATH=<AZURE_SSH_KEY_PATH>
+export AZURE_PUBLIC_IPV4_ADDRESS=<AZURE_PUBLIC_IPV4_ADDRESS>
 ```
 
 ### Set Up WorkAdventure Server
@@ -78,7 +85,7 @@ export EC2_PUBLIC_IPV4_ADDRESS=<EC2_PUBLIC_IPV4_ADDRESS>
 - https://github.com/workadventure/workadventure/releases
 
 ```bash
-# EC2
+# VM
 
 # Set up Ubuntu
 ./ubuntu/setup.sh
@@ -113,16 +120,16 @@ MAP_STORAGE_AUTHENTICATION_USER=admin
 MAP_STORAGE_AUTHENTICATION_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 ```
 
-1. Add an A record in Route 53 to point your domain to the EC2 public IP
+1. Add an A record in your DNS provider to point your domain to the VM public IP
 
-| Record Name | Type | Value                     | TTL |
-| ----------- | ---- | ------------------------- | --- |
-| <YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
+| Record Name | Type | Value                    | TTL |
+| ----------- | ---- | ------------------------ | --- |
+| <YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 
 ### Edit .env file for basic settings
 
 ```bash
-# EC2
+# VM
 
 # Move repository
 cd WorkAdventure
@@ -174,7 +181,7 @@ Upload directory: maps
 ```
 
 ```bash
-# EC2
+# VM
 
 # Move repository
 cd WorkAdventure
@@ -221,11 +228,11 @@ UPLOAD_DIRECTORY=maps
 5. Create OAuth client ID
    - Application type: Web application
    - Name: WorkAdventure
-   - Authorized redirect URIs: `https://<YOUR_FQDN>//openid-callback`
+   - Authorized redirect URIs: `https://<YOUR_FQDN>/openid-callback`
 6. Save the Client ID and Client Secret
 
 ```bash
-# EC2
+# VM
 
 # Move repository
 cd WorkAdventure
@@ -257,7 +264,7 @@ MAP_EDITOR_ALLOW_ALL_USERS=false
 ### Set Up LiveKit
 
 ```bash
-# EC2
+# VM
 
 # Move repository
 cd WorkAdventure
@@ -284,16 +291,16 @@ LIVEKIT_API_SECRET=<UNIQUE_RANDOM_64_HEX>
 MAX_PER_GROUP=<NUMBER>
 ```
 
-1. Add an A record in Route 53 to point your domain to the EC2 public IP
+1. Add an A record in your DNS provider to point your domain to the VM public IP
 
-| Record Name         | Type | Value                     | TTL |
-| ------------------- | ---- | ------------------------- | --- |
-| livekit.<YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
+| Record Name         | Type | Value                    | TTL |
+| ------------------- | ---- | ------------------------ | --- |
+| livekit.<YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 
 ### Set Up Coturn
 
 ```bash
-# EC2
+# VM
 
 # Move repository
 cd WorkAdventure
@@ -323,7 +330,7 @@ STUN_SERVER=stun:stun.l.google.com:19302
    - `https://matrix.<YOUR_FQDN>/_synapse/client/oidc/callback`
 
 ```bash
-# EC2
+# VM
 
 # Move repository
 cd WorkAdventure
@@ -362,11 +369,11 @@ POSTGRES_USER=admin
 POSTGRES_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 ```
 
-1. Add an A record in Route 53 to point your domain to the EC2 public IP
+1. Add an A record in your DNS provider to point your domain to the VM public IP
 
-| Record Name        | Type | Value                     | TTL |
-| ------------------ | ---- | ------------------------- | --- |
-| matrix.<YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
+| Record Name        | Type | Value                    | TTL |
+| ------------------ | ---- | ------------------------ | --- |
+| matrix.<YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 
 ## Log in to Matrix using Element
 
@@ -384,7 +391,7 @@ POSTGRES_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 ## Set up Egress with MinIO
 
 ```bash
-# EC2
+# VM
 
 # Move repository
 cd WorkAdventure
@@ -410,12 +417,12 @@ MINIO_BUCKET=livekit-recording
 MAX_USERS_FOR_WEBRTC=0
 ```
 
-1. Add A records in Route 53 to point your domain to the EC2 public IP
+1. Add A records in your DNS provider to point your domain to the VM public IP
 
-| Record Name               | Type | Value                     | TTL |
-| ------------------------- | ---- | ------------------------- | --- |
-| cdn-livekit.<YOUR_FQDN>   | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
-| minio-livekit.<YOUR_FQDN> | A    | <EC2_PUBLIC_IPV4_ADDRESS> | 300 |
+| Record Name               | Type | Value                    | TTL |
+| ------------------------- | ---- | ------------------------ | --- |
+| cdn-livekit.<YOUR_FQDN>   | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
+| minio-livekit.<YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 
 ## Log in to MinIO
 
