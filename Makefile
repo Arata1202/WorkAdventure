@@ -10,6 +10,22 @@ define REQUIRED_P
 	fi
 endef
 
+define REQUIRED_P_AWS_OR_AZURE
+	@set -e; \
+	if [ -z "$(strip $(P))" ]; then \
+		echo ""; \
+		echo "ERROR: Missing required P."; \
+		echo "Usage: make $(MAKECMDGOALS) P=aws|azure"; \
+		exit 1; \
+	fi; \
+	if [ "$(P)" != "aws" ] && [ "$(P)" != "azure" ]; then \
+		echo ""; \
+		echo "ERROR: P must be aws or azure."; \
+		echo "Usage: make $(MAKECMDGOALS) P=aws|azure"; \
+		exit 1; \
+	fi
+endef
+
 define OPTIONAL_P
 	@set -e; \
 	if [ -z "$(strip $(P))" ]; then \
@@ -29,20 +45,31 @@ endef
 
 # SSH
 
-SSH := ssh -i $(EC2_SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new ubuntu@$(EC2_PUBLIC_IPV4_ADDRESS)
+ifeq ($(P),aws)
+SSH_KEY_PATH := $(EC2_SSH_KEY_PATH)
+PUBLIC_IPV4_ADDRESS := $(EC2_PUBLIC_IPV4_ADDRESS)
+else ifeq ($(P),azure)
+SSH_KEY_PATH := $(AZURE_SSH_KEY_PATH)
+PUBLIC_IPV4_ADDRESS := $(AZURE_PUBLIC_IPV4_ADDRESS)
+endif
+
+SSH := ssh -i $(SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new ubuntu@$(PUBLIC_IPV4_ADDRESS)
 
 ssh:
+	$(REQUIRED_P_AWS_OR_AZURE)
 	@$(SSH)
 
 ssh-git-pull:
+	$(REQUIRED_P_AWS_OR_AZURE)
 	@$(SSH) "cd ~/WorkAdventure && git pull"
 
 rsync:
+	$(REQUIRED_P_AWS_OR_AZURE)
 	@set -e; \
 	echo ""; \
 	echo "== (review changes) =="; \
 	echo ""; \
-	rsync -avz --dry-run --itemize-changes --filter='merge .rsyncignore' -e "ssh -i $(EC2_SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new" ./ ubuntu@$(EC2_PUBLIC_IPV4_ADDRESS):~/WorkAdventure/; \
+	rsync -avz --dry-run --itemize-changes --filter='merge .rsyncignore' -e "ssh -i $(SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new" ./ ubuntu@$(PUBLIC_IPV4_ADDRESS):~/WorkAdventure/; \
 	echo ""; \
 	printf "Proceed with rsync? [y/N] "; \
 	read ans; \
@@ -53,7 +80,7 @@ rsync:
 	esac; \
 	echo "== (result) =="; \
 	echo ""; \
-	rsync -avz --filter='merge .rsyncignore' -e "ssh -i $(EC2_SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new" ./ ubuntu@$(EC2_PUBLIC_IPV4_ADDRESS):~/WorkAdventure/
+	rsync -avz --filter='merge .rsyncignore' -e "ssh -i $(SSH_KEY_PATH) -o StrictHostKeyChecking=accept-new" ./ ubuntu@$(PUBLIC_IPV4_ADDRESS):~/WorkAdventure/
 
 # Docker
 
@@ -102,8 +129,21 @@ decrypt:
 
 # Terraform
 
-apply:
-	@cd terraform/aws && terraform apply
+tf-init:
+	${REQUIRED_P_AWS_OR_AZURE}
+	@cd terraform/${P} && terraform init
+
+tf-plan:
+	${REQUIRED_P_AWS_OR_AZURE}
+	@cd terraform/${P} && terraform plan
+
+tf-apply:
+	${REQUIRED_P_AWS_OR_AZURE}
+	@cd terraform/${P} && terraform apply
+
+tf-destroy:
+	${REQUIRED_P_AWS_OR_AZURE}
+	@cd terraform/${P} && terraform destroy
 
 # WorkAdventure
 
@@ -127,4 +167,4 @@ lk-room-list:
 lk-egress-list:
 	@${DR} ${DC} exec webhook bash -c 'lk egress list'
 
-.PHONY: ssh ssh-git-pull rsync exec up up-f up-b stop restart logs ps encrypt decrypt apply wa-init wa-update wa-dev wa-upload lk-room-list lk-egress-list
+.PHONY: ssh ssh-git-pull rsync exec up up-f up-b stop restart logs ps encrypt decrypt tf-init tf-plan tf-apply tf-destroy wa-init wa-update wa-dev wa-upload lk-room-list lk-egress-list

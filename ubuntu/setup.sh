@@ -4,7 +4,7 @@ ARCH="$(dpkg --print-architecture)"
 
 # Ubuntu
 sudo apt update
-sudo apt install -y ca-certificates curl gnupg make
+sudo apt install -y ca-certificates curl gnupg make build-essential libpng-dev pkg-config nasm
 sudo install -m 0755 -d /etc/apt/keyrings
 
 # Node.js

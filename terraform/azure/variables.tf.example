@@ -1,0 +1,59 @@
+variable "location" {
+  type    = string
+  default = "japaneast"
+}
+
+variable "vnet_address_space" {
+  type    = string
+  default = "10.0.0.0/16"
+}
+
+variable "subnet_address_prefix" {
+  type    = string
+  default = "10.0.1.0/24"
+}
+
+variable "admin_username" {
+  type    = string
+  default = "ubuntu"
+}
+
+variable "ssh_public_key" {
+  type    = string
+  default=""
+}
+
+variable "vm_size" {
+  type    = string
+  default = "Standard_B2ps_v2"
+}
+
+variable "os_disk_type" {
+  type    = string
+  default = "StandardSSD_LRS"
+}
+
+variable "os_disk_size_gb" {
+  type    = number
+  default = 30
+}
+
+variable "image_publisher" {
+  type    = string
+  default = "Canonical"
+}
+
+variable "image_offer" {
+  type    = string
+  default = "0001-com-ubuntu-server-jammy"
+}
+
+variable "image_sku" {
+  type    = string
+  default = "22_04-lts-arm64"
+}
+
+variable "image_version" {
+  type    = string
+  default = "latest"
+}

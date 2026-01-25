@@ -1,31 +1,39 @@
 variable "region" {
+  type    = string
   default = "ap-northeast-1"
 }
 
 variable "ami" {
+  type    = string
   default = "ami-038e94aea55c0f480"
 }
 
 variable "instance_type" {
+  type    = string
   default = "t4g.medium"
 }
 
 variable "key_name" {
+  type    = string
   default = "workadventure_key"
 }
 
 variable "volume_type" {
+  type    = string
   default = "gp3"
 }
 
 variable "volume_size" {
+  type    = number
   default = "25"
 }
 
 variable "volume_encrypted" {
+  type    = bool
   default = true
 }
 
 variable "volume_kms_key_id" {
+  type    = string
   default = null
 }
