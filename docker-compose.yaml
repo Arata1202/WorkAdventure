@@ -346,6 +346,7 @@ services:
       - MINIO_ACCESS_KEY
       - MINIO_SECRET_KEY
       - MINIO_BUCKET
+      - RECORDING_MEETING_ROOMS
       - LIVEKIT_URL=http://livekit:7880
       - MINIO_URL=http://minio-livekit:9000
     healthcheck:

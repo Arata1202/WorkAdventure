@@ -14,6 +14,32 @@ if (!livekitHost) throw new Error('Error: LIVEKIT_URL is not set');
 const roomService = new RoomServiceClient(livekitHost, apiKey, apiSecret);
 const receiver = new WebhookReceiver(apiKey, apiSecret);
 
+function parseRecordingRooms(value) {
+  if (typeof value !== 'string') return null;
+  const entries = value
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  if (entries.length === 0) return null;
+  return new Set(entries);
+}
+
+function extractRoomLabel(roomName) {
+  if (typeof roomName !== 'string' || roomName.length === 0) return '';
+  const match = roomName.match(/^localWorld\.[^-]+-(.+)$/);
+  if (match && match[1]) return match[1];
+  return roomName;
+}
+
+const recordingRooms = parseRecordingRooms(process.env.RECORDING_MEETING_ROOMS);
+
+function shouldRecordRoom(roomName) {
+  if (!recordingRooms) return true;
+  const label = extractRoomLabel(roomName);
+  if (!label) return false;
+  return recordingRooms.has(label);
+}
+
 function readBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -266,6 +292,9 @@ const server = http.createServer(async (req, res) => {
       return json(res, 400, { error: 'bad_request' });
     }
     if (trackType !== 'audio') {
+      return json(res, 200, { ok: true });
+    }
+    if (!shouldRecordRoom(roomName)) {
       return json(res, 200, { ok: true });
     }
 
