@@ -7,6 +7,8 @@
 
 ## Getting Started
 
+This guide uses AWS EC2 as the baseline, but you can also provision an Azure VM with Terraform.
+
 ### Notes
 
 - Ensure that meeting room names and user display names are unique.
@@ -30,7 +32,7 @@ make wa-init
 # Local
 
 # Move repository
-cd WorkAdventure/terraform
+cd WorkAdventure/terraform/aws
 
 # Prepare and edit variables file
 cp variables.tf.example variables.tf
@@ -58,10 +60,10 @@ vi .envrc
 direnv allow .
 
 # Connect to EC2 via SSH
-make ssh
+make ssh P=aws
 
 # Sync Repository to EC2
-make rsync
+make rsync P=aws
 ```
 
 ```env
