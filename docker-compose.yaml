@@ -357,11 +357,8 @@ services:
       MINIO_ACCESS_KEY:
       MINIO_SECRET_KEY:
       MINIO_BUCKET:
-      EGRESS_CONFIG_FILE: /tmp/egress-config.yaml
       DISABLE_CUDA: "true"
       DISABLE_NVENC: "true"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     volumes:
       - ./egress/entrypoint.sh:/entrypoint.sh:ro
       - ./egress/egress-config.template.yaml:/etc/egress/egress-config.template.yaml:ro
