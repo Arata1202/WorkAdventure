@@ -1,8 +1,8 @@
-# AWS
+# AWS EC2
 export EC2_SSH_KEY_PATH=""
 export EC2_PUBLIC_IPV4_ADDRESS=""
 
-# Azure
+# Azure VM
 export ARM_SUBSCRIPTION_ID=""
 export AZURE_SSH_KEY_PATH=""
 export AZURE_PUBLIC_IPV4_ADDRESS=""

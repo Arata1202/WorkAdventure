@@ -198,6 +198,7 @@ make restart
 ```env
 # Required
 START_ROOM_URL=/~/maps/office.wam
+MAP_STORAGE_ENABLE_BEARER_AUTHENTICATION=true
 ```
 
 1. Access the uploaded map
@@ -410,6 +411,7 @@ make restart
 
 ```env
 # Required
+RECORDING_MEETING_ROOMS=<RECORDING_MEETING_ROOMS>
 MINIO_REGION=ap-northeast-1
 MINIO_ACCESS_KEY=<UNIQUE_RANDOM_64_HEX>
 MINIO_SECRET_KEY=<UNIQUE_RANDOM_64_HEX>

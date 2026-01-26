@@ -2,12 +2,6 @@ version: "3.6"
 services:
   reverse-proxy:
     image: traefik:v3.6.1
-    networks:
-      default:
-        aliases:
-          - "livekit.${DOMAIN}"
-          - "minio-livekit.${DOMAIN}"
-          - "cdn-livekit.${DOMAIN}"
     command:
       - --log.level=${LOG_LEVEL}
       - --providers.docker
@@ -111,10 +105,6 @@ services:
       - EMBEDDED_DOMAINS_WHITELIST=${EMBEDDED_DOMAINS_WHITELIST}
       - CARDS_ENABLED=${CARDS_ENABLED}
       - TLDRAW_ENABLED=${TLDRAW_ENABLED}
-      - PEER_VIDEO_LOW_BANDWIDTH=${PEER_VIDEO_LOW_BANDWIDTH}
-      - PEER_VIDEO_RECOMMENDED_BANDWIDTH=${PEER_VIDEO_RECOMMENDED_BANDWIDTH}
-      - PEER_SCREEN_SHARE_LOW_BANDWIDTH=${PEER_SCREEN_SHARE_LOW_BANDWIDTH}
-      - PEER_SCREEN_SHARE_RECOMMENDED_BANDWIDTH=${PEER_SCREEN_SHARE_RECOMMENDED_BANDWIDTH}
       # Google drive picker
       - GOOGLE_DRIVE_PICKER_CLIENT_ID=${GOOGLE_DRIVE_PICKER_CLIENT_ID}
       - GOOGLE_DRIVE_PICKER_APP_ID=${GOOGLE_DRIVE_PICKER_APP_ID}
@@ -192,7 +182,6 @@ services:
       - LIVEKIT_HOST
       - LIVEKIT_API_KEY
       - LIVEKIT_API_SECRET
-      - EGRESS_HOST=http://egress:8080
     labels:
       traefik.enable: "true"
       traefik.http.middlewares.strip-api-prefix.stripprefix.prefixes: "/api"
@@ -310,7 +299,7 @@ services:
       - LIVEKIT_API_KEY
       - LIVEKIT_API_SECRET
     ports:
-      - "7881:7881/udp"
+      - "7881:7881"
       - "7882:7882/udp"
     labels:
       - "traefik.enable=true"
@@ -322,9 +311,6 @@ services:
       - "traefik.http.routers.livekit-ssl.service=livekit"
       - "traefik.http.routers.livekit.entryPoints=web"
       - "traefik.http.services.livekit.loadbalancer.server.port=7880"
-      - "traefik.udp.routers.livekit-udp.entrypoints=udp"
-      - "traefik.udp.routers.livekit-udp.service=livekit-udp"
-      - "traefik.udp.services.livekit-udp.loadbalancer.server.port=7881"
     volumes:
       - ./livekit/entrypoint.sh:/entrypoint.sh:ro
       - ./livekit/livekit-config.template.yaml:/etc/livekit/livekit-config.template.yaml:ro
