@@ -1,4 +1,5 @@
 # AWS EC2
+export EC2_INSTANCE_ID=""
 export EC2_SSH_KEY_PATH=""
 export EC2_PUBLIC_IPV4_ADDRESS=""
 

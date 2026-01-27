@@ -7,7 +7,7 @@
 
 ## Getting Started
 
-This guide supports both AWS EC2 and Azure VM with Terraform.
+- This guide supports both AWS EC2 and Azure VM with Terraform.
 
 ### Notes
 
@@ -31,7 +31,7 @@ make wa-init
 ```bash
 # Local
 
-# Move repository
+# Move to repository
 cd WorkAdventure
 cd terraform/aws # or terraform/azure
 
@@ -45,12 +45,46 @@ terraform plan
 terraform apply
 ```
 
-### Configure SSH Access
+### Connect AWS EC2 with SSM
+
+- Default for AWS is SSM.
+- Default for Azure is SSH (Azure Bastion can be costly).
 
 ```bash
 # Local
 
-# Move repository
+# Move to repository
+cd WorkAdventure
+
+# Prepare and edit .envrc file
+cp .envrc.example .envrc
+vi .envrc
+
+# Allow direnv to load variables
+direnv allow .
+
+# Connect to AWS EC2 via SSM
+make ssm
+
+# Switch to ubuntu user and move to repository
+sudo -iu ubuntu
+cd ~/WorkAdventure
+```
+
+```env
+# Required
+export EC2_INSTANCE_ID=<EC2_INSTANCE_ID>
+```
+
+### Configure SSH Access
+
+- Default for AWS is SSM.
+- Default for Azure is SSH (Azure Bastion can be costly).
+
+```bash
+# Local
+
+# Move to repository
 cd WorkAdventure
 
 # Prepare and edit .envrc file
@@ -90,7 +124,7 @@ export AZURE_PUBLIC_IPV4_ADDRESS=<AZURE_PUBLIC_IPV4_ADDRESS>
 # Set up Ubuntu
 ./ubuntu/setup.sh
 
-# Move repository
+# Move to repository
 cd WorkAdventure
 
 # Remove existing .env file
@@ -131,7 +165,7 @@ MAP_STORAGE_AUTHENTICATION_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 ```bash
 # VM
 
-# Move repository
+# Move to repository
 cd WorkAdventure
 
 # Edit .env file
@@ -161,7 +195,7 @@ FEATURE_FLAG_BROADCAST_AREAS=true
 ```bash
 # Local
 
-# Move repository
+# Move to repository
 cd WorkAdventure/maps
 
 # Prepare .env file
@@ -183,7 +217,7 @@ Upload directory: maps
 ```bash
 # VM
 
-# Move repository
+# Move to repository
 cd WorkAdventure
 
 # Edit .env file
@@ -235,7 +269,7 @@ UPLOAD_DIRECTORY=maps
 ```bash
 # VM
 
-# Move repository
+# Move to repository
 cd WorkAdventure
 
 # Edit .env file
@@ -267,7 +301,7 @@ MAP_EDITOR_ALLOW_ALL_USERS=false
 ```bash
 # VM
 
-# Move repository
+# Move to repository
 cd WorkAdventure
 
 # Generate random strings for .env values
@@ -303,7 +337,7 @@ MAX_PER_GROUP=<NUMBER>
 ```bash
 # VM
 
-# Move repository
+# Move to repository
 cd WorkAdventure
 
 # Generate random strings for .env values
@@ -333,7 +367,7 @@ STUN_SERVER=stun:stun.l.google.com:19302
 ```bash
 # VM
 
-# Move repository
+# Move to repository
 cd WorkAdventure
 
 # Generate random strings for .env values
@@ -394,7 +428,7 @@ POSTGRES_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 ```bash
 # VM
 
-# Move repository
+# Move to repository
 cd WorkAdventure
 
 # Generate random strings for .env values
