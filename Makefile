@@ -59,10 +59,6 @@ ssh:
 	$(REQUIRED_P_AWS_OR_AZURE)
 	@$(SSH)
 
-ssh-git-pull:
-	$(REQUIRED_P_AWS_OR_AZURE)
-	@$(SSH) "cd ~/WorkAdventure && git pull"
-
 rsync:
 	$(REQUIRED_P_AWS_OR_AZURE)
 	@set -e; \
@@ -167,4 +163,4 @@ lk-room-list:
 lk-egress-list:
 	@${DR} ${DC} exec webhook bash -c 'lk egress list'
 
-.PHONY: ssh ssh-git-pull rsync exec up up-f up-b stop restart logs ps encrypt decrypt tf-init tf-plan tf-apply tf-destroy wa-init wa-update wa-dev wa-upload lk-room-list lk-egress-list
+.PHONY: ssh rsync exec up up-f up-b stop restart logs ps encrypt decrypt tf-init tf-plan tf-apply tf-destroy wa-init wa-update wa-dev wa-upload lk-room-list lk-egress-list
