@@ -85,7 +85,7 @@ rsync:
 
 # Docker
 
-DC:=docker compose
+DC := docker compose
 
 exec:
 	$(REQUIRED_P)
