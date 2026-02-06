@@ -13,11 +13,6 @@ variable "instance_type" {
   default = "t4g.medium"
 }
 
-variable "key_name" {
-  type    = string
-  default = "workadventure_key"
-}
-
 variable "volume_type" {
   type    = string
   default = "gp3"

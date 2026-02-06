@@ -1,7 +1,6 @@
 resource "aws_instance" "workadventure_server" {
   ami                    = var.ami
   instance_type          = var.instance_type
-  key_name               = var.key_name
   iam_instance_profile   = aws_iam_instance_profile.workadventure_iam_instance_profile.name
   vpc_security_group_ids = [aws_security_group.workadventure_sg.id]
 

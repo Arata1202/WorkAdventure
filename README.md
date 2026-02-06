@@ -66,9 +66,8 @@ direnv allow .
 # Connect to AWS EC2 via SSM
 make ssm
 
-# Switch to ubuntu user and move to repository
+# Switch to ubuntu user
 sudo -iu ubuntu
-cd ~/WorkAdventure
 ```
 
 ```env
