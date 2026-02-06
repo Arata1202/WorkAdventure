@@ -1,0 +1,29 @@
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  precise:
+    format: '%(asctime)s - %(name)s - %(lineno)d - %(levelname)s - %(request)s - %(message)s'
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: precise
+    level: INFO
+
+  file:
+    class: logging.handlers.TimedRotatingFileHandler
+    formatter: precise
+    level: INFO
+    filename: /data/homeserver.log
+    when: midnight
+    backupCount: 3
+    encoding: utf8
+
+loggers:
+  synapse.storage.SQL:
+    level: WARNING
+
+root:
+  level: INFO
+  handlers: [console, file]

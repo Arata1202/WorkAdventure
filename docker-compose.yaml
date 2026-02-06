@@ -464,6 +464,7 @@ services:
       - synapse-data:/data
       - ./synapse/entrypoint.sh:/entrypoint.sh:ro
       - ./synapse/homeserver.template.yaml:/homeserver.template.yaml:ro
+      - ./synapse/log.config.yaml:/log.config.yaml:ro
     depends_on:
       - postgres
     restart: ${RESTART_POLICY}

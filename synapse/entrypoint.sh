@@ -27,4 +27,9 @@ if [ ! -f /data/homeserver.yaml ] || [ /homeserver.template.yaml -nt /data/homes
     /homeserver.template.yaml > /data/homeserver.yaml
 fi
 
+if [ ! -f /data/log.config.yaml ] || [ /log.config.yaml -nt /data/log.config.yaml ]; then
+  echo "Copying log.config.yaml..."
+  cp /log.config.yaml /data/log.config.yaml
+fi
+
 exec /start.py
