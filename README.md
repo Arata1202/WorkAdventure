@@ -381,9 +381,6 @@ make encrypt
 # Change /data permissions
 npx dotenvx run -- docker compose run --rm --user root --entrypoint sh synapse -lc 'chown -R 991:991 /data'
 
-# Restart server
-make up-f
-
 # Create a Matrix Admin User
 npx dotenvx run -- sh -lc 'docker compose exec synapse register_new_matrix_user -c /data/homeserver.yaml -u "$MATRIX_ADMIN_USER" -p "$MATRIX_ADMIN_PASSWORD" --admin http://localhost:8008'
 
