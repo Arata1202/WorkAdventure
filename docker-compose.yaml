@@ -354,6 +354,8 @@ services:
       - SYS_ADMIN
     privileged: true
     shm_size: "2gb"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       LIVEKIT_API_KEY:
       LIVEKIT_API_SECRET:
@@ -458,7 +460,7 @@ services:
    restart: ${RESTART_POLICY}
 
   synapse:
-    image: matrixdotorg/synapse:v1.100.0
+    image: matrixdotorg/synapse:v1.140.0
     entrypoint: ["/entrypoint.sh"]
     environment:
       DOMAIN: "${DOMAIN}"
