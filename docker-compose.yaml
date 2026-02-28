@@ -352,6 +352,7 @@ services:
     entrypoint: ["/entrypoint.sh"]
     cap_add:
       - SYS_ADMIN
+    privileged: true
     shm_size: "2gb"
     environment:
       LIVEKIT_API_KEY:
