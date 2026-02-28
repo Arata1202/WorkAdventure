@@ -13,4 +13,6 @@ if [ ! -f /tmp/egress-config.yaml ] || [ /etc/egress/egress-config.template.yaml
       /etc/egress/egress-config.template.yaml > /tmp/egress-config.yaml
 fi
 
+pulseaudio -D --verbose --exit-idle-time=-1 --disallow-exit
+
 exec /bin/egress --config /tmp/egress-config.yaml
