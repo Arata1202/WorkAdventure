@@ -350,6 +350,9 @@ services:
   egress:
     image: livekit/egress:v1.9.0
     entrypoint: ["/entrypoint.sh"]
+    cap_add:
+      - SYS_ADMIN
+    shm_size: "2gb"
     environment:
       LIVEKIT_API_KEY:
       LIVEKIT_API_SECRET:
