@@ -13,6 +13,9 @@ if [ ! -f /tmp/egress-config.yaml ] || [ /etc/egress/egress-config.template.yaml
       /etc/egress/egress-config.template.yaml > /tmp/egress-config.yaml
 fi
 
+# Start PulseAudio daemon (required for RoomCompositeEgress audio recording)
+pulseaudio --kill >/dev/null 2>&1 || true
+rm -rf /tmp/pulse-* /home/egress/.cache/xdgr/pulse/ >/dev/null 2>&1 || true
 pulseaudio -D --verbose --exit-idle-time=-1 --disallow-exit
 
 exec /bin/egress --config /tmp/egress-config.yaml
