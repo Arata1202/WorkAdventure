@@ -9,6 +9,10 @@
 
 - This guide supports both AWS EC2 and Azure VM with Terraform.
 
+### Notes
+
+- Ensure that meeting room names and user display names are unique.
+
 ### Prepare Repository
 
 ```bash
