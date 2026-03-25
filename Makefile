@@ -99,10 +99,6 @@ up-f:
 	$(OPTIONAL_P)
 	@${DR} ${DC} up -d --force-recreate $(P)
 
-up-b:
-	$(OPTIONAL_P)
-	@${DR} ${DC} up -d --build $(P)
-
 stop:
 	$(OPTIONAL_P)
 	@${DR} ${DC} stop $(P)
@@ -160,12 +156,4 @@ wa-dev:
 wa-upload:
 	@cd maps && ${DR} npm run upload
 
-# LiveKit
-
-lk-room-list:
-	@${DR} ${DC} exec webhook bash -c 'lk room list'
-
-lk-egress-list:
-	@${DR} ${DC} exec webhook bash -c 'lk egress list'
-
-.PHONY: ssm ssh rsync exec up up-f up-b stop restart logs ps encrypt decrypt tf-init tf-plan tf-apply tf-destroy wa-init wa-update wa-dev wa-upload lk-room-list lk-egress-list
+.PHONY: ssm ssh rsync exec up up-f stop restart logs ps encrypt decrypt tf-init tf-plan tf-apply tf-destroy wa-init wa-update wa-dev wa-upload

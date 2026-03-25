@@ -6,16 +6,14 @@ insecure: true
 template_port: 7980
 health_port: 8081
 prometheus_port: 9000
+cpu_cost:
+  room_composite_cpu_cost: 2
+  web_cpu_cost: 2
+  participant_cpu_cost: 1
+  track_composite_cpu_cost: 1
+  track_cpu_cost: 0.5
 redis:
   address: "redis:6379"
   username: ""
   password: ""
   db: 2
-
-file_output:
-  s3:
-    region: ${MINIO_REGION}
-    access_key: ${MINIO_ACCESS_KEY}
-    secret: ${MINIO_SECRET_KEY}
-    bucket: ${MINIO_BUCKET}
-    endpoint: http://minio-livekit:9000

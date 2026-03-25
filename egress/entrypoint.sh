@@ -10,11 +10,12 @@ if [ ! -f /tmp/egress-config.yaml ] || [ /etc/egress/egress-config.template.yaml
     sed \
       -e "s|\${LIVEKIT_API_KEY}|$LIVEKIT_API_KEY|g" \
       -e "s|\${LIVEKIT_API_SECRET}|$LIVEKIT_API_SECRET|g" \
-      -e "s|\${MINIO_REGION}|$MINIO_REGION|g" \
-      -e "s|\${MINIO_ACCESS_KEY}|$MINIO_ACCESS_KEY|g" \
-      -e "s|\${MINIO_SECRET_KEY}|$MINIO_SECRET_KEY|g" \
-      -e "s|\${MINIO_BUCKET}|$MINIO_BUCKET|g" \
       /etc/egress/egress-config.template.yaml > /tmp/egress-config.yaml
 fi
+
+# Start PulseAudio daemon (required for RoomCompositeEgress audio recording)
+pulseaudio --kill >/dev/null 2>&1 || true
+rm -rf /tmp/pulse-* /home/egress/.cache/xdgr/pulse/ >/dev/null 2>&1 || true
+pulseaudio -D --verbose --exit-idle-time=-1 --disallow-exit
 
 exec /bin/egress --config /tmp/egress-config.yaml

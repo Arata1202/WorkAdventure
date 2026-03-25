@@ -9,10 +9,6 @@
 
 - This guide supports both AWS EC2 and Azure VM with Terraform.
 
-### Notes
-
-- Ensure that meeting room names and user display names are unique.
-
 ### Prepare Repository
 
 ```bash
@@ -422,7 +418,7 @@ POSTGRES_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 7. Click Sign in
 8. After successful authentication, you will be redirected back to Element and logged in
 
-## Set up Egress with MinIO
+## Set up Egress with RustFS
 
 ```bash
 # VM
@@ -444,26 +440,27 @@ make up-f
 
 ```env
 # Required
-RECORDING_MEETING_ROOMS=<RECORDING_MEETING_ROOMS>
-MINIO_REGION=ap-northeast-1
-MINIO_ACCESS_KEY=<UNIQUE_RANDOM_64_HEX>
-MINIO_SECRET_KEY=<UNIQUE_RANDOM_64_HEX>
-MINIO_BUCKET=livekit-recording
+LIVEKIT_RECORDING_S3_ENDPOINT=http://rustfs-livekit:9000
+LIVEKIT_RECORDING_S3_CDN_ENDPOINT=https://cdn-livekit.<YOUR_FQDN>
+LIVEKIT_RECORDING_S3_ACCESS_KEY=<UNIQUE_RANDOM_64_HEX>
+LIVEKIT_RECORDING_S3_SECRET_KEY=<UNIQUE_RANDOM_64_HEX>
+LIVEKIT_RECORDING_S3_BUCKET=livekit-recordings
+LIVEKIT_RECORDING_S3_REGION=ap-northeast-1
 MAX_USERS_FOR_WEBRTC=0
 ```
 
 1. Add A records in your DNS provider to point your domain to the VM public IP
 
-| Record Name               | Type | Value                    | TTL |
-| ------------------------- | ---- | ------------------------ | --- |
-| cdn-livekit.<YOUR_FQDN>   | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
-| minio-livekit.<YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
+| Record Name                | Type | Value                    | TTL |
+| -------------------------- | ---- | ------------------------ | --- |
+| cdn-livekit.<YOUR_FQDN>    | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
+| rustfs-livekit.<YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 
-## Log in to MinIO
+## Log in to RustFS
 
-1. Access MinIO Web: `https://minio-livekit.<YOUR_FQDN>`
-2. Enter your MinIO credentials:
-   - Username: <MINIO_ACCESS_KEY>
-   - Password: <MINIO_SECRET_KEY>
+1. Access RustFS Console: `https://rustfs-livekit.<YOUR_FQDN>`
+2. Enter your RustFS credentials:
+   - Username: <LIVEKIT_RECORDING_S3_ACCESS_KEY>
+   - Password: <LIVEKIT_RECORDING_S3_SECRET_KEY>
 3. Click Sign in
 4. After successful authentication, you will be logged in
