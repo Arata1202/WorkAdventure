@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "workadventure_rg" {
-  name     = "workadventure_rg"
+  name     = var.resource_group_name
   location = var.location
 }
 
@@ -30,7 +30,6 @@ resource "azurerm_network_security_group" "workadventure_nsg" {
   location            = azurerm_resource_group.workadventure_rg.location
   resource_group_name = azurerm_resource_group.workadventure_rg.name
 
-  # これ
   security_rule {
     name                       = "workadventure_22"
     priority                   = 100

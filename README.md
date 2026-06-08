@@ -31,9 +31,9 @@ make wa-init
 cd WorkAdventure
 cd terraform/aws # or terraform/azure
 
-# Prepare and edit variables file
-cp variables.tf.example variables.tf
-vi variables.tf
+# Prepare and edit local values
+cp terraform.tfvars.example terraform.tfvars
+vi terraform.tfvars
 
 # Create resources
 terraform init

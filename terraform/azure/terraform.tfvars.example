@@ -1,0 +1,13 @@
+location = "japaneast"
+resource_group_name = "workadventure_rg"
+vnet_address_space = "10.0.0.0/16"
+subnet_address_prefix = "10.0.1.0/24"
+admin_username = "ubuntu"
+ssh_public_key = ""
+vm_size = "Standard_B2ps_v2"
+os_disk_type = "StandardSSD_LRS"
+os_disk_size_gb = 30
+image_publisher = "Canonical"
+image_offer = "0001-com-ubuntu-server-jammy"
+image_sku = "22_04-lts-arm64"
+image_version = "latest"
