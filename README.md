@@ -235,7 +235,7 @@ MAP_STORAGE_ENABLE_BEARER_AUTHENTICATION=true
 
 ### Set Up GitHub Actions
 
-1. Configure GitHub Actions secrets
+1. Configure GitHub Actions secrets for `upload-wa-maps.yml`
 
 ```env
 # Required
@@ -244,6 +244,17 @@ MAP_STORAGE_URL=https://<YOUR_FQDN>/map-storage/
 MAP_STORAGE_API_KEY=<MAP_STORAGE_AUTHENTICATION_TOKEN>
 UPLOAD_DIRECTORY=maps
 ```
+
+1. Configure GitHub Actions secrets for `deploy.yml`
+
+```env
+# Required
+SSH_HOST=<VM_PUBLIC_IPV4_ADDRESS>
+SSH_USERNAME=ubuntu
+SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
+```
+
+1. Run the `deploy` workflow manually from GitHub Actions to apply repository changes to the VM
 
 ### Set Up Google OIDC
 
