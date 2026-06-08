@@ -6,8 +6,6 @@
 + /synapse/***
 + /ubuntu/
 + /ubuntu/***
-+ /webhook/
-+ /webhook/***
 + /docker-compose.yaml
 + /Makefile
 - *

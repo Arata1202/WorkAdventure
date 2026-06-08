@@ -15,7 +15,7 @@
 # Local and VM
 
 # Clone repository
-git clone git@github.com:Arata1202/WorkAdventure.git
+git clone https://github.com/Arata1202/WorkAdventure.git
 cd WorkAdventure
 
 # Install dependencies
@@ -44,68 +44,47 @@ terraform apply
 ### Connect AWS EC2 with SSM
 
 - Default for AWS is SSM.
-- Default for Azure is SSH (Azure Bastion can be costly).
 
 ```bash
 # Local
 
-# Move to repository
-cd WorkAdventure
-
-# Prepare and edit .envrc file
-cp .envrc.example .envrc
-vi .envrc
-
-# Allow direnv to load variables
-direnv allow .
+# Configure AWS CLI credentials and region before connecting
+aws configure
 
 # Connect to AWS EC2 via SSM
-make ssm
+aws ssm start-session --target <EC2_INSTANCE_ID>
 
 # Switch to ubuntu user
 sudo -iu ubuntu
 ```
 
-```env
-# Required
-export EC2_INSTANCE_ID=<EC2_INSTANCE_ID>
-```
-
 ### Configure SSH Access
 
-- Default for AWS is SSM.
 - Default for Azure is SSH (Azure Bastion can be costly).
 
 ```bash
 # Local
 
-# Move to repository
-cd WorkAdventure
+# Save the VM private key
+vi ~/.ssh/workadventure_key.pem
+chmod 600 ~/.ssh/workadventure_key.pem
 
-# Prepare and edit .envrc file
-cp .envrc.example .envrc
-vi .envrc
-
-# Allow direnv to load variables
-direnv allow .
-
-# Connect to VM via SSH
-make ssh P=aws # or P=azure
-
-# Sync Repository to VM
-make rsync P=aws # or P=azure
+# Configure SSH host aliases
+vi ~/.ssh/config
 ```
 
-```env
-# Required
-export EC2_SSH_KEY_PATH=<EC2_SSH_KEY_PATH>
-export EC2_PUBLIC_IPV4_ADDRESS=<EC2_PUBLIC_IPV4_ADDRESS>
+```sshconfig
+Host workadventure
+  HostName <VM_PUBLIC_IPV4_ADDRESS>
+  User ubuntu
+  IdentityFile ~/.ssh/workadventure_key.pem
+```
 
-# or
+```bash
+# Local
 
-export ARM_SUBSCRIPTION_ID=<AZURE_SUBSCRIPTION_ID>
-export AZURE_SSH_KEY_PATH=<AZURE_SSH_KEY_PATH>
-export AZURE_PUBLIC_IPV4_ADDRESS=<AZURE_PUBLIC_IPV4_ADDRESS>
+# Connect to VM via SSH
+ssh workadventure
 ```
 
 ### Set Up WorkAdventure Server
@@ -191,15 +170,15 @@ FEATURE_FLAG_BROADCAST_AREAS=true
 # Local
 
 # Move to repository
-cd WorkAdventure/maps
+cd WorkAdventure
 
 # Prepare .env file
-cp .env.example .env
+cp maps/.env.example maps/.env
 
 # Preview the map locally
 make wa-dev
 
-# Edit the map file (office.tmj) using Tiled
+# Edit the map file (maps/office.tmj) using Tiled
 
 # Upload the map
 make wa-upload
@@ -367,7 +346,7 @@ STUN_SERVER=stun:stun.l.google.com:19302
 
 ### Set Up Matrix
 
-1. Add the following redirect URI to the existing Google OAuth client used by WorkAdventure (LiveKit configuration).
+1. Add the following redirect URI to the existing Google OAuth client used by WorkAdventure.
    - `https://matrix.<YOUR_FQDN>/_synapse/client/oidc/callback`
 
 ```bash
@@ -416,7 +395,7 @@ POSTGRES_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 | ------------------ | ---- | ------------------------ | --- |
 | matrix.<YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 
-## Log in to Matrix using Element
+### Log in to Matrix using Element
 
 1. Access Element Web: `https://element.io`
 2. Click Sign in -> Open Element web
@@ -429,7 +408,7 @@ POSTGRES_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 7. Click Sign in
 8. After successful authentication, you will be redirected back to Element and logged in
 
-## Set up Egress with RustFS
+### Set Up Egress with RustFS
 
 ```bash
 # VM
@@ -467,7 +446,7 @@ MAX_USERS_FOR_WEBRTC=0
 | cdn-livekit.<YOUR_FQDN>    | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 | rustfs-livekit.<YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 
-## Log in to RustFS
+### Log in to RustFS
 
 1. Access RustFS Console: `https://rustfs-livekit.<YOUR_FQDN>`
 2. Enter your RustFS credentials:

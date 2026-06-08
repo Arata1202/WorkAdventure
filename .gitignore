@@ -4,7 +4,6 @@ node_modules/
 maps/.env
 .env.backup_*
 .env.keys
-.envrc
 **/.terraform/*
 *.tfstate
 *.tfstate.*
