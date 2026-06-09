@@ -115,7 +115,8 @@ vi .env
 # Encrypt .env file
 make encrypt
 
-# Start server
+# Start services with the basic configuration.
+# For production, prefer the recommended initial production setup in this section.
 make up
 ```
 
@@ -133,6 +134,38 @@ MAP_STORAGE_AUTHENTICATION_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 | Record Name | Type | Value                    | TTL |
 | ----------- | ---- | ------------------------ | --- |
 | <YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
+
+#### Recommended Initial Production Setup
+
+- Use this flow for a new production server before the first start.
+- Start from a clean `.env`, add all values from the sections you plan to use, then start the stack once.
+- Run the Synapse commands only when Matrix is configured.
+
+```bash
+# VM
+
+# Move to repository
+cd WorkAdventure
+
+# Prepare a clean .env file for initial setup
+rm -f .env
+cp .env.example .env
+
+# Edit .env once with all values from the sections you plan to use
+vi .env
+
+# Encrypt .env file
+make encrypt
+
+# Prepare Synapse data volume when Matrix is enabled
+npx dotenvx run -- docker compose run --rm --user root --entrypoint sh synapse -lc 'chown -R 991:991 /data'
+
+# Start services with the completed .env
+make up-f
+
+# Create a Matrix Admin User when Matrix is enabled
+npx dotenvx run -- sh -lc 'docker compose exec synapse register_new_matrix_user -c /data/homeserver.yaml -u "$MATRIX_ADMIN_USER" -p "$MATRIX_ADMIN_PASSWORD" --admin http://localhost:8008'
+```
 
 ### Edit .env file for basic settings
 
@@ -224,7 +257,7 @@ MAP_STORAGE_API_KEY=<MAP_STORAGE_AUTHENTICATION_TOKEN>
 UPLOAD_DIRECTORY=maps
 ```
 
-1. Configure GitHub Actions secrets for `deploy.yml`
+2. Configure GitHub Actions secrets for `deploy.yml`
 
 ```env
 # Required
@@ -233,7 +266,7 @@ SSH_USERNAME=ubuntu
 SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
 ```
 
-1. Run the `deploy` workflow manually from GitHub Actions to apply repository changes to the VM
+3. Run the `deploy` workflow manually from GitHub Actions to apply repository changes to the VM
 
 ### Set Up Google OIDC
 
@@ -364,14 +397,14 @@ make decrypt
 vi .env
 make encrypt
 
-# Change /data permissions
+# Prepare Synapse data volume
 npx dotenvx run -- docker compose run --rm --user root --entrypoint sh synapse -lc 'chown -R 991:991 /data'
-
-# Create a Matrix Admin User
-npx dotenvx run -- sh -lc 'docker compose exec synapse register_new_matrix_user -c /data/homeserver.yaml -u "$MATRIX_ADMIN_USER" -p "$MATRIX_ADMIN_PASSWORD" --admin http://localhost:8008'
 
 # Restart server
 make up-f
+
+# Create a Matrix Admin User
+npx dotenvx run -- sh -lc 'docker compose exec synapse register_new_matrix_user -c /data/homeserver.yaml -u "$MATRIX_ADMIN_USER" -p "$MATRIX_ADMIN_PASSWORD" --admin http://localhost:8008'
 ```
 
 ```env
