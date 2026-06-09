@@ -49,8 +49,7 @@ stop:
 
 restart:
 	$(OPTIONAL_P)
-	@${DR} ${DC} stop $(P)
-	@${DR} ${DC} up -d $(P)
+	@${DR} ${DC} restart $(P)
 
 logs:
 	$(OPTIONAL_P)
@@ -73,13 +72,10 @@ decrypt:
 wa-init:
 	@npm install && cd maps && npm install
 
-wa-update:
-	@./scripts/wa-update.sh
-
 wa-dev:
 	@cd maps && ${DR} npm run dev
 
 wa-upload:
 	@cd maps && ${DR} npm run upload
 
-.PHONY: exec up up-f stop restart logs ps encrypt decrypt wa-init wa-update wa-dev wa-upload
+.PHONY: exec up up-f stop restart logs ps encrypt decrypt wa-init wa-dev wa-upload
