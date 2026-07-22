@@ -37,7 +37,7 @@ services:
       - ENABLE_MAP_EDITOR
       - MAP_EDITOR_ALLOWED_USERS
       - MAP_EDITOR_ALLOW_ALL_USERS
-      - PUSHER_URL=https://${DOMAIN}/
+      - PUSHER_URL=https://${DOMAIN}
       - ICON_URL=/icon
       - TURN_SERVER
       - TURN_USER
