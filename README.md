@@ -268,21 +268,24 @@ SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
 
 3. Run the `deploy` workflow manually from GitHub Actions to apply repository changes to the VM
 
-### Set Up Google OIDC
+### Set Up Microsoft Entra ID OIDC
 
-1. Access Google Cloud Platform
-2. Create a new project
-3. Go to APIs & Services -> OAuth consent screen
-   - App name: WorkAdventure
-   - User support email: <EMAIL_ADDRESS>
-   - User Type: External
-   - Contact Information: <EMAIL_ADDRESS>
-4. Go to APIs & Services -> Credentials
-5. Create OAuth client ID
-   - Application type: Web application
+1. Access the [Microsoft Entra admin center](https://entra.microsoft.com)
+2. Go to Microsoft Entra ID -> App registrations
+3. Create a new registration
    - Name: WorkAdventure
-   - Authorized redirect URIs: `https://<YOUR_FQDN>/openid-callback`
-6. Save the Client ID and Client Secret
+   - Supported account types: Accounts in this organizational directory only
+   - Platform: Web
+   - Redirect URI: `https://<YOUR_FQDN>/openid-callback`
+4. Open Certificates & secrets
+5. Create a new client secret
+6. Save the following values:
+   - Application (client) ID
+   - Directory (tenant) ID
+   - Client secret **Value** (not the Secret ID)
+
+> For other OpenID Connect providers, including Google, see the
+> [WorkAdventure OpenID Connect documentation](https://github.com/workadventure/workadventure/blob/develop/docs/others/self-hosting/openid.md).
 
 ```bash
 # VM
@@ -301,11 +304,11 @@ make up-f
 
 ```env
 # Required
-OPENID_CLIENT_ID=<GOOGLE_CLIENT_ID>
-OPENID_CLIENT_SECRET=<GOOGLE_CLIENT_SECRET>
-OPENID_CLIENT_ISSUER=https://accounts.google.com
+OPENID_CLIENT_ID=<APPLICATION_CLIENT_ID>
+OPENID_CLIENT_SECRET=<CLIENT_SECRET_VALUE>
+OPENID_CLIENT_ISSUER=https://login.microsoftonline.com/<DIRECTORY_TENANT_ID>/v2.0
 OPENID_LOGOUT_REDIRECT_URL=https://<YOUR_FQDN>
-OPENID_USERNAME_CLAIM=email
+OPENID_USERNAME_CLAIM=name
 OPENID_SCOPE=openid email profile
 
 # Optional
@@ -379,7 +382,7 @@ STUN_SERVER=stun:stun.l.google.com:19302
 
 ### Set Up Matrix
 
-1. Add the following redirect URI to the existing Google OAuth client used by WorkAdventure.
+1. Add the following redirect URI to the Microsoft Entra ID app registration used by WorkAdventure.
    - `https://matrix.<YOUR_FQDN>/_synapse/client/oidc/callback`
 
 ```bash
