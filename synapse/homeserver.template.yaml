@@ -41,7 +41,7 @@ oidc_providers:
     user_profile_method: "userinfo_endpoint"
     user_mapping_provider:
       config:
-        localpart_template: "{{ user.email.split('@')[0] }}"
+        localpart_template: "{{ user.preferred_username.split('@')[0] }}"
         display_name_template: "{{ user.name }}"
         email_template: "{{ user.email }}"
 
