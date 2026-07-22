@@ -103,11 +103,11 @@ resource "azurerm_network_security_group" "workadventure_nsg" {
   }
 
   security_rule {
-    name                       = "workadventure_7881_udp"
+    name                       = "workadventure_7881_tcp"
     priority                   = 160
     direction                  = "Inbound"
     access                     = "Allow"
-    protocol                   = "Udp"
+    protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "7881"
     source_address_prefix      = "*"
