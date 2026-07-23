@@ -470,8 +470,11 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      OPENID_IDP_ID: "${OPENID_IDP_ID}"
+      OPENID_IDP_NAME: "${OPENID_IDP_NAME}"
       OPENID_CLIENT_ID: "${OPENID_CLIENT_ID}"
       OPENID_CLIENT_SECRET: "${OPENID_CLIENT_SECRET}"
+      OPENID_CLIENT_ISSUER: "${OPENID_CLIENT_ISSUER}"
     labels:
       traefik.enable: "true"
       traefik.http.routers.matrix.rule: "Host(`matrix.${DOMAIN}`)"

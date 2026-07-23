@@ -9,8 +9,11 @@ set -eu
 : "${POSTGRES_DB:?Error: POSTGRES_DB is not set}"
 : "${POSTGRES_USER:?Error: POSTGRES_USER is not set}"
 : "${POSTGRES_PASSWORD:?Error: POSTGRES_PASSWORD is not set}"
+: "${OPENID_IDP_ID:?Error: OPENID_IDP_ID is not set}"
+: "${OPENID_IDP_NAME:?Error: OPENID_IDP_NAME is not set}"
 : "${OPENID_CLIENT_ID:?Error: OPENID_CLIENT_ID is not set}"
 : "${OPENID_CLIENT_SECRET:?Error: OPENID_CLIENT_SECRET is not set}"
+: "${OPENID_CLIENT_ISSUER:?Error: OPENID_CLIENT_ISSUER is not set}"
 
 if [ ! -f /data/homeserver.yaml ] || [ /homeserver.template.yaml -nt /data/homeserver.yaml ]; then
   echo "Generating homeserver.yaml from homeserver.template.yaml..."
@@ -22,8 +25,11 @@ if [ ! -f /data/homeserver.yaml ] || [ /homeserver.template.yaml -nt /data/homes
     -e "s|\${POSTGRES_DB}|$POSTGRES_DB|g" \
     -e "s|\${POSTGRES_USER}|$POSTGRES_USER|g" \
     -e "s|\${POSTGRES_PASSWORD}|$POSTGRES_PASSWORD|g" \
+    -e "s|\${OPENID_IDP_ID}|$OPENID_IDP_ID|g" \
+    -e "s|\${OPENID_IDP_NAME}|$OPENID_IDP_NAME|g" \
     -e "s|\${OPENID_CLIENT_ID}|$OPENID_CLIENT_ID|g" \
     -e "s|\${OPENID_CLIENT_SECRET}|$OPENID_CLIENT_SECRET|g" \
+    -e "s|\${OPENID_CLIENT_ISSUER}|$OPENID_CLIENT_ISSUER|g" \
     /homeserver.template.yaml > /data/homeserver.yaml
 fi
 

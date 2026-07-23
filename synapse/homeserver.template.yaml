@@ -31,9 +31,9 @@ trusted_key_servers:
 suppress_key_server_warning: true
 
 oidc_providers:
-  - idp_id: microsoft
-    idp_name: "Microsoft"
-    issuer: "https://login.microsoftonline.com/65a11ea6-52ba-4edf-8d0f-f864bbb30f7e/v2.0"
+  - idp_id: "${OPENID_IDP_ID}"
+    idp_name: "${OPENID_IDP_NAME}"
+    issuer: "${OPENID_CLIENT_ISSUER}"
     client_id: "${OPENID_CLIENT_ID}"
     client_secret: "${OPENID_CLIENT_SECRET}"
     scopes: ["openid", "profile", "email"]
