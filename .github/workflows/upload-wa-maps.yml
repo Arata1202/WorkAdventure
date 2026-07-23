@@ -1,9 +1,6 @@
 name: Upload WA maps
 
 on:
-  push:
-    branches:
-      - master
   workflow_dispatch:
 
 permissions:
