@@ -55,7 +55,7 @@ services:
       - INTERNAL_MAP_STORAGE_URL=http://map-storage:3000
       - PUBLIC_MAP_STORAGE_URL=https://${DOMAIN}/map-storage
       - START_ROOM_URL
-      - OPENID_PROMPT=login
+      - OPENID_PROMPT
       - OPENID_WOKA_NAME_POLICY
       - OPENID_CLIENT_ID
       - OPENID_CLIENT_SECRET
@@ -475,6 +475,7 @@ services:
       OPENID_CLIENT_ID: "${OPENID_CLIENT_ID}"
       OPENID_CLIENT_SECRET: "${OPENID_CLIENT_SECRET}"
       OPENID_CLIENT_ISSUER: "${OPENID_CLIENT_ISSUER}"
+      OPENID_USERNAME_CLAIM: "${OPENID_USERNAME_CLAIM}"
     labels:
       traefik.enable: "true"
       traefik.http.routers.matrix.rule: "Host(`matrix.${DOMAIN}`)"
