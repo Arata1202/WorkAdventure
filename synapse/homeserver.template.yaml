@@ -36,14 +36,13 @@ oidc_providers:
     issuer: "${OPENID_CLIENT_ISSUER}"
     client_id: "${OPENID_CLIENT_ID}"
     client_secret: "${OPENID_CLIENT_SECRET}"
-    scopes: ["openid", "profile", "email"]
+    scopes: ["openid", "profile"]
     allow_existing_users: true
 
     user_mapping_provider:
       config:
         localpart_template: "{{ user['${OPENID_USERNAME_CLAIM}'].split('@')[0] }}"
         display_name_template: "{{ user.name }}"
-        email_template: "{{ user.email }}"
 
 sso:
   client_whitelist:
