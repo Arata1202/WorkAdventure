@@ -277,15 +277,44 @@ SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
    - Supported account types: Accounts in this organizational directory only
    - Platform: Web
    - Redirect URI: `https://<YOUR_FQDN>/openid-callback`
-4. Open Certificates & secrets
-5. Create a new client secret
-6. Save the following values:
+4. Open Authentication and add another Web redirect URI:
+   - `https://matrix.<YOUR_FQDN>/_synapse/client/oidc/callback`
+5. Open Certificates & secrets and create a new client secret
+6. Open Token configuration and add the `email` optional claim:
+   - Token type: ID
+   - Claim: `email`
+   - Keep `Turn on the Microsoft Graph email permission` enabled
+   - If required by your tenant, grant admin consent under API permissions
+7. Save the following values:
    - Application (client) ID
    - Directory (tenant) ID
    - Client secret **Value** (not the Secret ID)
+8. Confirm that each user who will access WorkAdventure has an email address in Microsoft Entra ID
 
-> For other OpenID Connect providers, including Google, see the
-> [WorkAdventure OpenID Connect documentation](https://github.com/workadventure/workadventure/blob/develop/docs/others/self-hosting/openid.md).
+> For Google OIDC, see [Set Up Google OIDC](docs/google-oidc.md).
+
+```env
+# Required
+OPENID_IDP_ID=microsoft
+OPENID_IDP_NAME=Microsoft
+OPENID_CLIENT_ID=<APPLICATION_CLIENT_ID>
+OPENID_CLIENT_SECRET=<CLIENT_SECRET_VALUE>
+OPENID_CLIENT_ISSUER=https://login.microsoftonline.com/<DIRECTORY_TENANT_ID>/v2.0
+OPENID_LOGOUT_REDIRECT_URL=https://<YOUR_FQDN>
+OPENID_USERNAME_CLAIM=preferred_username
+OPENID_SCOPE=openid email profile
+
+# Optional
+# Keep this empty to reuse an existing Microsoft session.
+OPENID_PROMPT=
+DISABLE_ANONYMOUS=true
+MAP_EDITOR_ALLOWED_USERS=<EMAIL_ADDRESS>
+MAP_EDITOR_ALLOW_ALL_USERS=false
+```
+
+`email` must remain in `OPENID_SCOPE`. WorkAdventure v1.28.9 requires it, and
+`MAP_EDITOR_ALLOWED_USERS` uses the returned email address. This WorkAdventure
+setting is separate from the scopes configured for Synapse.
 
 ```bash
 # VM
@@ -302,22 +331,12 @@ make encrypt
 make up-f
 ```
 
-```env
-# Required
-OPENID_IDP_ID=google
-OPENID_IDP_NAME=Google
-OPENID_CLIENT_ID=<GOOGLE_CLIENT_ID>
-OPENID_CLIENT_SECRET=<GOOGLE_CLIENT_SECRET>
-OPENID_CLIENT_ISSUER=https://accounts.google.com
-OPENID_LOGOUT_REDIRECT_URL=https://<YOUR_FQDN>
-OPENID_USERNAME_CLAIM=name
-OPENID_SCOPE=openid email profile
+After restarting, verify the migration in a private browser window:
 
-# Optional
-DISABLE_ANONYMOUS=true
-MAP_EDITOR_ALLOWED_USERS=<EMAIL_ADDRESS>
-MAP_EDITOR_ALLOW_ALL_USERS=false
-```
+1. Sign in to WorkAdventure with Microsoft Entra ID
+2. Confirm that chat opens with the existing Matrix account
+3. Confirm that a user in `MAP_EDITOR_ALLOWED_USERS` can open the Map Editor
+4. Confirm that a user not in `MAP_EDITOR_ALLOWED_USERS` cannot open the Map Editor
 
 ### Set Up LiveKit
 
@@ -384,7 +403,7 @@ STUN_SERVER=stun:stun.l.google.com:19302
 
 ### Set Up Matrix
 
-1. Add the following redirect URI to the Microsoft Entra ID app registration used by WorkAdventure.
+1. Confirm that the following redirect URI is registered with the OpenID Connect provider.
    - `https://matrix.<YOUR_FQDN>/_synapse/client/oidc/callback`
 
 ```bash
