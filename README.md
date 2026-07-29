@@ -312,8 +312,6 @@ OPENID_SCOPE=openid email profile
 
 # Optional
 DISABLE_ANONYMOUS=true
-MAP_EDITOR_ALLOWED_USERS=<EMAIL_ADDRESS>
-MAP_EDITOR_ALLOW_ALL_USERS=false
 ```
 
 ### Set Up LiveKit
