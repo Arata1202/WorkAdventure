@@ -70,6 +70,9 @@ services:
       - ENABLE_CHAT_UPLOAD
       - ENABLE_CHAT_ONLINE_LIST
       - ENABLE_CHAT_DISCONNECTED_LIST
+      - CLIENT_DISCONNECTION_RETENTION_MS
+      - REDIS_HOST=redis
+      - ENABLE_TUTORIAL=${ENABLE_TUTORIAL:-true}
       - UPLOADER_URL=/uploader
       # Report issues menu
       - ENABLE_REPORT_ISSUES_MENU=${ENABLE_REPORT_ISSUES_MENU}
@@ -115,12 +118,15 @@ services:
       - MATRIX_ADMIN_USER
       - MATRIX_ADMIN_PASSWORD
       - MATRIX_DOMAIN
+      - LIVEKIT_API_KEY
+      - LIVEKIT_API_SECRET
       - LIVEKIT_RECORDING_S3_ENDPOINT
       - LIVEKIT_RECORDING_S3_ACCESS_KEY
       - LIVEKIT_RECORDING_S3_SECRET_KEY
       - LIVEKIT_RECORDING_S3_REGION
       - LIVEKIT_RECORDING_S3_BUCKET
       - LIVEKIT_RECORDING_S3_CDN_ENDPOINT
+      - LIVEKIT_PIXEL_DENSITY=${LIVEKIT_PIXEL_DENSITY:-}
       - MAX_DISPLAYED_VIDEOS
     labels:
       traefik.enable: "true"
@@ -140,6 +146,10 @@ services:
       traefik.http.routers.play-ws.entryPoints: "web"
       traefik.http.routers.play-ws.service: play-ws
       traefik.http.services.play-ws.loadbalancer.server.port: "3001"
+      traefik.http.services.play-ws.loadbalancer.sticky.cookie: "true"
+      traefik.http.services.play-ws.loadbalancer.sticky.cookie.name: "wa_ws_affinity"
+      traefik.http.services.play-ws.loadbalancer.sticky.cookie.httpOnly: "true"
+      traefik.http.services.play-ws.loadbalancer.sticky.cookie.sameSite: "lax"
 
       traefik.http.routers.play-ws-ssl.rule: "Host(`${DOMAIN}`) && PathPrefix(`/ws/`)"
       traefik.http.routers.play-ws-ssl.entryPoints: "websecure"
@@ -321,7 +331,7 @@ services:
     restart: ${RESTART_POLICY}
 
   livekit:
-    image: livekit/livekit-server:v1.8.4
+    image: livekit/livekit-server:v1.10.1
     entrypoint: ["/entrypoint.sh"]
     environment:
       - LIVEKIT_API_KEY
@@ -348,7 +358,7 @@ services:
     restart: ${RESTART_POLICY}
 
   egress:
-    image: livekit/egress:v1.9.0
+    image: livekit/egress:v1.12.0
     entrypoint: ["/entrypoint.sh"]
     cap_add:
       - SYS_ADMIN
