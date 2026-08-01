@@ -259,6 +259,9 @@ UPLOAD_DIRECTORY=maps
 
 2. Configure GitHub Actions secrets for `deploy.yml`
 
+> [!NOTE]
+> The `deploy.yml` workflow requires direct SSH access and is not compatible with the default AWS SSM setup.
+
 ```env
 # Required
 SSH_HOST=<VM_PUBLIC_IPV4_ADDRESS>
@@ -270,7 +273,7 @@ SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
 
 ### Set Up Microsoft Entra ID OIDC
 
-> For Google OIDC, see [Set Up Google OIDC](docs/google-oidc.md).
+For Google OIDC, see [Set Up Google OIDC](docs/google-oidc.md).
 
 1. Access Microsoft Azure portal
 2. Go to Microsoft Entra ID -> App registrations
