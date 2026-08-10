@@ -56,7 +56,7 @@ services:
       - PUBLIC_MAP_STORAGE_URL=https://${DOMAIN}/map-storage
       - START_ROOM_URL
       - OPENID_PROMPT
-      - OPENID_WOKA_NAME_POLICY
+      - OPID_WOKA_NAME_POLICY
       - OPENID_CLIENT_ID
       - OPENID_CLIENT_SECRET
       - OPENID_CLIENT_ISSUER

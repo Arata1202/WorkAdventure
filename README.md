@@ -7,12 +7,19 @@
 
 ## Getting Started
 
-- This guide supports both AWS EC2 and Azure VM with Terraform.
+This guide deploys the complete WorkAdventure stack to either AWS EC2 or an Azure VM using Terraform. Follow only the instructions for your selected cloud provider.
 
-### Prepare Repository
+### Prerequisites
+
+- Git, Make, Node.js 20, npm, and Terraform
+- AWS: AWS CLI and the Session Manager plugin
+- Azure: Azure CLI and OpenSSH
+- A domain whose DNS records you can configure
+
+### Set Up Local Repository
 
 ```bash
-# Local and VM
+# Local
 
 # Clone repository
 git clone https://github.com/Arata1202/WorkAdventure.git
@@ -24,16 +31,59 @@ make wa-init
 
 ### Create Resources with Terraform
 
+Choose one cloud provider and run its commands from the repository root.
+
+#### AWS
+
 ```bash
 # Local
 
-# Move to repository
-cd WorkAdventure
-cd terraform/aws # or terraform/azure
+# Configure AWS credentials and region
+aws configure
 
-# Prepare and edit local values
+# Move to the AWS Terraform directory
+cd terraform/aws
+
+# Prepare local values
 cp terraform.tfvars.example terraform.tfvars
-vi terraform.tfvars
+```
+
+Edit `terraform.tfvars` with your preferred editor.
+
+#### Azure
+
+If you do not already have a dedicated SSH key for this VM, create one first:
+
+```bash
+# Local
+
+# Generate an SSH key pair
+ssh-keygen -t ed25519 -C "workadventure" -f ~/.ssh/workadventure -N ""
+```
+
+Then authenticate with Azure and prepare the Terraform values:
+
+```bash
+# Local
+
+# Authenticate with Azure
+az login
+
+# Move to the Azure Terraform directory
+cd terraform/azure
+
+# Prepare local values
+cp terraform.tfvars.example terraform.tfvars
+```
+
+Edit `terraform.tfvars` with your preferred editor and set `ssh_public_key` to the contents of `~/.ssh/workadventure.pub`.
+
+#### Apply
+
+After preparing either the AWS or Azure values:
+
+```bash
+# Local
 
 # Create resources
 terraform init
@@ -41,15 +91,12 @@ terraform plan
 terraform apply
 ```
 
-### Connect AWS EC2 with SSM
+### Connect to AWS EC2 with SSM
 
-- Default for AWS is SSM.
+Use this section for AWS. The Terraform configuration uses AWS Systems Manager Session Manager instead of SSH.
 
 ```bash
 # Local
-
-# Configure AWS CLI credentials and region before connecting
-aws configure
 
 # Connect to AWS EC2 via SSM
 aws ssm start-session --target <EC2_INSTANCE_ID>
@@ -58,26 +105,15 @@ aws ssm start-session --target <EC2_INSTANCE_ID>
 sudo -iu ubuntu
 ```
 
-### Configure SSH Access
+### Connect to Azure VM with SSH
 
-- Default for Azure is SSH (Azure Bastion can be costly).
-
-```bash
-# Local
-
-# Save the VM private key
-vi ~/.ssh/workadventure_key.pem
-chmod 600 ~/.ssh/workadventure_key.pem
-
-# Configure SSH host aliases
-vi ~/.ssh/config
-```
+Use this section for Azure. Add the following host alias to `~/.ssh/config`:
 
 ```sshconfig
 Host workadventure
   HostName <VM_PUBLIC_IPV4_ADDRESS>
   User ubuntu
-  IdentityFile ~/.ssh/workadventure_key.pem
+  IdentityFile ~/.ssh/workadventure
 ```
 
 ```bash
@@ -89,44 +125,60 @@ ssh workadventure
 
 ### Set Up WorkAdventure Server
 
-- https://github.com/workadventure/workadventure/blob/develop/contrib/docker/README.md
-- https://github.com/workadventure/workadventure/releases
+- [Self-hosting WorkAdventure using Docker Compose](https://github.com/workadventure/workadventure/blob/v1.33.0/contrib/docker/README.md)
+- [WorkAdventure releases](https://github.com/workadventure/workadventure/releases)
 
 ```bash
 # VM
 
-# Set up Ubuntu
-./ubuntu/setup.sh
+# Clone repository
+git clone https://github.com/Arata1202/WorkAdventure.git
 
 # Move to repository
 cd WorkAdventure
 
+# Set up Ubuntu
+./ubuntu/setup.sh
+
+# Install repository tools and map dependencies
+make wa-init
+
 # Remove existing .env file
 rm -f .env
+
+# Prepare .env file
+cp .env.example .env
+```
+
+### Configure Basic Settings
+
+- Generate a separate value for every secret. Run the matching command again as needed and do not reuse values.
+
+```bash
+# VM
 
 # Generate random strings for .env values
 openssl rand -hex 16
 openssl rand -hex 32
-
-# Prepare and edit .env file
-cp .env.example .env
-vi .env
-
-# Encrypt .env file
-make encrypt
-
-# Start services with the basic configuration.
-# For production, prefer the recommended initial production setup in this section.
-make up
 ```
 
 ```env
 # Required
 SECRET_KEY=<UNIQUE_RANDOM_64_HEX>
 DOMAIN=<YOUR_FQDN>
+START_ROOM_URL=/~/maps/office.wam
+TZ=Asia/Tokyo
+ACME_EMAIL=<EMAIL_ADDRESS>
+MAP_STORAGE_ENABLE_BEARER_AUTHENTICATION=true
+MAP_STORAGE_ENABLE_BASIC_AUTHENTICATION=true
 MAP_STORAGE_AUTHENTICATION_TOKEN=<UNIQUE_RANDOM_64_HEX>
 MAP_STORAGE_AUTHENTICATION_USER=admin
 MAP_STORAGE_AUTHENTICATION_PASSWORD=<UNIQUE_RANDOM_32_HEX>
+
+# Optional
+ENABLE_TELEMETRY=true
+SECURITY_EMAIL=<EMAIL_ADDRESS>
+FEATURE_FLAG_BROADCAST_AREAS=true
 ```
 
 1. Add an A record in your DNS provider to point your domain to the VM public IP
@@ -135,179 +187,30 @@ MAP_STORAGE_AUTHENTICATION_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 | ----------- | ---- | ------------------------ | --- |
 | <YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 
-#### Recommended Initial Production Setup
+### Configure OIDC
 
-- Use this flow for a new production server before the first start.
-- Start from a clean `.env`, add all values from the sections you plan to use, then start the stack once.
-- Run the Synapse commands only when Matrix is configured.
+Configure one OIDC provider. To use Google, see [Set Up Google OIDC](docs/google-oidc.md).
 
-```bash
-# VM
+#### Microsoft Entra ID
 
-# Move to repository
-cd WorkAdventure
-
-# Prepare a clean .env file for initial setup
-rm -f .env
-cp .env.example .env
-
-# Edit .env once with all values from the sections you plan to use
-vi .env
-
-# Encrypt .env file
-make encrypt
-
-# Prepare Synapse data volume when Matrix is enabled
-npx dotenvx run -- docker compose run --rm --user root --entrypoint sh synapse -lc 'chown -R 991:991 /data'
-
-# Start services with the completed .env
-make up-f
-
-# Create a Matrix Admin User when Matrix is enabled
-npx dotenvx run -- sh -lc 'docker compose exec synapse register_new_matrix_user -c /data/homeserver.yaml -u "$MATRIX_ADMIN_USER" -p "$MATRIX_ADMIN_PASSWORD" --admin http://localhost:8008'
-```
-
-### Edit .env file for basic settings
-
-```bash
-# VM
-
-# Move to repository
-cd WorkAdventure
-
-# Edit .env file
-make decrypt
-vi .env
-make encrypt
-
-# Restart server
-make up-f
-```
-
-```env
-# Required
-TZ=Asia/Tokyo
-
-# Optional
-ACME_EMAIL=<EMAIL_ADDRESS>
-ENABLE_TELEMETRY=true
-SECURITY_EMAIL=<EMAIL_ADDRESS>
-FEATURE_FLAG_BROADCAST_AREAS=true
-```
-
-### Upload a Map Edited with Tiled
-
-- https://docs.workadventu.re/map-building/tiled-editor/publish/wa-hosted
-
-```bash
-# Local
-
-# Move to repository
-cd WorkAdventure
-
-# Prepare .env file
-cp maps/.env.example maps/.env
-
-# Preview the map locally
-make wa-dev
-
-# Edit the map file (maps/office.tmj) using Tiled
-
-# Upload the map
-make wa-upload
-
-Please enter your Map storage URL: https://<YOUR_FQDN>/map-storage/
-Please enter your API Key: <MAP_STORAGE_AUTHENTICATION_TOKEN>
-Upload directory: maps
-```
-
-```bash
-# VM
-
-# Move to repository
-cd WorkAdventure
-
-# Edit .env file
-make decrypt
-vi .env
-make encrypt
-
-# Restart server
-make up-f
-```
-
-```env
-# Required
-START_ROOM_URL=/~/maps/office.wam
-MAP_STORAGE_ENABLE_BEARER_AUTHENTICATION=true
-```
-
-1. Access the uploaded map
-   `https://<YOUR_FQDN>`
-
-### Set Up GitHub Actions
-
-1. Configure GitHub Actions secrets for `upload-wa-maps.yml`
-
-```env
-# Required
-UPLOAD_MODE=MAP_STORAGE
-MAP_STORAGE_URL=https://<YOUR_FQDN>/map-storage/
-MAP_STORAGE_API_KEY=<MAP_STORAGE_AUTHENTICATION_TOKEN>
-UPLOAD_DIRECTORY=maps
-```
-
-2. Configure GitHub Actions secrets for `deploy.yml`
-
-> [!NOTE]
-> The `deploy.yml` workflow requires direct SSH access and is not compatible with the default AWS SSM setup.
-
-```env
-# Required
-SSH_HOST=<VM_PUBLIC_IPV4_ADDRESS>
-SSH_USERNAME=ubuntu
-SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
-```
-
-3. Run the `deploy` workflow manually from GitHub Actions to apply repository changes to the VM
-
-### Set Up Microsoft Entra ID OIDC
-
-For Google OIDC, see [Set Up Google OIDC](docs/google-oidc.md).
-
-1. Access Microsoft Azure portal
-2. Go to Microsoft Entra ID -> App registrations
-3. Create a new registration
+1. Access the [Microsoft Entra admin center](https://entra.microsoft.com/)
+2. Go to Entra ID -> App registrations -> New registration
+3. Register the application
    - Name: WorkAdventure
-   - Supported account types: Accounts in this organizational directory only
+   - Supported account types: Accounts in this organizational directory only (Single tenant)
    - Platform: Web
    - Redirect URI: `https://<YOUR_FQDN>/openid-callback`
-4. Open Authentication and add another Web redirect URI
+4. Go to Manage -> Authentication, add another URI to the existing Web platform, and save it
    - Redirect URI: `https://matrix.<YOUR_FQDN>/_synapse/client/oidc/callback`
-5. Open Certificates & secrets and create a new client secret
-6. Open Token configuration and add the `email` optional claim
+5. Go to Manage -> Certificates & secrets -> Client secrets -> New client secret
+6. Copy the client secret Value immediately and store it securely
+7. Go to Manage -> Token configuration -> Add optional claim and add the `email` claim
    - Token type: ID
    - Claim: `email`
    - Keep `Turn on the Microsoft Graph email permission` enabled
-7. Save the following values
+8. Save the following values from the application Overview page
    - Application (client) ID
    - Directory (tenant) ID
-   - Client secret Value (not the Secret ID)
-
-```bash
-# VM
-
-# Move to repository
-cd WorkAdventure
-
-# Edit .env file
-make decrypt
-vi .env
-make encrypt
-
-# Restart server
-make up-f
-```
 
 ```env
 # Required
@@ -319,29 +222,16 @@ OPENID_CLIENT_ISSUER=https://login.microsoftonline.com/<DIRECTORY_TENANT_ID>/v2.
 OPENID_LOGOUT_REDIRECT_URL=https://<YOUR_FQDN>
 OPENID_USERNAME_CLAIM=preferred_username
 OPENID_SCOPE=openid email profile
-
-# Optional
 DISABLE_ANONYMOUS=true
 ```
 
-### Set Up LiveKit
+### Configure LiveKit
 
 ```bash
 # VM
 
-# Move to repository
-cd WorkAdventure
-
 # Generate random strings for .env values
 openssl rand -hex 32
-
-# Edit .env file
-make decrypt
-vi .env
-make encrypt
-
-# Restart server
-make up-f
 ```
 
 ```env
@@ -360,24 +250,13 @@ MAX_PER_GROUP=<NUMBER>
 | ------------------- | ---- | ------------------------ | --- |
 | livekit.<YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 
-### Set Up Coturn
+### Configure Coturn
 
 ```bash
 # VM
 
-# Move to repository
-cd WorkAdventure
-
 # Generate random strings for .env values
 openssl rand -hex 32
-
-# Edit .env file
-make decrypt
-vi .env
-make encrypt
-
-# Restart server
-make up-f
 ```
 
 ```env
@@ -387,31 +266,14 @@ TURN_STATIC_AUTH_SECRET=<UNIQUE_RANDOM_64_HEX>
 STUN_SERVER=stun:stun.l.google.com:19302
 ```
 
-### Set Up Matrix
+### Configure Matrix
 
 ```bash
 # VM
 
-# Move to repository
-cd WorkAdventure
-
 # Generate random strings for .env values
 openssl rand -hex 16
 openssl rand -hex 32
-
-# Edit .env file
-make decrypt
-vi .env
-make encrypt
-
-# Prepare Synapse data volume
-npx dotenvx run -- docker compose run --rm --user root --entrypoint sh synapse -lc 'chown -R 991:991 /data'
-
-# Restart server
-make up-f
-
-# Create a Matrix Admin User
-npx dotenvx run -- sh -lc 'docker compose exec synapse register_new_matrix_user -c /data/homeserver.yaml -u "$MATRIX_ADMIN_USER" -p "$MATRIX_ADMIN_PASSWORD" --admin http://localhost:8008'
 ```
 
 ```env
@@ -435,37 +297,13 @@ POSTGRES_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 | ------------------ | ---- | ------------------------ | --- |
 | matrix.<YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 
-### Log in to Matrix using Element
-
-1. Access Element Web: `https://element.io`
-2. Click Sign in -> Open Element web
-3. Click Sign in
-4. Enter your Matrix homeserver URL: `https://matrix.<YOUR_FQDN>`
-5. Click Continue
-6. Enter your Matrix credentials:
-   - Username: admin
-   - Password: <MATRIX_ADMIN_PASSWORD>
-7. Click Sign in
-8. After successful authentication, you will be redirected back to Element and logged in
-
-### Set Up Egress with RustFS
+### Configure Egress with RustFS
 
 ```bash
 # VM
 
-# Move to repository
-cd WorkAdventure
-
 # Generate random strings for .env values
 openssl rand -hex 32
-
-# Edit .env file
-make decrypt
-vi .env
-make encrypt
-
-# Restart server
-make up-f
 ```
 
 ```env
@@ -486,6 +324,73 @@ MAX_USERS_FOR_WEBRTC=0
 | cdn-livekit.<YOUR_FQDN>    | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 | rustfs-livekit.<YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 
+### Start WorkAdventure Server
+
+Edit `.env` with your preferred editor and configure all required values listed above.
+
+Before starting, confirm that every DNS record listed above resolves to the VM public IP so Traefik can obtain the TLS certificates.
+
+```bash
+# VM
+
+# Encrypt .env file
+make encrypt
+
+# Prepare Synapse data volume
+npx dotenvx run -- docker compose run --rm --user root --entrypoint sh synapse -lc 'chown -R 991:991 /data'
+
+# Start all services
+make up
+```
+
+Back up `.env.keys` securely after the first encryption. It is required to decrypt `.env` and must never be committed.
+
+### Upload a Map Edited with Tiled
+
+- [Upload maps to WorkAdventure Map Storage](https://docs.workadventu.re/map-building/tiled-editor/publish/wa-hosted)
+
+```bash
+# Local
+
+# Prepare .env file
+cp maps/.env.example maps/.env
+
+# Preview the map locally
+make wa-dev
+
+# Edit the map file (maps/office.tmj) using Tiled
+
+# Upload the map
+make wa-upload
+
+Please enter your Map storage URL: https://<YOUR_FQDN>/map-storage/
+Please enter your API Key: <MAP_STORAGE_AUTHENTICATION_TOKEN>
+Upload directory: maps
+```
+
+1. Access the uploaded map: `https://<YOUR_FQDN>`
+
+### Create and Log In as the Matrix Admin User
+
+```bash
+# VM
+
+# Move to repository
+cd ~/WorkAdventure
+
+# Create a Matrix Admin User
+npx dotenvx run -- sh -lc 'docker compose exec synapse register_new_matrix_user -c /data/homeserver.yaml -u "$MATRIX_ADMIN_USER" -p "$MATRIX_ADMIN_PASSWORD" --admin http://localhost:8008'
+```
+
+1. Access Element Web: `https://app.element.io`
+2. Click Sign in
+3. Click Edit and enter your Matrix homeserver URL: `https://matrix.<YOUR_FQDN>`
+4. Click Continue
+5. Enter your Matrix credentials:
+   - Username: admin
+   - Password: <MATRIX_ADMIN_PASSWORD>
+6. Click Sign in
+
 ### Log in to RustFS
 
 1. Access RustFS Console: `https://rustfs-livekit.<YOUR_FQDN>`
@@ -494,3 +399,61 @@ MAX_USERS_FOR_WEBRTC=0
    - Password: <LIVEKIT_RECORDING_S3_SECRET_KEY>
 3. Click Sign in
 4. After successful authentication, you will be logged in
+
+### Set Up GitHub Actions
+
+Go to the repository's Settings -> Secrets and variables -> Actions -> Secrets, then add the following repository secrets.
+
+#### Upload Maps
+
+Configure these secrets for `upload-wa-maps.yml`:
+
+```env
+# Required
+UPLOAD_MODE=MAP_STORAGE
+MAP_STORAGE_URL=https://<YOUR_FQDN>/map-storage/
+MAP_STORAGE_API_KEY=<MAP_STORAGE_AUTHENTICATION_TOKEN>
+UPLOAD_DIRECTORY=maps
+```
+
+Run the `Upload WA maps` workflow manually whenever you want to publish map changes.
+
+#### Deploy
+
+Configure these secrets for `deploy.yml`:
+
+> [!NOTE]
+> The `deploy.yml` workflow requires direct SSH access and is not compatible with the default AWS SSM setup.
+
+```env
+# Required
+SSH_HOST=<VM_PUBLIC_IPV4_ADDRESS>
+SSH_USERNAME=ubuntu
+SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
+```
+
+Run the `deploy` workflow manually to pull repository changes and recreate the services on the VM.
+
+### Update Configuration
+
+```bash
+# VM
+
+# Move to repository
+cd ~/WorkAdventure
+
+# Decrypt .env file
+make decrypt
+```
+
+Edit `.env` with your preferred editor.
+
+```bash
+# VM
+
+# Encrypt .env file
+make encrypt
+
+# Restart services
+make up-f
+```
