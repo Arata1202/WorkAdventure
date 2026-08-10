@@ -25,6 +25,9 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DATA_DIR}/letsencrypt/:/letsencrypt/
+    networks:
+      - default
+      - proxy
     restart: ${RESTART_POLICY}
 
   play:
@@ -516,6 +519,11 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     restart: ${RESTART_POLICY}
+
+networks:
+  proxy:
+    external: true
+    name: workadventure-proxy
 
 volumes:
   redisdata:

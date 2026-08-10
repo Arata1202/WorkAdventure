@@ -30,6 +30,7 @@ endef
 # Docker
 
 DC := docker compose
+PROXY_NETWORK := workadventure-proxy
 
 exec:
 	$(REQUIRED_P)
@@ -37,10 +38,12 @@ exec:
 
 up:
 	$(OPTIONAL_P)
+	@docker network inspect ${PROXY_NETWORK} > /dev/null 2>&1 || docker network create ${PROXY_NETWORK}
 	@${DR} ${DC} up -d $(P)
 
 up-f:
 	$(OPTIONAL_P)
+	@docker network inspect ${PROXY_NETWORK} > /dev/null 2>&1 || docker network create ${PROXY_NETWORK}
 	@${DR} ${DC} up -d --force-recreate $(P)
 
 stop:
