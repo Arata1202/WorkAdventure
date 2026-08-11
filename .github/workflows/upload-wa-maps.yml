@@ -5,8 +5,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  actions: write
 
 jobs:
   build-and-deploy:
@@ -17,16 +15,16 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: "20"
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build project
         run: npm run build
@@ -70,9 +68,7 @@ jobs:
 
       - name: Deploy using Github Pages
         if: ${{ env.UPLOAD_MODE == 'GH_PAGES' }}
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: maps/dist/
-          BASE_BRANCH: master
+          branch: gh-pages
+          folder: maps/dist/
