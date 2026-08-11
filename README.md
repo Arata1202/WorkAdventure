@@ -9,10 +9,10 @@
 
 - This guide supports both AWS EC2 and Azure VM with Terraform.
 
-### Prepare Repository
+### Prepare Local Repository
 
 ```bash
-# Local and VM
+# Local
 
 # Clone repository
 git clone https://github.com/Arata1202/WorkAdventure.git
@@ -23,6 +23,14 @@ make wa-init
 ```
 
 ### Create Resources with Terraform
+
+When using Azure, generate an SSH key first:
+
+```bash
+# Local
+
+ssh-keygen -t ed25519 -C "workadventure" -f ~/.ssh/workadventure -N ""
+```
 
 ```bash
 # Local
@@ -40,6 +48,8 @@ terraform init
 terraform plan
 terraform apply
 ```
+
+For Azure, set `ssh_public_key` in `terraform.tfvars` to the contents of `~/.ssh/workadventure.pub`.
 
 ### Connect AWS EC2 with SSM
 
@@ -62,22 +72,11 @@ sudo -iu ubuntu
 
 - Default for Azure is SSH (Azure Bastion can be costly).
 
-```bash
-# Local
-
-# Save the VM private key
-vi ~/.ssh/workadventure_key.pem
-chmod 600 ~/.ssh/workadventure_key.pem
-
-# Configure SSH host aliases
-vi ~/.ssh/config
-```
-
 ```sshconfig
 Host workadventure
   HostName <VM_PUBLIC_IPV4_ADDRESS>
   User ubuntu
-  IdentityFile ~/.ssh/workadventure_key.pem
+  IdentityFile ~/.ssh/workadventure
 ```
 
 ```bash
@@ -87,6 +86,22 @@ Host workadventure
 ssh workadventure
 ```
 
+### Prepare VM Repository
+
+```bash
+# VM
+
+# Clone repository
+git clone https://github.com/Arata1202/WorkAdventure.git
+cd WorkAdventure
+
+# Set up Ubuntu
+./ubuntu/setup.sh
+
+# Install dependencies
+make wa-init
+```
+
 ### Set Up WorkAdventure Server
 
 - https://github.com/workadventure/workadventure/blob/develop/contrib/docker/README.md
@@ -94,9 +109,6 @@ ssh workadventure
 
 ```bash
 # VM
-
-# Set up Ubuntu
-./ubuntu/setup.sh
 
 # Move to repository
 cd WorkAdventure
@@ -111,13 +123,6 @@ openssl rand -hex 32
 # Prepare and edit .env file
 cp .env.example .env
 vi .env
-
-# Encrypt .env file
-make encrypt
-
-# Start services with the basic configuration.
-# For production, prefer the recommended initial production setup in this section.
-make up
 ```
 
 ```env
@@ -135,39 +140,22 @@ MAP_STORAGE_AUTHENTICATION_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 | ----------- | ---- | ------------------------ | --- |
 | <YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 
-#### Recommended Initial Production Setup
-
-- Use this flow for a new production server before the first start.
-- Start from a clean `.env`, add all values from the sections you plan to use, then start the stack once.
-- Run the Synapse commands only when Matrix is configured.
-
 ```bash
 # VM
 
 # Move to repository
 cd WorkAdventure
 
-# Prepare a clean .env file for initial setup
-rm -f .env
-cp .env.example .env
-
-# Edit .env once with all values from the sections you plan to use
-vi .env
-
 # Encrypt .env file
 make encrypt
 
-# Prepare Synapse data volume when Matrix is enabled
-npx dotenvx run -- docker compose run --rm --user root --entrypoint sh synapse -lc 'chown -R 991:991 /data'
-
-# Start services with the completed .env
-make up-f
-
-# Create a Matrix Admin User when Matrix is enabled
-npx dotenvx run -- sh -lc 'docker compose exec synapse register_new_matrix_user -c /data/homeserver.yaml -u "$MATRIX_ADMIN_USER" -p "$MATRIX_ADMIN_PASSWORD" --admin http://localhost:8008'
+# Start services
+make up
 ```
 
-### Edit .env file for basic settings
+Back up `.env.keys` securely. It is required to decrypt `.env` and must not be committed.
+
+### Update Configuration
 
 ```bash
 # VM
